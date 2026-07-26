@@ -48,7 +48,12 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go test ./...
-      - name: Build saige integration example
-        run: go build ./...
-        working-directory: examples/saige
+      # -race in CI, not just locally: this codebase is a bus, a router and a
+      # durable runtime, so most of what can break is a data race or a lost
+      # wakeup rather than a wrong return value.
+      - run: go test ./... -race
+      # The example is the end-to-end test. It exercises the registry, the bus,
+      # the router, two sinks and a durable replay in one process, and asserts
+      # its own invariants rather than only printing.
+      - name: Run the end-to-end example
+        run: go run ./examples/local

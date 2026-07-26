@@ -144,6 +144,7 @@ type executor struct {
 	requests []runtime.Request
 	chunks   []agentrt.Chunk
 	err      error
+	failures int
 	answer   string
 }
 
@@ -151,11 +152,36 @@ func newExecutor(answer string, chunks ...agentrt.Chunk) *executor {
 	return &executor{answer: answer, chunks: chunks}
 }
 
+// failNext makes the next n executions fail with err and every execution after
+// them succeed. Setting err directly instead makes every execution fail, which
+// is what a permanent-failure test wants.
+//
+// A retry test needs this rather than the obvious handshake of "wait until the
+// test sees a failure, then clear err". The retry backoff here is a
+// millisecond, so the second attempt can start before the waiting goroutine
+// wakes; the observed failure count then goes straight from zero to two, a
+// poll for exactly one never holds again, and the test waits forever rather
+// than failing fast. Deciding the number of failures up front removes the
+// coordination, and with it the race.
+func (e *executor) failNext(n int, err error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.err, e.failures = err, n
+}
+
 func (e *executor) Execute(ctx context.Context, req runtime.Request, emit func(context.Context, agentrt.Chunk) error) (runtime.Outcome, error) {
 	e.mu.Lock()
 	e.runs++
 	e.requests = append(e.requests, req)
 	chunks, failure, answer := e.chunks, e.err, e.answer
+	// A budgeted failure is spent here, so the next attempt succeeds without
+	// anyone having to heal the executor from outside.
+	if e.failures > 0 {
+		e.failures--
+		if e.failures == 0 {
+			e.err = nil
+		}
+	}
 	e.mu.Unlock()
 
 	for _, c := range chunks {
@@ -580,7 +606,9 @@ func TestARetryableFailureIsReportedAsNonTerminalAndTheRunResumes(t *testing.T) 
 	t.Parallel()
 
 	exec := newExecutor("second time lucky")
-	exec.err = errors.New("provider timed out")
+	// Exactly one attempt fails; the retry succeeds on its own. Healing the
+	// executor from the test instead would race the retry backoff.
+	exec.failNext(1, errors.New("provider timed out"))
 	h := newHarness(t, exec)
 	h.specs.revise("docs-bot", "v1")
 	h.work(t)
@@ -590,11 +618,6 @@ func TestARetryableFailureIsReportedAsNonTerminalAndTheRunResumes(t *testing.T) 
 	if err != nil {
 		t.Fatalf("Accept: %v", err)
 	}
-	// Let the first attempt fail, then heal the executor.
-	waitFor(t, func() bool { return len(h.bus.ofKind(envelope.KindFailed)) == 1 })
-	exec.mu.Lock()
-	exec.err = nil
-	exec.mu.Unlock()
 
 	out, err := h.rt.Result(ctx, acc.RunID)
 	if err != nil {
