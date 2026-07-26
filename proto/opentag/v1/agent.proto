@@ -1,0 +1,322 @@
+// opentag.v1 is the wire contract every opentag client speaks. This file is
+// the control plane: what an agent is, how its history is kept, and the RPCs
+// that manage it.
+//
+// One invariant governs the whole file: an AgentSpec is immutable. Editing an
+// agent does not mutate a row, it appends revision N+1. A run pins the
+// revision it was accepted under and replays under that revision forever,
+// because durable execution replays a workflow from the top: a run whose
+// prompt, model, or tool grant changed underneath it would diverge from its
+// own ledger and produce a different answer on replay than it did live. So the
+// control plane never edits in place, and the data plane always carries the
+// revision it ran under (see Event.rev in bus.proto).
+//
+// Field numbering convention, applied in every file of this package: each
+// message reserves a trailing range. New fields are carved from the front of
+// that range, so two parallel branches cannot pick colliding numbers, and a
+// removed field's number is never silently reused.
+syntax = "proto3";
+
+package opentag.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/urmzd/opentag/gen/opentag/v1;opentagv1";
+
+// AgentSpec is the complete definition of an agent: everything needed to
+// construct the agent loop that answers a tag.
+//
+// A spec is immutable once accepted. It carries no revision number, no
+// timestamps, and no identity beyond its name, because those are properties of
+// a Revision rather than of the definition itself. Submitting the same spec
+// twice therefore produces the same content hash, which is how a redundant
+// revise is recognised and rejected.
+//
+// A spec grants capability, it does not configure infrastructure. Tools and
+// sources are named, not defined: the deployment supplies the catalog (the
+// registered connectors' actions, the indexed corpora) and the spec chooses
+// from it. This keeps a spec portable across deployments and keeps an agent
+// author from being able to widen their own blast radius.
+message AgentSpec {
+  // Name is the identity users tag: "@docs-bot". It is unique within a tenant
+  // and is the second segment of every topic the agent publishes to, so it is
+  // restricted to letters, digits, "-" and "_".
+  string name = 1;
+
+  // Description is human-facing help text, shown in agent listings and to
+  // users who ask what an agent is for. It is never sent to the model.
+  string description = 2;
+
+  // Model is the provider-specific model identifier, such as
+  // "claude-sonnet-4-6". Empty takes the deployment default.
+  string model = 3;
+
+  // Provider selects the LLM backend ("anthropic", "ollama"). Empty takes the
+  // deployment default. Provider and model are separate fields because the
+  // same model name can be served by more than one provider.
+  string provider = 4;
+
+  // SystemPrompt is the agent's standing instruction. It is the single largest
+  // reason revisions are immutable: changing it changes every answer, so it
+  // must be attributable to a revision and pinned for the runs already in
+  // flight.
+  string system_prompt = 5;
+
+  // Tools is the allowlist of tool names this agent may call, drawn from the
+  // deployment's catalog of connector actions ("jira_transition",
+  // "github_comment"). A name that the deployment does not offer is rejected
+  // at create time rather than silently ignored, so a spec cannot appear to
+  // grant a capability it does not have. Empty grants no tools.
+  repeated string tools = 6;
+
+  // Sources are the corpora this agent retrieves from. Retrieval is
+  // grounded and cited: an answer that used a source carries a citation event
+  // naming it, which is why a source has a stable name rather than only a
+  // location.
+  repeated Source sources = 7;
+
+  // Access is the agent's authority boundary: what it may spawn and what it
+  // may touch in the shared workspace. Absent means the deployment default,
+  // which grants neither.
+  Access access = 8;
+
+  // Reserved for growth. Carve new fields from the front of this range.
+  reserved 9 to 24;
+}
+
+// Source names one corpus an agent retrieves from.
+//
+// It is a message rather than a bare string because a citation has to be able
+// to point somewhere: the name is what the agent and the reader see, the URI is
+// what the citation resolves to.
+message Source {
+  // Name identifies the corpus within the spec and is what citations carry
+  // back to the reader.
+  string name = 1;
+
+  // Uri locates the corpus. Address URIs name mesh surfaces
+  // ("github://urmzd/opentag/docs"); ordinary URLs name anything else.
+  string uri = 2;
+
+  // Options carry retriever-specific configuration, such as a chunk size or a
+  // branch name. Unknown keys are ignored by retrievers that do not use them.
+  map<string, string> options = 3;
+
+  // Reserved for growth.
+  reserved 4 to 15;
+}
+
+// Access is what an agent is permitted to do beyond talking, expressed as two
+// allowlists rather than a role name.
+//
+// It is a closed grant, not an open one: everything is denied unless listed.
+// The two axes are separate because delegation and storage are separate
+// hazards. An agent that may spawn a sub-agent but touch nothing can still
+// fan out work; an agent that may write one workspace area but spawn nothing
+// can still corrupt only its own area.
+message Access {
+  // Spawn is the allowlist of agent names this agent may delegate to. An agent
+  // absent from this list cannot be reached from here even if it exists and
+  // even if the model asks for it by name. Empty forbids delegation entirely.
+  repeated string spawn = 1;
+
+  // WorkspaceAreas are the shared-workspace key prefixes this agent may read
+  // and write, such as "runs/docs-bot/". Prefixes, not exact keys, because a
+  // run's own scratch space is created as it goes and cannot be enumerated in
+  // advance. Empty grants no workspace access.
+  repeated string workspace_areas = 2;
+
+  // Reserved for growth.
+  reserved 3 to 15;
+}
+
+// Revision is one immutable version of an agent: the spec, plus who put it
+// there and when.
+//
+// Revisions are the unit the rest of the system references. A run pins one, an
+// Event reports one, and a canary comparison is a filter over two of them on
+// the same topic (see Filter.rev in bus.proto). Nothing in opentag references
+// "the agent" without also resolving which revision of it.
+message Revision {
+  // Spec is the immutable definition at this revision.
+  AgentSpec spec = 1;
+
+  // Rev counts from 1 and increases by exactly one per accepted revision.
+  // It is the value a run pins and an event reports.
+  int32 rev = 2;
+
+  // Hash is the content hash of the spec. Two revisions with the same hash are
+  // the same definition, which is how a no-op revise is detected, and how a
+  // replaying run can assert that the spec it is about to execute is the one
+  // it originally pinned.
+  string hash = 3;
+
+  // CreatedAt is when this revision was accepted, assigned by the server.
+  google.protobuf.Timestamp created_at = 4;
+
+  // CreatedBy is the identity from the calling credential, not a value the
+  // caller supplies, so authorship cannot be forged.
+  string created_by = 5;
+
+  // Reserved for growth.
+  reserved 6 to 19;
+}
+
+// CreateAgentRequest introduces a new agent name.
+message CreateAgentRequest {
+  // Spec is the definition to accept as revision 1.
+  AgentSpec spec = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// CreateAgentResponse returns the agent's first revision.
+message CreateAgentResponse {
+  // Revision is the accepted revision, always rev 1.
+  Revision revision = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// ReviseAgentRequest appends a new revision to an existing agent.
+message ReviseAgentRequest {
+  // Spec is the new definition. Its name selects the agent to revise; the name
+  // itself can never change, because the name is the agent's identity and
+  // renaming it would orphan every topic and every in-flight run.
+  AgentSpec spec = 1;
+
+  // ExpectedRev is the revision the caller believes is current. The revise is
+  // rejected if it is not, so two editors racing on the same agent cannot
+  // silently overwrite each other. Zero revises unconditionally.
+  int32 expected_rev = 2;
+
+  // Reserved for growth.
+  reserved 3 to 9;
+}
+
+// ReviseAgentResponse returns the newly appended revision.
+message ReviseAgentResponse {
+  // Revision is the accepted revision, with rev one greater than the previous.
+  Revision revision = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// GetAgentRequest reads one revision of one agent.
+message GetAgentRequest {
+  // Name is the agent to read.
+  string name = 1;
+
+  // Rev selects an exact revision. Zero means the latest, which is what a
+  // caller about to raise a tag wants; an exact value is what a caller
+  // inspecting a completed run wants, since that run executed under a revision
+  // that may no longer be current.
+  int32 rev = 2;
+
+  // Reserved for growth.
+  reserved 3 to 9;
+}
+
+// GetAgentResponse returns the requested revision.
+message GetAgentResponse {
+  // Revision is the requested revision, or the latest if rev was zero.
+  Revision revision = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// ListAgentsRequest enumerates the agents visible to the caller's tenant.
+message ListAgentsRequest {
+  // PageSize caps the number of agents returned. Zero takes the server
+  // default. The server may return fewer.
+  uint32 page_size = 1;
+
+  // PageToken continues a previous listing. Empty starts at the beginning.
+  string page_token = 2;
+
+  // Reserved for growth.
+  reserved 3 to 9;
+}
+
+// ListAgentsResponse returns one page of agents at their latest revision.
+message ListAgentsResponse {
+  // Agents holds the latest revision of each agent, name-ordered so that
+  // paging is stable across calls.
+  repeated Revision agents = 1;
+
+  // NextPageToken continues the listing. Empty means this page was the last.
+  string next_page_token = 2;
+
+  // Reserved for growth.
+  reserved 3 to 9;
+}
+
+// GetAgentHistoryRequest reads every revision of one agent.
+message GetAgentHistoryRequest {
+  // Name is the agent whose history to read.
+  string name = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// GetAgentHistoryResponse returns an agent's full revision history: the audit
+// trail that makes "which definition produced this answer" answerable.
+message GetAgentHistoryResponse {
+  // Revisions are ordered oldest first, rev 1 through the current revision,
+  // with no gaps.
+  repeated Revision revisions = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// DeleteAgentRequest retires an agent name.
+message DeleteAgentRequest {
+  // Name is the agent to retire.
+  string name = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// DeleteAgentResponse is empty: deletion has no result beyond succeeding.
+message DeleteAgentResponse {
+  // Reserved for growth.
+  reserved 1 to 9;
+}
+
+// AgentService is the control plane: it defines agents and keeps their
+// history. It never runs anything. Raising work is InvokeService, and
+// observing it is BusService, so a deployment can expose read-only agent
+// browsing without exposing the ability to spend money on inference.
+service AgentService {
+  // CreateAgent accepts a new agent as revision 1. It fails if the name is
+  // already taken; changing an existing agent is ReviseAgent, so that no call
+  // can ever be ambiguous about whether it created or overwrote.
+  rpc CreateAgent(CreateAgentRequest) returns (CreateAgentResponse) {}
+
+  // ReviseAgent appends revision N+1. The previous revision is not modified
+  // and not deleted: runs already accepted under it continue to replay under
+  // it, and its history entry remains readable forever.
+  rpc ReviseAgent(ReviseAgentRequest) returns (ReviseAgentResponse) {}
+
+  // GetAgent reads one revision, defaulting to the latest.
+  rpc GetAgent(GetAgentRequest) returns (GetAgentResponse) {}
+
+  // ListAgents enumerates agents at their latest revision.
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse) {}
+
+  // GetAgentHistory returns every revision of one agent, oldest first.
+  rpc GetAgentHistory(GetAgentHistoryRequest) returns (GetAgentHistoryResponse) {}
+
+  // DeleteAgent retires the name so no new tag can be accepted for it. It does
+  // not cancel runs already in flight and does not erase history: a run holds
+  // its pinned revision independently of the registry, and deleting the name
+  // must not make a completed run's provenance unreadable.
+  rpc DeleteAgent(DeleteAgentRequest) returns (DeleteAgentResponse) {}
+}

@@ -1,0 +1,16 @@
+# Build artifacts
+bin/
+build/
+
+# Runtime state
+.opentag/
+
+# Coverage
+*.out
+coverage.html
+
+# OS noise
+.DS_Store
+
+# direnv
+.direnv/

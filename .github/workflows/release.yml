@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    if: github.actor != 'sr[bot]'
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SR_RELEASER_APP_ID }}
+          private-key: ${{ secrets.SR_RELEASER_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: urmzd/sr@v8
+        id: sr
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+
+    outputs:
+      released: ${{ steps.sr.outputs.released }}
+      tag: ${{ steps.sr.outputs.tag }}
+      version: ${{ steps.sr.outputs.version }}
+
+  build:
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            runner: ubuntu-latest
+            artifact_suffix: -linux-amd64
+          - goos: linux
+            goarch: arm64
+            runner: ubuntu-latest
+            artifact_suffix: -linux-arm64
+          - goos: darwin
+            goarch: amd64
+            runner: macos-15-intel
+            artifact_suffix: -darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            runner: macos-15
+            artifact_suffix: -darwin-arm64
+          - goos: windows
+            goarch: amd64
+            runner: windows-latest
+            artifact_suffix: -windows-amd64.exe
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build static binary
+        shell: bash
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+        run: |
+          BIN_NAME="${{ github.event.repository.name }}"
+          go build -trimpath \
+            -ldflags "-X main.version=${{ needs.release.outputs.version }} -X main.commit=${{ github.sha }} -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -o "build/bin/${BIN_NAME}${{ matrix.artifact_suffix }}" ./cmd/${BIN_NAME}
+
+      - name: Upload to release
+        shell: bash
+        run: |
+          BIN_NAME="${{ github.event.repository.name }}"
+          gh release upload "${{ needs.release.outputs.tag }}" "build/bin/${BIN_NAME}${{ matrix.artifact_suffix }}" --clobber

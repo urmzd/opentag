@@ -1,0 +1,337 @@
+// opentag.v1 is the wire contract every opentag client speaks. This file is the
+// write path: how a tag gets raised, where its output is sent, and how the run
+// it created is inspected afterwards.
+//
+// A tag is the only thing the core accepts as work. Every trigger — a Slack
+// mention, a GitHub review request, a Jira transition, a cron tick, a raw gRPC
+// call — translates its native event into a Tag, and from that point the system
+// no longer knows or cares which surface it came from.
+//
+// Origin and destination are independent, and that independence is the whole
+// point of the shape below. Tag.source says where the tag came from; Tag.deliver
+// says where its events go, per kind. Neither implies the other, so a tag raised
+// in GitHub can deliver into Jira, a cron schedule with no surface at all can
+// deliver into both, and a webhook that only wants the outcome can share a run
+// with a connector rendering every token.
+//
+// Field numbering convention, applied in every file of this package: each
+// message reserves a trailing range. New fields are carved from the front of
+// that range, so two parallel branches cannot pick colliding numbers, and a
+// removed field's number is never silently reused.
+syntax = "proto3";
+
+package opentag.v1;
+
+import "google/protobuf/timestamp.proto";
+import "opentag/v1/bus.proto";
+
+option go_package = "github.com/urmzd/opentag/gen/opentag/v1;opentagv1";
+
+// Address is a stable URI for any place a tag can come from or be delivered to.
+// It is the naming layer of the mesh, and it is structured rather than a bare
+// string so that a server can authorize a target without re-parsing it:
+//
+//   github://urmzd/opentag/issues/42
+//   slack://T0123/C0456?thread=1699123456.001
+//   jira://acme/PROJ-5
+//   cron://acme/nightly-review
+//   webhook://acme/deploys
+message Address {
+  // Connector is the URI scheme, and it names which connector owns this
+  // endpoint: "github" owns github:// targets. Resolution is by scheme alone,
+  // so a deployment can swap a connector implementation without any address
+  // changing.
+  string connector = 1;
+
+  // Workspace is the account boundary: a GitHub org, a Slack team ID, a Jira
+  // site. It is restricted to letters, digits, "-" and "_", because it becomes
+  // a token in the mesh's delivery subject and a workspace that cannot be a
+  // token cannot be sharded on.
+  string workspace = 2;
+
+  // Path locates a resource inside the workspace, one decoded segment per
+  // element. It carries no charset restriction, which is precisely why issue
+  // numbers, thread timestamps, and Jira keys live here and not in the
+  // workspace.
+  repeated string path = 3;
+
+  // Params carry positioning that is not part of the resource's identity, such
+  // as a Slack thread timestamp or a comment anchor. Two addresses differing
+  // only in params point at the same resource from different places.
+  map<string, string> params = 4;
+
+  // Reserved for growth.
+  reserved 5 to 15;
+}
+
+// Route is one delivery instruction: where to send events, and which ones.
+//
+// Selectivity per route is what lets a single run serve consumers with opposite
+// appetites. The GitHub connector can stream every delta into a comment it keeps
+// editing, while a webhook on the same run receives only lifecycle.completed and
+// learns nothing about the intermediate steps.
+message Route {
+  // Target is the destination address. Required: a route with no target is
+  // rejected rather than silently dropped.
+  Address target = 1;
+
+  // Kinds selects which event kinds are delivered on this route, by exact match
+  // ("delta.citation") or by family ("delta"). Empty delivers every kind.
+  repeated string kinds = 2;
+
+  // Reserved for growth.
+  reserved 3 to 15;
+}
+
+// Actor is the human or system that raised a tag. It is carried through to
+// every event's provenance and is what an agent's policy can be written
+// against, so it is a message rather than a display string.
+message Actor {
+  // Id is the connector-native identifier: a Slack user ID, a GitHub login.
+  // Stable within a workspace, which is what makes it usable in an allowlist.
+  string id = 1;
+
+  // Display is a human-readable name, best effort. It is for rendering only and
+  // must never be used for authorization: display names are not unique and are
+  // usually user-editable.
+  string display = 2;
+
+  // Bot reports whether the actor is automation rather than a person. It is the
+  // field a connector checks to avoid answering its own messages, which is the
+  // usual way an agent loop becomes an infinite loop.
+  bool bot = 3;
+
+  // Reserved for growth.
+  reserved 4 to 15;
+}
+
+// Tag is a request to an agent: the canonical form every trigger translates
+// into, and the only thing the core accepts as work.
+//
+// Tenant is deliberately absent from this message, and from every other request
+// in this package. The server derives it from the caller's credential and
+// stamps it onto the run and onto every event the run emits. Were tenant a
+// field here, it would be a claim the wire could make, and cross-tenant access
+// would reduce to sending a different string. Authorization scope is never
+// something the caller names.
+message Tag {
+  // Id is the trigger-native event identifier: a Slack event_id, a GitHub
+  // delivery GUID, a schedule occurrence key. It becomes the run's idempotency
+  // key, so a webhook redelivery — which every one of these surfaces does —
+  // joins the existing run and returns its run_id instead of starting a second
+  // one and answering twice. Required.
+  string id = 1;
+
+  // Agent is the name that was tagged, with no revision. The revision is
+  // resolved to the latest at accept time and then pinned to the run; see
+  // InvokeResponse.rev for why the caller does not get to choose it.
+  string agent = 2;
+
+  // Origin is the trigger that raised this tag ("slack", "github", "cron"). It
+  // records provenance and is a filterable field on every resulting event. It
+  // does not influence delivery. Required.
+  string origin = 3;
+
+  // Source is where the tag came from, and the natural place to answer when no
+  // route says otherwise. It is unset for triggers with no addressable surface,
+  // such as a schedule; such a tag still runs and still publishes to the bus,
+  // it simply has nowhere to be rendered unless deliver says so.
+  Address source = 4;
+
+  // Text is the request, with the agent mention already stripped. The trigger
+  // does the stripping because only the trigger knows its own mention syntax.
+  string text = 5;
+
+  // Actor is who raised the tag.
+  Actor actor = 6;
+
+  // Deliver lists every destination for this run's events, each with its own
+  // kind selection. Empty means answer in place, at source. This is where
+  // destination lives — on the run, never in the topic — so the same agent can
+  // answer into Slack for one tag and into Jira for the next without either
+  // destination existing in the addressing namespace.
+  repeated Route deliver = 7;
+
+  // Meta carries trigger-specific context the agent's tools may need: a pull
+  // request number, an issue title, a Jira status. It is a string map rather
+  // than a typed message because its shape belongs to the connector, and a
+  // connector must be able to add a key without this file being regenerated.
+  map<string, string> meta = 8;
+
+  // At is when the trigger observed the native event, not when the server
+  // received it. The gap between the two is the delivery latency of the surface
+  // and is worth being able to measure.
+  google.protobuf.Timestamp at = 9;
+
+  // Reserved for growth. Note that tenant will never be carved from this range:
+  // see the message comment.
+  reserved 10 to 24;
+}
+
+// InvokeResponse acknowledges an accepted tag. It returns as soon as the run is
+// durable, before any inference has happened, because the surfaces that raise
+// tags have short timeouts and a run that outlives its HTTP request is the
+// normal case rather than the exception.
+message InvokeResponse {
+  // RunId identifies the durable run. On a redelivered tag this is the run_id of
+  // the run the original tag created, which is what makes Invoke safe to retry.
+  string run_id = 1;
+
+  // Rev is the agent revision the run pinned at accept time. The run replays
+  // under this revision forever: durable execution re-executes a workflow from
+  // the top, so a run whose prompt, model, or tool grant changed underneath it
+  // would diverge from its own ledger and produce a different answer on replay
+  // than it did live. Pinning is what makes the ledger the truth.
+  int32 rev = 2;
+
+  // Topic is where this run's events are published:
+  // "agent:<agent>:<run_id>". It is returned so a caller can subscribe without
+  // constructing the string and without depending on the addressing format.
+  string topic = 3;
+
+  // AcceptedAt is when the run became durable.
+  google.protobuf.Timestamp accepted_at = 4;
+
+  // Reserved for growth.
+  reserved 5 to 15;
+}
+
+// RunStatus is where a run is in its lifecycle. It mirrors the lifecycle.*
+// event kinds, which are the streaming form of the same transitions: status is
+// the answer to "where is it now", the events are the answer to "how did it get
+// there".
+enum RunStatus {
+  // Unspecified means the server did not set a status. It is never a real
+  // state; it exists because proto3 requires a zero value and because a client
+  // built against an older contract must be able to tell "unknown to me" from
+  // "accepted".
+  RUN_STATUS_UNSPECIFIED = 0;
+
+  // Accepted means the run is durable and queued, but no worker has claimed it.
+  RUN_STATUS_ACCEPTED = 1;
+
+  // Running means a worker is executing the run. A run can re-enter this state
+  // after a crash, because replay is not a distinct state: a re-executing run
+  // is simply running again.
+  RUN_STATUS_RUNNING = 2;
+
+  // Parked means the run is waiting on an external event and is consuming no
+  // worker. Waiting costs no retry budget, so a run may be parked for as long
+  // as the thing it waits on takes.
+  RUN_STATUS_PARKED = 3;
+
+  // Completed means the run finished successfully. Terminal.
+  RUN_STATUS_COMPLETED = 4;
+
+  // Failed means the run finished unsuccessfully and will not be retried.
+  // Terminal, and error carries why.
+  RUN_STATUS_FAILED = 5;
+
+  // Reserved for growth.
+  reserved 6 to 15;
+}
+
+// Run is the durable record of one invocation: what was asked, which definition
+// answered it, and where it got to.
+//
+// It is a projection of the ledger rather than a live object. Reading a Run
+// never touches a worker, which is what makes it safe for a status poller to
+// call in a loop.
+message Run {
+  // RunId identifies the run. Stable across replay.
+  string run_id = 1;
+
+  // Tenant is the authorization scope the run executes under, stamped from the
+  // credential that raised the tag. It appears on the response and never on a
+  // request; see the Tag comment.
+  string tenant = 2;
+
+  // Agent is the agent that was tagged.
+  string agent = 3;
+
+  // Rev is the revision pinned at accept time, and the definition every replay
+  // of this run uses. It may be older than the agent's current revision, and
+  // reading it is how a completed run's answer is explained.
+  int32 rev = 4;
+
+  // Origin is the trigger that raised the run.
+  string origin = 5;
+
+  // Topic is where this run's events were published.
+  string topic = 6;
+
+  // Status is the run's current lifecycle state.
+  RunStatus status = 7;
+
+  // Tag is the request the run was accepted from, retained verbatim. It is the
+  // input side of the audit trail: with the pinned revision, it is everything
+  // needed to explain, or reproduce, what the agent did.
+  Tag tag = 8;
+
+  // LastSeq is the highest event sequence number published for this run, and
+  // therefore the cursor a consumer would pass as Subscription.from to catch up
+  // without replaying what it has already seen.
+  uint64 last_seq = 9;
+
+  // Error is why the run failed, empty unless status is RUN_STATUS_FAILED. It
+  // is a message rather than a status code because the failure that matters is
+  // usually a tool's or a provider's, and flattening those into a code loses
+  // the only part an operator can act on.
+  string error = 10;
+
+  // CreatedAt is when the tag was accepted and the run became durable.
+  google.protobuf.Timestamp created_at = 11;
+
+  // StartedAt is when a worker first claimed the run. Unset while accepted. It
+  // is not reset by replay: it records when work first began, so the gap
+  // between created_at and started_at is queue latency and nothing else.
+  google.protobuf.Timestamp started_at = 12;
+
+  // EndedAt is when the run reached a terminal state. Unset until then.
+  google.protobuf.Timestamp ended_at = 13;
+
+  // Reserved for growth.
+  reserved 14 to 31;
+}
+
+// GetRunRequest reads one run.
+message GetRunRequest {
+  // RunId is the run to read. Required.
+  string run_id = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// InvokeService is the write path: raise a tag, and inspect the run it created.
+//
+// It is separate from BusService because starting work and watching work are
+// different privileges, and separate from AgentService because defining an agent
+// and spending money running one are different privileges again.
+service InvokeService {
+  // Invoke accepts a tag and returns as soon as the run is durable, which is
+  // before any inference has happened. The caller gets a run_id and a topic and
+  // subscribes if it wants the output.
+  //
+  // Invoke is idempotent on Tag.id: a redelivery returns the original run's
+  // run_id rather than starting a second run. This is not an optimisation. Every
+  // surface that raises tags redelivers on timeout, and without it a slow first
+  // response would make the agent answer twice.
+  rpc Invoke(Tag) returns (InvokeResponse) {}
+
+  // InvokeStream accepts a tag and streams the resulting run's events on the
+  // same connection: Invoke plus Subscribe, minus the race between them. A
+  // caller doing the two separately can miss events emitted between accept and
+  // subscribe; here the subscription is established before the run is enqueued.
+  //
+  // The stream ends when the run reaches a terminal state, unlike
+  // BusService.Subscribe, which outlives any run. Idempotency is the same as
+  // Invoke: a redelivered tag tails the existing run from its beginning rather
+  // than starting a second one.
+  rpc InvokeStream(Tag) returns (stream Event) {}
+
+  // GetRun reads a run's durable record: its status, its pinned revision, the
+  // tag it was accepted from, and its last event sequence number. It reads the
+  // ledger and never touches a worker, so it is safe to poll.
+  rpc GetRun(GetRunRequest) returns (Run) {}
+}

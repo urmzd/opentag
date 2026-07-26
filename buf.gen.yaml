@@ -1,0 +1,38 @@
+# buf.gen.yaml drives code generation for the opentag wire contract.
+#
+#   buf generate
+#
+# writes gen/opentag/v1/*.pb.go (messages) and
+# gen/opentag/v1/opentagv1connect/*.connect.go (handlers and clients), giving the
+# Go import paths
+#
+#   github.com/urmzd/opentag/gen/opentag/v1
+#   github.com/urmzd/opentag/gen/opentag/v1/opentagv1connect
+#
+# gen/ is generated, never edited, and never committed; `make proto` recreates
+# it. Managed mode is off on purpose: every .proto file states its own
+# go_package, so the import path of a generated package is readable from the
+# file that defines it rather than assembled from a prefix in this config.
+#
+# Connect is the only RPC plugin because one Connect handler already serves
+# gRPC, gRPC-Web, and HTTP/JSON. A Slack webhook posting JSON and a Go client
+# speaking gRPC reach the same method set, so the contract does not have to be
+# expressed twice.
+version: v2
+
+plugins:
+  # protoc-gen-go emits the message types. paths=source_relative keeps the
+  # output tree shaped like the proto tree (opentag/v1/bus.proto ->
+  # opentag/v1/bus.pb.go) instead of nesting the full module path under out.
+  - local: protoc-gen-go
+    out: gen
+    opt:
+      - paths=source_relative
+
+  # protoc-gen-connect-go emits the service handlers and clients into an
+  # opentagv1connect subpackage, so a server importing the handlers does not
+  # also pull in a second copy of the message package under a different name.
+  - local: protoc-gen-connect-go
+    out: gen
+    opt:
+      - paths=source_relative

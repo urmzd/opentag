@@ -1,0 +1,52 @@
+# buf.yaml is the module and lint configuration for the opentag wire contract.
+#
+# One module rooted at proto/, so that every import path in a .proto file is the
+# path a generated Go import will mirror ("opentag/v1/bus.proto" ->
+# gen/opentag/v1/bus.pb.go). Buf v2 declares modules here; there is deliberately
+# no buf.work.yaml, which v2 replaced with the modules list below. There is no
+# buf.lock either: the only import outside this module is
+# google/protobuf/timestamp.proto, a well-known type buf resolves from its own
+# embedded copy, so the contract has no registry dependency to pin.
+version: v2
+
+modules:
+  - path: proto
+
+lint:
+  use:
+    - STANDARD
+    # Comments are the public API documentation for this contract, so the
+    # linter enforces them: every message, field, service, RPC, enum, and enum
+    # value must carry one.
+    - COMMENTS
+  except:
+    # The three rules below all say the same thing: every RPC should take a
+    # dedicated <Rpc>Request and return a dedicated <Rpc>Response. That is good
+    # advice for a control plane, and agent.proto follows it everywhere.
+    #
+    # The data plane deliberately does not. Its RPCs speak the domain types
+    # directly — Invoke takes a Tag, Subscribe and InvokeStream return a stream
+    # of Event — because Tag and Event are the contract. They are the values
+    # connectors construct, store, replay, and hand to each other, and wrapping
+    # them in a single-field envelope would mean every client unwraps on the way
+    # in and rewraps on the way out for a field that will never have a sibling.
+    #
+    # The evolvability the rules protect is preserved by other means: Tag, Event
+    # and Run each reserve a trailing field range, so a new field lands on the
+    # message itself rather than on a wrapper. Where a request genuinely does
+    # have room to grow beyond one domain value — Subscribe carrying transport
+    # concerns, Publish carrying write options — the wrapper exists and is used.
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME
+    # Invoke and InvokeStream take the same request type on purpose: they are
+    # one operation with two response shapes, and a caller must be able to move
+    # between them without rebuilding the tag.
+    - RPC_REQUEST_RESPONSE_UNIQUE
+
+breaking:
+  use:
+    # Wire and JSON compatibility. FILE additionally pins messages and enums to
+    # the file they were declared in, which matters here because generated Go
+    # import paths follow file paths: moving Event out of bus.proto would break
+    # every import even though the wire format would not notice.
+    - FILE

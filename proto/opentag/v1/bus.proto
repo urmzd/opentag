@@ -1,0 +1,252 @@
+// opentag.v1 is the wire contract every opentag client speaks. This file is the
+// read path, and it is the product surface: everything an agent produces leaves
+// the system through here.
+//
+// One stream carries everything. Streaming output, run lifecycle, actions taken
+// on a connector's surface, and control-plane changes are all Events on the same
+// subscription, distinguished by the kind field. A consumer that wants only
+// citations filters for them; it does not subscribe to a second topic and it does
+// not have to re-order two streams to reconstruct the conversation.
+//
+// What deliberately is NOT in the topic namespace, and is a filterable field
+// instead:
+//
+//   kind    all kinds stream the same way; splitting them across topics would
+//           force a consumer wanting the whole run to fan in and re-order.
+//   rev     canary observation is a filter over one topic, not a topic that
+//           blinks into existence each time an agent is revised.
+//   origin  where a run came from does not change where its output is read.
+//   tenant  an authorization scope carried by the caller's credential, never
+//           named by the subscriber (see Event.tenant).
+//
+// Field numbering convention, applied in every file of this package: each
+// message reserves a trailing range. New fields are carved from the front of
+// that range, so two parallel branches cannot pick colliding numbers, and a
+// removed field's number is never silently reused.
+syntax = "proto3";
+
+package opentag.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/urmzd/opentag/gen/opentag/v1;opentagv1";
+
+// Event is one thing an agent produced.
+//
+// Every event, of every kind, travels the same path: it is published to its
+// run's topic, seen by every subscriber whose topic is a prefix of it, and
+// delivered to whichever routes on the run asked for its kind. There is no
+// second-class event and no side channel.
+//
+// An Event is self-describing on purpose. It carries the agent, the pinned
+// revision, and the origin as fields, so a consumer holding one broad
+// subscription can answer "what produced this" without a lookup and without
+// having parsed the topic string.
+message Event {
+  // Seq orders events within a run, starting at 1 and increasing by one with no
+  // gaps. It is the resume cursor: a consumer that reconnects asks for
+  // everything after the last seq it processed (see Subscription.from).
+  //
+  // Seq is per-run, not global. Two runs of the same agent each start at 1, and
+  // a subscriber to agent:<name> therefore sees interleaved sequences that are
+  // only monotonic within a run. Ordering across runs is by at, and matters to
+  // nobody: runs are independent.
+  //
+  // The server assigns seq. A value supplied on Publish is ignored.
+  uint64 seq = 1;
+
+  // Topic is where this event was published, always in its most specific form:
+  // "agent:<name>:<run_id>". Publishing at the leaf is what makes prefix
+  // subscription work, so a subscriber to "agent:docs-bot" and a subscriber to
+  // "agent" both receive this event without it being published three times.
+  string topic = 2;
+
+  // RunId is the durable run that produced the event. It is stable across
+  // replay: a run that crashes and re-executes emits under the same run_id,
+  // because the ledger, not the process, is what a run is.
+  string run_id = 3;
+
+  // Tenant scopes the event for authorization on the read path. It is stamped
+  // by the server from the run's tenant and is never accepted from a client, so
+  // an event cannot be published into a tenant the caller does not hold. A
+  // subscriber never names a tenant; the broker narrows every subscription to
+  // the tenant on the caller's credential.
+  string tenant = 4;
+
+  // Agent is the name of the agent that produced the event: the second segment
+  // of the topic, repeated here so a consumer never has to parse the topic.
+  string agent = 5;
+
+  // Rev is the agent revision this run pinned at accept time, not the agent's
+  // current revision. It is what makes a canary comparison a filter rather than
+  // a topology change: subscribe once to agent:<name>, filter rev=7 in one
+  // consumer and rev=8 in another. See Revision in agent.proto for why a run's
+  // revision can never move.
+  int32 rev = 6;
+
+  // Origin is the trigger that raised the run ("slack", "github", "cron"). It
+  // is where the work came from, which is independent of where the output goes:
+  // a tag raised in GitHub can deliver into Jira, so origin answers provenance
+  // questions and never routing ones.
+  string origin = 7;
+
+  // Kind classifies the event and is the field every selective consumer filters
+  // on. Kinds are dotted so a selector can name a whole family ("delta") or one
+  // member ("delta.citation"):
+  //
+  //   delta.text, delta.thinking, delta.tool.call, delta.tool.done,
+  //   delta.citation             streaming output as the agent works
+  //   lifecycle.accepted, lifecycle.started, lifecycle.parked,
+  //   lifecycle.resumed, lifecycle.completed, lifecycle.failed
+  //                              run lifecycle
+  //   action.taken               the agent changed something on a real surface
+  //   control.created, control.revised, control.deleted
+  //                              control-plane changes, on the same bus as the
+  //                              data so a dashboard sees an agent get revised
+  //                              in the same stream as the runs that follow it
+  //
+  // Kind is an open string rather than an enum so that a connector can emit a
+  // kind this contract has not been regenerated for, and so that an unknown
+  // kind degrades to "a consumer's filter does not select it" instead of to
+  // "the field decodes as UNSPECIFIED".
+  string kind = 8;
+
+  // Payload is the kind-specific body, opaque to the bus. It is bytes rather
+  // than Any because the bus must be able to fan out an event without knowing
+  // how to decode it, and because a connector's payload schema evolves on the
+  // connector's release schedule rather than on this file's.
+  bytes payload = 9;
+
+  // At is when the event was produced, assigned by the server. It is the only
+  // ordering available across runs.
+  google.protobuf.Timestamp at = 10;
+
+  // Reserved for growth. Carve new fields from the front of this range.
+  reserved 11 to 24;
+}
+
+// Filter narrows a subscription without changing the topic it listens to. The
+// empty filter selects everything on the topic.
+//
+// Every field is an AND: an event must satisfy all of the set fields to be
+// delivered. Unset fields are wildcards, so the empty message is the identity
+// filter and callers never have to spell out "any".
+message Filter {
+  // Kinds selects event kinds by exact match ("delta.citation") or by family
+  // ("delta"). Selectors are OR'd with each other. Empty means every kind.
+  repeated string kinds = 1;
+
+  // Rev selects one pinned agent revision. Zero means any revision. This is how
+  // two consumers compare a canary against the incumbent while sharing a single
+  // topic; rev is never a topic segment.
+  int32 rev = 2;
+
+  // Origin selects the trigger that raised the run ("slack", "cron"). Empty
+  // means any origin.
+  string origin = 3;
+
+  // RunId narrows to a single run. Empty means any. Subscribing directly to
+  // "agent:<name>:<run_id>" is usually clearer; this exists so a consumer can
+  // hold one long-lived agent-level subscription and narrow it dynamically
+  // without tearing the stream down.
+  string run_id = 4;
+
+  // Reserved for growth.
+  reserved 5 to 15;
+}
+
+// Subscription is a topic, a filter, and a resume position: everything the bus
+// needs to serve one consumer.
+message Subscription {
+  // Topic is the prefix to listen on: "agent" for every agent the caller's
+  // tenant can see, "agent:<name>" for one agent across all its runs, or
+  // "agent:<name>:<run_id>" for a single run. There is no wildcard language,
+  // because prefix containment already expresses every subscription the mesh
+  // needs and it cannot be got wrong.
+  string topic = 1;
+
+  // Filter narrows which events on that topic are delivered. Unset delivers
+  // everything on the topic.
+  Filter filter = 2;
+
+  // From resumes strictly after this sequence number: an event is delivered
+  // only if its seq is greater than from. Zero starts at the beginning of what
+  // the bus still retains, which for a live tail is "everything from now on"
+  // and for a run whose history is retained is "the whole run from event 1".
+  //
+  // Because seq is per-run, from is applied per-run. On an agent-wide
+  // subscription it means "skip the first N events of each run", which is
+  // meaningful only when the subscription is also narrowed to one run. Resume
+  // is therefore a run-scoped operation: reconnect on the run topic with the
+  // last seq you processed and you get exactly the events you missed, with no
+  // gap and no duplicate.
+  uint64 from = 3;
+
+  // Reserved for growth.
+  reserved 4 to 15;
+}
+
+// SubscribeRequest opens a stream. It is a wrapper around a Subscription rather
+// than the Subscription itself so that transport-level concerns (a resume token
+// format, a heartbeat interval, a delivery guarantee) can be added later
+// without changing the shape callers store and replay.
+message SubscribeRequest {
+  // Subscription is what to listen to. Required.
+  Subscription subscription = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// PublishRequest submits one event to the bus.
+//
+// This is the seam that makes opentag a bus rather than an agent runner: a
+// connector, a sidecar, or a foreign runtime can put events onto an existing
+// run's topic, and every subscriber and every route sees them exactly as if the
+// agent loop had emitted them.
+message PublishRequest {
+  // Event is the event to publish. The client fills topic, run_id, agent, rev,
+  // origin, kind, and payload. The server assigns seq, at, and tenant: seq
+  // because only the broker can order a run, at because clocks disagree, and
+  // tenant because it comes from the caller's credential and must never be
+  // claimed on the wire.
+  Event event = 1;
+
+  // Reserved for growth.
+  reserved 2 to 9;
+}
+
+// PublishResponse acknowledges a published event.
+message PublishResponse {
+  // Seq is the sequence number the broker assigned within the run. It is the
+  // durable position of this event and the cursor a publisher would resume
+  // from.
+  uint64 seq = 1;
+
+  // At is the timestamp the broker assigned.
+  google.protobuf.Timestamp at = 2;
+
+  // Reserved for growth.
+  reserved 3 to 9;
+}
+
+// BusService is the read path: subscribe to agents, and publish into them.
+//
+// It is separate from InvokeService because reading and spending are different
+// privileges. A deployment can hand a dashboard a credential that streams every
+// event in the tenant and cannot start a single run.
+service BusService {
+  // Subscribe streams events matching the subscription until the client goes
+  // away or the server shuts down. The stream is long-lived and open-ended: it
+  // does not end when a run completes, because a topic outlives the runs on it.
+  //
+  // Delivery is at-least-once. A consumer that must not act twice keys its
+  // effect on (run_id, seq), which is exactly what the resume cursor gives it.
+  rpc Subscribe(SubscribeRequest) returns (stream Event) {}
+
+  // Publish appends one event to a run's topic and fans it out to every
+  // subscriber and every route that wants its kind. It returns once the event
+  // is durable and ordered, not once every subscriber has seen it: a slow
+  // consumer must never be able to stall an agent.
+  rpc Publish(PublishRequest) returns (PublishResponse) {}
+}
