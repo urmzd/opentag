@@ -15,7 +15,7 @@ func valid() agentspec.AgentSpec {
 	return agentspec.AgentSpec{
 		Name:         "docs-bot",
 		Description:  "answers questions about the docs",
-		Model:        "claude-sonnet-4",
+		Model:        "claude-haiku-5-5",
 		Provider:     agentspec.ProviderAnthropic,
 		SystemPrompt: "You answer from the docs.",
 		Tools:        []string{"search", "fetch"},
@@ -85,7 +85,7 @@ func TestNormalizeCanonicalizesPresentation(t *testing.T) {
 	spec := agentspec.AgentSpec{
 		Name:         "  Docs-Bot ",
 		Description:  " answers ",
-		Model:        " claude-sonnet-4 ",
+		Model:        " claude-haiku-5-5 ",
 		Provider:     "Anthropic",
 		SystemPrompt: "You answer from the docs.\n",
 		Tools:        []string{"search", "fetch"},
@@ -105,7 +105,7 @@ func TestNormalizeCanonicalizesPresentation(t *testing.T) {
 	if got.Description != "answers" {
 		t.Errorf("Description = %q, want it trimmed", got.Description)
 	}
-	if got.Model != "claude-sonnet-4" {
+	if got.Model != "claude-haiku-5-5" {
 		t.Errorf("Model = %q, want it trimmed", got.Model)
 	}
 	if got.Provider != agentspec.ProviderAnthropic {

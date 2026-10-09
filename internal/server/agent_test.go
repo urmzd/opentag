@@ -16,7 +16,7 @@ func specMsg(name string) *opentagv1.AgentSpec {
 	return &opentagv1.AgentSpec{
 		Name:         name,
 		Description:  "answers questions about the docs",
-		Model:        "claude-sonnet-4-6",
+		Model:        "claude-haiku-5-5",
 		Provider:     "anthropic",
 		SystemPrompt: "be brief",
 		Tools:        []string{"github_comment"},

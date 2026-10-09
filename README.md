@@ -108,7 +108,7 @@ cat > docs-bot.json <<'JSON'
   "name": "docs-bot",
   "description": "Answers questions about the deploy pipeline",
   "provider": "anthropic",
-  "model": "claude-sonnet-5",
+  "model": "claude-haiku-5-5",
   "system_prompt": "You answer questions about the deploy pipeline. Cite your sources."
 }
 JSON

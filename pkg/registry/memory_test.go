@@ -21,7 +21,7 @@ func spec(name, prompt string) agentspec.AgentSpec {
 	return agentspec.AgentSpec{
 		Name:         name,
 		Description:  "answers questions",
-		Model:        "claude-sonnet-4",
+		Model:        "claude-haiku-5-5",
 		Provider:     agentspec.ProviderOffline,
 		SystemPrompt: prompt,
 		Tools:        []string{"search"},
