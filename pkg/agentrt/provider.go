@@ -9,6 +9,7 @@ import (
 	"github.com/urmzd/saige/agent/agenttest"
 	"github.com/urmzd/saige/agent/provider/anthropic"
 	"github.com/urmzd/saige/agent/provider/ollama"
+	"github.com/urmzd/saige/agent/provider/retry"
 )
 
 // Provider names a spec may ask for. The set is open: a deployment adds its
@@ -66,7 +67,7 @@ func anthropicProvider(spec Spec) (saigetypes.Provider, error) {
 	if spec.Model == "" {
 		return nil, fmt.Errorf("%w: agent %q asks for the %s provider with no model", ErrInvalid, spec.Name, ProviderAnthropic)
 	}
-	return anthropic.NewAdapter(key, spec.Model), nil
+	return withRetry(anthropic.NewAdapter(key, spec.Model)), nil
 }
 
 func ollamaProvider(spec Spec) (saigetypes.Provider, error) {
@@ -79,7 +80,16 @@ func ollamaProvider(spec Spec) (saigetypes.Provider, error) {
 	}
 	// The embedding model is empty: an agent turn generates, it does not
 	// embed. Retrieval brings its own embedder (see Retriever).
-	return ollama.NewAdapter(ollama.NewClient(host, spec.Model, "")), nil
+	return withRetry(ollama.NewAdapter(ollama.NewClient(host, spec.Model, ""))), nil
+}
+
+// withRetry wraps a model adapter in saige's retry decorator. saige's adapters
+// make one attempt per call (the Anthropic SDK's own retries are off), so this
+// is the only retry layer: transient failures such as rate limits and
+// overloads are retried with jittered backoff that honors Retry-After, and
+// everything else surfaces at once.
+func withRetry(p saigetypes.Provider) saigetypes.Provider {
+	return retry.New(p, retry.DefaultConfig())
 }
 
 // offlineProvider replays script, one entry per model call.
