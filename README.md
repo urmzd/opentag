@@ -178,7 +178,7 @@ control plane:
 - The bus requires Redis or the in-memory backend. duraturo's `pgqueue` does not implement `DeltaLog`, so a Postgres-only deployment runs durably but cannot stream.
 - The registry is in-memory only; a Postgres implementation is not written yet.
 - dispatch's queue is at-most-once in beta, so durability comes from duraturo rather than from dispatch.
-- Citations are derived from RAG context blocks, because saige v0.14.0 has no agent-level citation delta.
+- Citations are derived from RAG context blocks. saige's `CitationDelta`, which reports what a model or tool cited, is not translated into events yet.
 - The bus is at-least-once with no consumer groups. If durable competing consumers become a requirement, NATS JetStream behind the `Bus` interface is a better answer than growing a broker here.
 - Agent specs load from JSON, not YAML.
 
