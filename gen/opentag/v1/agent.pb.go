@@ -64,7 +64,7 @@ type AgentSpec struct {
 	// users who ask what an agent is for. It is never sent to the model.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Model is the provider-specific model identifier, such as
-	// "claude-sonnet-4-6". Empty takes the deployment default.
+	// "claude-haiku-5-5". Empty takes the deployment default.
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
 	// Provider selects the LLM backend ("anthropic", "ollama"). Empty takes the
 	// deployment default. Provider and model are separate fields because the

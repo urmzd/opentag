@@ -260,9 +260,10 @@ Verified against the code, and honest.
   backend. duraturo's in-memory ledger and queue are complete systems and are
   what the single-binary deployment uses.
 - **dispatch's queue is at-most-once** in beta. Durability comes from duraturo.
-- **Citations are derived, not native.** saige v0.14.0 has no agent-level
-  citation delta, so citations are extracted from RAG `AssembledContext` blocks
-  and emitted as opentag's own `delta.citation` events.
+- **Citations are derived from retrieval.** Citations are extracted from RAG
+  `AssembledContext` blocks and emitted as opentag's own `delta.citation`
+  events. saige's `CitationDelta`, which reports what a model or tool cited, is
+  not translated into events yet.
 - **duraturo v1 workflow bodies are single-goroutine.** Parallelism belongs
   inside a dispatch task, not in a forked workflow.
 - **The bus is at-least-once with no consumer groups.** Subjects, filters, and

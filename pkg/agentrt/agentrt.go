@@ -18,10 +18,10 @@
 //
 // # Citations
 //
-// saige v0.14.0 emits no agent-level citation delta, so there is nothing in the
-// delta stream to translate. Citations are derived from retrieval instead (see
-// Retriever and Citations), which also makes them honest: they report the
-// passages the turn was given, not the ones a model claims to have used.
+// Citations are derived from retrieval (see Retriever and Citations), which
+// makes them honest: they report the passages the turn was given, not the ones
+// a model claims to have used. saige's CitationDelta, which reports what a
+// model or tool cited, is not translated.
 //
 // # Revisions are pinned, not resolved
 //
@@ -289,8 +289,16 @@ func (r *Runner) Run(ctx context.Context, t Turn, emit func(context.Context, Chu
 			// forever, so it is refused explicitly. The right shape for
 			// approval is to park the run on an external event; see
 			// pkg/runtime.
-			stream.ResolveMarkerWithMessage(v.ToolCallID, false, nil,
-				"opentag: interactive approval is not available inside a durable run")
+			//
+			// A refusal that cannot be delivered would leave the tool
+			// waiting, so it fails the turn and stops the stream instead.
+			err := stream.ResolveMarkerErr(v.ToolCallID, saige.Resolution{
+				Message: "opentag: interactive approval is not available inside a durable run",
+			})
+			if err != nil {
+				streamErr = errors.Join(streamErr, fmt.Errorf("refuse approval for tool call %s: %w", v.ToolCallID, err))
+				stream.Cancel()
+			}
 		}
 		c, ok := translator.Delta(d)
 		if !ok {

@@ -48,7 +48,7 @@ message AgentSpec {
   string description = 2;
 
   // Model is the provider-specific model identifier, such as
-  // "claude-sonnet-4-6". Empty takes the deployment default.
+  // "claude-haiku-5-5". Empty takes the deployment default.
   string model = 3;
 
   // Provider selects the LLM backend ("anthropic", "ollama"). Empty takes the

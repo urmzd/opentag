@@ -30,11 +30,10 @@ type Retriever interface {
 // the order the context lists them.
 //
 // This is where opentag's citations come from, and it is worth being explicit
-// about why: saige v0.14.0 has no agent-level citation delta — that lives on an
-// unreleased branch — so there is nothing in the delta stream to translate. The
-// retrieval result, however, already carries exactly what a footnote needs: the
-// exact source text, the inline label the assembled prompt used, and resolvable
-// provenance. Deriving citations from retrieval rather than from the model also
+// about why. saige's CitationDelta reports what a model or tool cited, which
+// opentag does not translate. The retrieval result already carries exactly what
+// a footnote needs: the exact source text, the inline label the assembled
+// prompt used, and resolvable provenance. Deriving citations from retrieval rather than from the model also
 // makes them honest: they report what the turn was GIVEN, which a model cannot
 // misattribute, rather than what it claims to have used.
 //

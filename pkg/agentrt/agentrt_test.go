@@ -231,6 +231,20 @@ func TestConnectorActionReportsWhatItDidAndWhere(t *testing.T) {
 	if !hasKind(got, envelope.KindToolCall) || !hasKind(got, envelope.KindToolDone) {
 		t.Errorf("chunks are %v, want a tool call and a tool done", kinds(got))
 	}
+	// The agent loop names the tool on the delta that reports its result, so
+	// the done event says which tool finished.
+	for _, c := range got {
+		if c.Kind != envelope.KindToolDone {
+			continue
+		}
+		var done payload.ToolDone
+		if err := json.Unmarshal(c.Payload, &done); err != nil {
+			t.Fatalf("decode tool done: %v", err)
+		}
+		if done.Name != "github_comment" {
+			t.Errorf("tool done names %q, want github_comment", done.Name)
+		}
+	}
 }
 
 // The prompt a turn sends is part of a durable run's input, so identical tag
@@ -402,4 +416,35 @@ func renderMessages(msgs []saigetypes.Message) string {
 
 func messagesContain(msgs []saigetypes.Message, want string) bool {
 	return strings.Contains(renderMessages(msgs), want)
+}
+
+// A tool that asks for human approval is refused inside a turn: nobody can
+// answer it, so the tool must not run and the turn must still finish.
+func TestApprovalRequestIsRefused(t *testing.T) {
+	t.Parallel()
+
+	inner := &agenttest.MockTool{Def: saigetypes.ToolDef{Name: "deploy"}, Result: "deployed"}
+	marked := &saigetypes.MarkedTool{Inner: inner, Markers: []saigetypes.Marker{{Kind: "human_approval"}}}
+	rev := offlineRevision(1, "")
+	rev.Spec.Tools = []string{"deploy"}
+	r, err := agentrt.New(rev,
+		agentrt.WithTools(agentrt.StaticTools(marked)),
+		agentrt.WithScript(
+			agenttest.ToolCallResponse("call_1", "deploy", map[string]any{}),
+			agenttest.TextResponse("not deployed"),
+		))
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+	got, res := collect(t, r, agentrt.Turn{Text: "deploy it"})
+
+	if len(inner.Calls) != 0 {
+		t.Errorf("the tool ran %d times, want 0", len(inner.Calls))
+	}
+	if res.Text != "not deployed" {
+		t.Errorf("answer is %q, want %q", res.Text, "not deployed")
+	}
+	if !hasKind(got, envelope.KindToolDone) {
+		t.Errorf("chunks are %v, want a tool done for the refused call", kinds(got))
+	}
 }

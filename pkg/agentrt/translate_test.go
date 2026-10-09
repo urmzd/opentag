@@ -50,9 +50,9 @@ func TestEveryMappedDeltaBecomesItsKind(t *testing.T) {
 		},
 		{
 			name: "tool exec end",
-			in:   saigetypes.ToolExecEndDelta{ToolCallID: "call_3", Result: "ok"},
+			in:   saigetypes.ToolExecEndDelta{ToolCallID: "call_3", Name: "build", Result: "ok"},
 			kind: envelope.KindToolDone,
-			want: `{"id":"call_3","result":"ok"}`,
+			want: `{"id":"call_3","name":"build","result":"ok"}`,
 		},
 		{
 			name: "tool exec end with error",
@@ -85,48 +85,30 @@ func TestEveryMappedDeltaBecomesItsKind(t *testing.T) {
 	}
 }
 
-// A finished tool must be reported by name, and saige only says the name when
-// the call starts, so the translator has to remember it across deltas.
-func TestToolDoneReportsTheNameFromTheCallThatStartedIt(t *testing.T) {
-	t.Parallel()
-
-	tr := agentrt.NewTranslator()
-	if _, ok := tr.Delta(saigetypes.ToolCallStartDelta{ID: "call_1", Name: "run_tests"}); !ok {
-		t.Fatal("tool call start produced no event")
-	}
-	done, ok := tr.Delta(saigetypes.ToolExecEndDelta{ToolCallID: "call_1", Result: "42 passed"})
-	if !ok {
-		t.Fatal("tool exec end produced no event")
-	}
-	var body payload.ToolDone
-	if err := json.Unmarshal(done.Payload, &body); err != nil {
-		t.Fatalf("decode: %v", err)
-	}
-	if body.Name != "run_tests" {
-		t.Fatalf("tool name is %q, want %q", body.Name, "run_tests")
-	}
-}
-
-// Names are remembered per call id, so two tools running in parallel must not be
-// confused for each other.
-func TestParallelToolCallsKeepTheirOwnNames(t *testing.T) {
+// A finished tool must be reported by name, taken from the ToolExecEndDelta
+// itself. Two calls finishing in either order must not be confused for each
+// other, which a translator that guessed from earlier deltas could do.
+func TestToolDoneReportsItsOwnName(t *testing.T) {
 	t.Parallel()
 
 	tr := agentrt.NewTranslator()
 	tr.Delta(saigetypes.ToolExecStartDelta{ToolCallID: "a", Name: "read"})
 	tr.Delta(saigetypes.ToolExecStartDelta{ToolCallID: "b", Name: "write"})
 
-	for id, want := range map[string]string{"a": "read", "b": "write"} {
-		c, ok := tr.Delta(saigetypes.ToolExecEndDelta{ToolCallID: id})
+	for _, end := range []saigetypes.ToolExecEndDelta{
+		{ToolCallID: "b", Name: "write"},
+		{ToolCallID: "a", Name: "read"},
+	} {
+		c, ok := tr.Delta(end)
 		if !ok {
-			t.Fatalf("call %s produced no done event", id)
+			t.Fatalf("call %s produced no done event", end.ToolCallID)
 		}
 		var body payload.ToolDone
 		if err := json.Unmarshal(c.Payload, &body); err != nil {
 			t.Fatalf("decode: %v", err)
 		}
-		if body.Name != want {
-			t.Errorf("call %s finished as %q, want %q", id, body.Name, want)
+		if body.ID != end.ToolCallID || body.Name != end.Name {
+			t.Errorf("call %s finished as %s/%q, want %q", end.ToolCallID, body.ID, body.Name, end.Name)
 		}
 	}
 }
@@ -149,8 +131,9 @@ func TestFramingAndTelemetryDeltasProduceNoEvents(t *testing.T) {
 		saigetypes.FeedbackDelta{TargetNodeID: "n1"},
 		saigetypes.DoneDelta{},
 		saigetypes.ErrorDelta{},
-		saigetypes.TextContentDelta{},     // empty fragment: nothing to render
-		saigetypes.ThinkingContentDelta{}, // ditto
+		saigetypes.CitationDelta{Citation: saigetypes.Citation{Title: "model-cited"}}, // not translated yet: citations come from retrieval
+		saigetypes.TextContentDelta{},                                                 // empty fragment: nothing to render
+		saigetypes.ThinkingContentDelta{},                                             // ditto
 	}
 	tr := agentrt.NewTranslator()
 	for _, d := range dropped {

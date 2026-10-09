@@ -1,6 +1,6 @@
 module github.com/urmzd/opentag
 
-go 1.26.5
+go 1.26.9
 
 require (
 	connectrpc.com/connect v1.20.0
@@ -8,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/urmzd/dispatch v0.1.0
 	github.com/urmzd/duraturo v0.1.1
-	github.com/urmzd/saige v0.14.0
+	github.com/urmzd/saige v0.22.0
 	google.golang.org/protobuf v1.36.11
 )
 
@@ -23,5 +23,5 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sync v0.23.0 // indirect
 )

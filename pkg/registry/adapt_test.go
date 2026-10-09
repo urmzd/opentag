@@ -24,7 +24,7 @@ func serverSpec(name, prompt string) server.Spec {
 	return server.Spec{
 		Name:         name,
 		Description:  "answers questions",
-		Model:        "claude-sonnet-4",
+		Model:        "claude-haiku-5-5",
 		Provider:     agentspec.ProviderOffline,
 		SystemPrompt: prompt,
 		Tools:        []string{"search", "fetch"},
@@ -51,7 +51,7 @@ func TestServerStoreRoundTripsEveryField(t *testing.T) {
 	want := server.Spec{
 		Name:         "docs-bot",
 		Description:  "answers questions",
-		Model:        "claude-sonnet-4",
+		Model:        "claude-haiku-5-5",
 		Provider:     agentspec.ProviderOffline,
 		SystemPrompt: "v1",
 		Tools:        []string{"fetch", "search"},
@@ -210,7 +210,7 @@ func TestSpecsResolvesPinnedRevisionsForever(t *testing.T) {
 	want := agentrt.Spec{
 		Name:         "docs-bot",
 		Description:  "answers questions",
-		Model:        "claude-sonnet-4",
+		Model:        "claude-haiku-5-5",
 		Provider:     agentspec.ProviderOffline,
 		SystemPrompt: "v1",
 		Tools:        []string{"search"},

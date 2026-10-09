@@ -67,7 +67,7 @@ func TestHashDiffersForEveryMeaningfulChange(t *testing.T) {
 	}{
 		{"name", func(s *agentspec.AgentSpec) { s.Name = "other-bot" }},
 		{"description", func(s *agentspec.AgentSpec) { s.Description = "different" }},
-		{"model", func(s *agentspec.AgentSpec) { s.Model = "claude-opus-4" }},
+		{"model", func(s *agentspec.AgentSpec) { s.Model = "claude-sonnet-5-5" }},
 		{"provider", func(s *agentspec.AgentSpec) { s.Provider = agentspec.ProviderOllama }},
 		{"system prompt", func(s *agentspec.AgentSpec) { s.SystemPrompt = "Answer differently." }},
 		{"a tool added", func(s *agentspec.AgentSpec) { s.Tools = append(s.Tools, "grep") }},
