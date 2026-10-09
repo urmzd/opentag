@@ -21,20 +21,14 @@ type Chunk struct {
 
 // Translator converts saige's typed deltas into event bodies.
 //
-// It is stateful for one reason: saige reports a tool's name when the call
-// starts and its result when the call ends, correlated only by tool call id. A
-// stateless mapping would publish a "tool finished" event that could not say
-// which tool finished, so the translator remembers the names it saw. State is
-// per turn; a Translator is not safe for concurrent use and is not meant to be
-// shared between turns.
-type Translator struct {
-	names map[string]string // tool call id -> tool name
-}
+// It holds no state: saige names the tool on every tool delta, including the
+// ToolExecEndDelta that reports the result, so each delta translates on its
+// own. A Translator is still made per turn with NewTranslator, which keeps the
+// call sites stable if the mapping ever needs per-turn state again.
+type Translator struct{}
 
 // NewTranslator returns a translator for one turn.
-func NewTranslator() *Translator {
-	return &Translator{names: make(map[string]string)}
-}
+func NewTranslator() *Translator { return &Translator{} }
 
 // Delta maps one saige delta to an event body. The second result reports
 // whether this delta becomes an event at all.
@@ -50,9 +44,9 @@ func NewTranslator() *Translator {
 //	ToolCallStartDelta, ToolExecStartDelta  -> delta.tool.call
 //	ToolExecEndDelta                        -> delta.tool.done
 //
-// Citations are the exception that is not in this list: saige v0.14.0 has no
-// agent-level citation delta, so they are derived from retrieval instead. See
-// Citations.
+// Citations are the exception that is not in this list: they are derived from
+// retrieval instead (see Citations). saige's CitationDelta, which reports what
+// a model or tool cited, is not translated yet and is dropped with the framing.
 //
 // Two deltas are dropped for reasons worth stating:
 //
@@ -78,21 +72,19 @@ func (t *Translator) Delta(d saigetypes.Delta) (Chunk, bool) {
 		return chunk(envelope.KindThinking, payload.Thinking{Text: v.Content})
 
 	case saigetypes.ToolCallStartDelta:
-		t.remember(v.ID, v.Name)
 		return chunk(envelope.KindToolCall, payload.ToolCall{
 			ID: v.ID, Name: v.Name, Phase: payload.PhaseRequested,
 		})
 
 	case saigetypes.ToolExecStartDelta:
-		t.remember(v.ToolCallID, v.Name)
 		return chunk(envelope.KindToolCall, payload.ToolCall{
-			ID: v.ToolCallID, Name: t.name(v.ToolCallID), Phase: payload.PhaseExecuting,
+			ID: v.ToolCallID, Name: v.Name, Phase: payload.PhaseExecuting,
 		})
 
 	case saigetypes.ToolExecEndDelta:
 		return chunk(envelope.KindToolDone, payload.ToolDone{
 			ID:     v.ToolCallID,
-			Name:   t.name(v.ToolCallID),
+			Name:   v.Name,
 			Result: v.Result,
 			Error:  v.Error,
 		})
@@ -107,19 +99,6 @@ func (t *Translator) Delta(d saigetypes.Delta) (Chunk, bool) {
 		return Chunk{}, false
 	}
 }
-
-// remember records a tool call id's name so the matching ToolDone can report it.
-func (t *Translator) remember(id, name string) {
-	if id == "" || name == "" {
-		return
-	}
-	t.names[id] = name
-}
-
-// name returns the remembered tool name for a call id, or "" if the delta
-// stream never announced one. An unnamed tool is reported as unnamed rather
-// than guessed: the id is still there to correlate with.
-func (t *Translator) name(id string) string { return t.names[id] }
 
 // chunk marshals a body into a Chunk. A payload that will not marshal is a
 // programming error in this package (every payload type is a plain struct of
