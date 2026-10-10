@@ -241,7 +241,7 @@ func (w *webhookSink) seenKinds() map[envelope.Kind]int {
 // ── the executor ────────────────────────────────────────────────────
 //
 // runtime.Executor is the seam between the durable turn and the agent loop. A
-// deployment passes runtime.NewSandbox, which runs the turn as a dispatch task
+// deployment passes runtime.NewSandbox, which runs the turn as a legatus task
 // under the NGAC policy compiled from the pinned revision's Access grant.
 //
 // This example passes an in-process executor instead, for one reason: a sandbox

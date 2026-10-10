@@ -23,12 +23,12 @@ mandatum composes three libraries and adds the parts that make them a product.
 |---------|-------|
 | The agent loop, typed deltas, RAG and citations | [saige](https://github.com/urmzd/saige) |
 | Durability, replay, exactly-once effects, per-run journal | [duraturo](https://github.com/urmzd/duraturo) |
-| Sandboxed execution nodes, NGAC access control | [dispatch](https://github.com/urmzd/dispatch) |
+| Sandboxed execution nodes, NGAC access control | [legatus](https://github.com/urmzd/legatus) |
 | Agent specs, revisions, registry | mandatum |
 | Topics, the bus, delivery routing, transports | mandatum |
 | Connectors: triggers, sinks, and native actions | mandatum |
 
-The division is strict. duraturo owns whether work survives a crash; dispatch
+The division is strict. duraturo owns whether work survives a crash; legatus
 owns what a tool is allowed to touch; saige owns what the model does. mandatum
 owns addressing, distribution, and the control plane, and delegates the rest.
 
@@ -158,7 +158,7 @@ Two consequences worth knowing:
 
 ## Durability
 
-duraturo owns durability; dispatch does not. dispatch's queue is at-most-once in
+duraturo owns durability; legatus does not. legatus's queue is at-most-once in
 its current beta, so a node that dies mid-task drops it. That is acceptable here
 only because the durable run wrapping the task is duraturo's, and duraturo
 replays it.
@@ -196,7 +196,7 @@ seams
 
 composition
   pkg/agentrt      builds a saige agent from a pinned revision; citations
-  pkg/runtime      the durable duraturo turn, dispatch sandbox
+  pkg/runtime      the durable duraturo turn, legatus sandbox
   pkg/router       delivery fan-out to sinks
   pkg/connectors   slack, github, jira, cron, webhook
   internal/server  Connect handlers, SSE, webhook ingress
@@ -242,7 +242,7 @@ valid as long as the secret does. That defense lives downstream in `Tag.ID`
 idempotency instead, and the package documents this rather than implying a
 protection it cannot provide.
 
-**The NGAC policy path** is dispatch's. An agent's `Access` block compiles into a
+**The NGAC policy path** is legatus's. An agent's `Access` block compiles into a
 policy graph enforced by the sandbox with default deny, covering both workspace
 areas and the spawn allowlist that governs agent-tags-agent.
 
@@ -259,13 +259,13 @@ Verified against the code, and honest.
   depends only on duraturo's root module and ships its own Redis Streams bus
   backend. duraturo's in-memory ledger and queue are complete systems and are
   what the single-binary deployment uses.
-- **dispatch's queue is at-most-once** in beta. Durability comes from duraturo.
+- **legatus's queue is at-most-once** in beta. Durability comes from duraturo.
 - **Citations are derived from retrieval.** Citations are extracted from RAG
   `AssembledContext` blocks and emitted as mandatum's own `delta.citation`
   events. saige's `CitationDelta`, which reports what a model or tool cited, is
   not translated into events yet.
 - **duraturo v1 workflow bodies are single-goroutine.** Parallelism belongs
-  inside a dispatch task, not in a forked workflow.
+  inside a legatus task, not in a forked workflow.
 - **The bus is at-least-once with no consumer groups.** Subjects, filters, and
   cursors cover real-time consumers. If durable competing consumers with
   independent offsets become a requirement, the honest answer is NATS JetStream

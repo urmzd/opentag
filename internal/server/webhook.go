@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/urmzd/dispatch/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/metrics"
 	"github.com/urmzd/mandatum/pkg/address"
 	"github.com/urmzd/mandatum/pkg/envelope"
 	"github.com/urmzd/mandatum/pkg/signature"

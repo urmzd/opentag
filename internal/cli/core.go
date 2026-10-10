@@ -14,16 +14,16 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/urmzd/dispatch/pkg/controlplane"
-	"github.com/urmzd/dispatch/pkg/metrics"
-	"github.com/urmzd/dispatch/pkg/node/inproc"
-	"github.com/urmzd/dispatch/pkg/tool"
-	"github.com/urmzd/dispatch/pkg/workspace"
 	"github.com/urmzd/duraturo"
 	"github.com/urmzd/duraturo/pkg/ledger"
 	dqueue "github.com/urmzd/duraturo/pkg/queue"
 	drun "github.com/urmzd/duraturo/pkg/run"
 	"github.com/urmzd/duraturo/pkg/worker"
+	"github.com/urmzd/legatus/pkg/controlplane"
+	"github.com/urmzd/legatus/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/node/inproc"
+	"github.com/urmzd/legatus/pkg/tool"
+	"github.com/urmzd/legatus/pkg/workspace"
 
 	"github.com/urmzd/mandatum/internal/server"
 	"github.com/urmzd/mandatum/pkg/bus"
@@ -159,7 +159,7 @@ func newCore(cfg coreConfig) (*core, error) {
 	// trigger to sink holds both ends at once.
 	c.deliver = router.New(broker, sinks, router.WithLogger(log))
 
-	// The agent side. A turn runs as a dispatch task under the NGAC policy
+	// The agent side. A turn runs as a legatus task under the NGAC policy
 	// compiled from the pinned revision's Access grant, so what an agent may
 	// touch is enforced rather than documented.
 	exec, err := newExecutor(cfg, c.store, sinks, log, rec)
@@ -213,7 +213,7 @@ func newBus(redisURL string) (bus.Bus, func() error, error) {
 // newExecutor builds the sandbox a turn runs in.
 //
 // The tool registry and the workspace are shared with the control plane rather
-// than owned by the sandbox: dispatch resolves a tool by name on the node that
+// than owned by the sandbox: legatus resolves a tool by name on the node that
 // executes it, and the node is created from this factory. The policy that
 // scopes what that tool can see comes from the pinned revision, one deployment
 // per (agent, revision), which is what stops a revised Access grant from

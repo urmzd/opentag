@@ -17,7 +17,7 @@ structural.
 ## Architecture
 
 Composes three libraries and adds addressing, distribution and the control
-plane. saige owns the agent loop, duraturo owns durability, dispatch owns
+plane. saige owns the agent loop, duraturo owns durability, legatus owns
 sandboxing and access control.
 
 | Package | Role |
@@ -32,7 +32,7 @@ sandboxing and access control.
 | `pkg/bus` | `Bus` interface, `Memory` and Redis Streams backends, `bustest` conformance suite. |
 | `pkg/router` | Delivery fan-out to sinks, ordered per `(run, target)`. |
 | `pkg/agentrt` | Builds a saige agent from a pinned revision; delta translation; citation extraction. `payload/` holds typed event bodies. |
-| `pkg/runtime` | The durable duraturo turn: revision pinning, dispatch sandbox, dual publish. |
+| `pkg/runtime` | The durable duraturo turn: revision pinning, legatus sandbox, dual publish. |
 | `pkg/connectors` | `slack`, `github`, `jira`, `cron`, `webhook`, plus shared helpers under `internal/`. |
 | `internal/server` | Connect handlers, SSE, webhook ingress, tenant interceptor. |
 | `internal/cli` | Command tree. `core.go` is the composition root. |
@@ -75,7 +75,7 @@ Discover layout with `tree` or ripgrep; do not trust stale listings.
   confinement: constant-time comparison, verify-before-parse, replay window,
   malformed input, and duplicated headers. Default is always deny.
 - **The NGAC policy path is a security boundary.** An agent's `Access` block
-  compiles into dispatch's policy graph with default deny. Changes need tests
+  compiles into legatus's policy graph with default deny. Changes need tests
   proving spawn gating and workspace confinement still hold.
 - **Preserve the DAG.** Leaves (`topic`, `address`, `envelope`, `signature`,
   `agentspec`) stay stdlib-only. Nothing under `pkg/` imports `internal/`.
@@ -83,7 +83,7 @@ Discover layout with `tree` or ripgrep; do not trust stale listings.
   and must never re-resolve "latest" inside a workflow body: duraturo replays
   from the top, and an unpinned run diverges. Tests that assert this exist in
   `pkg/runtime`; do not weaken them.
-- **Durability comes from duraturo, never from dispatch.** dispatch's queue is
+- **Durability comes from duraturo, never from legatus.** legatus's queue is
   at-most-once in beta.
 - **Sinks must be idempotent.** Delivery is at-least-once. Render one message
   per run and edit it; never post per delta.

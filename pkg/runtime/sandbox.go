@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/urmzd/dispatch/pkg/controlplane"
-	dispatchsandbox "github.com/urmzd/dispatch/pkg/sandbox"
-	"github.com/urmzd/dispatch/pkg/task"
-	"github.com/urmzd/dispatch/pkg/tool"
+	"github.com/urmzd/legatus/pkg/controlplane"
+	dispatchsandbox "github.com/urmzd/legatus/pkg/sandbox"
+	"github.com/urmzd/legatus/pkg/task"
+	"github.com/urmzd/legatus/pkg/tool"
 	saigetypes "github.com/urmzd/saige/agent/types"
 
 	"github.com/urmzd/mandatum/pkg/address"
@@ -29,7 +29,7 @@ const (
 	// DefaultBuffer is the per-turn chunk buffer between the tool producing
 	// events and the activity publishing them.
 	DefaultBuffer = 256
-	// DefaultPollInterval is how often a turn checks whether its dispatch
+	// DefaultPollInterval is how often a turn checks whether its legatus
 	// task has reported a result.
 	DefaultPollInterval = 5 * time.Millisecond
 	// AnswerArea is the workspace area a turn writes its answer artifact
@@ -70,14 +70,14 @@ func (r Request) SourceAddress() (address.Address, error) {
 	return a, nil
 }
 
-// Sandbox executes turns as dispatch tasks, under the NGAC policy compiled from
+// Sandbox executes turns as legatus tasks, under the NGAC policy compiled from
 // the pinned revision's Access grant.
 //
 // # What the sandbox is for
 //
 // A turn is arbitrary model-directed code: it calls tools, writes files, and may
 // delegate to other agents. Access says what the agent may touch, and saying it
-// is worth nothing unless something enforces it. dispatch is that something: the
+// is worth nothing unless something enforces it. legatus is that something: the
 // tool never receives the shared workspace, only a view scoped to its policy, and
 // every spawn attempt is checked against the policy's allowlist before it
 // reaches a queue. Default is deny, so an agent granted nothing can do nothing.
@@ -93,7 +93,7 @@ func (r Request) SourceAddress() (address.Address, error) {
 //
 // # Streaming out of a sandbox
 //
-// A dispatch tool is a function over bytes: it has no way to stream, and the node
+// A legatus tool is a function over bytes: it has no way to stream, and the node
 // running it holds neither the caller's context nor the run's replay frame. So
 // the tool sends its chunks through an in-process channel registered under the
 // run id, and the activity that submitted the task drains that channel on its own
@@ -101,14 +101,14 @@ func (r Request) SourceAddress() (address.Address, error) {
 // writes behind it) on the single goroutine duraturo requires, while the agent
 // loop's own parallelism stays inside the task.
 //
-// That handoff is in-process by construction. A remote dispatch node would have
+// That handoff is in-process by construction. A remote legatus node would have
 // to publish to the bus itself; nothing here pretends otherwise.
 //
 // # At-most-once, on purpose
 //
-// dispatch's queue is at-most-once in beta. A lost task is a failed attempt, and
+// legatus's queue is at-most-once in beta. A lost task is a failed attempt, and
 // the attempt is what duraturo already knows how to repeat. Durability is never
-// borrowed from dispatch.
+// borrowed from legatus.
 type Sandbox struct {
 	plane   controlplane.ControlPlane
 	tools   *tool.Registry
@@ -126,7 +126,7 @@ type Sandbox struct {
 
 	mu         sync.Mutex
 	deployed   map[string]string             // "<agent>@<rev>" -> deployment name
-	registered map[string]bool               // dispatch tool name -> registered
+	registered map[string]bool               // legatus tool name -> registered
 	streams    map[string]chan agentrt.Chunk // run id -> live chunk sink
 }
 
@@ -215,7 +215,7 @@ func WithSandboxLogger(l *slog.Logger) SandboxOption {
 	}
 }
 
-// NewSandbox returns an executor over a dispatch control plane.
+// NewSandbox returns an executor over a legatus control plane.
 //
 // tools is the registry the plane's nodes resolve from; the sandbox registers one
 // tool per agent into it as agents are first seen. specs is used only to resolve
@@ -223,10 +223,10 @@ func WithSandboxLogger(l *slog.Logger) SandboxOption {
 // the model can read.
 func NewSandbox(plane controlplane.ControlPlane, tools *tool.Registry, specs Specs, opts ...SandboxOption) (*Sandbox, error) {
 	if plane == nil {
-		return nil, fmt.Errorf("%w: no dispatch control plane", ErrInvalid)
+		return nil, fmt.Errorf("%w: no legatus control plane", ErrInvalid)
 	}
 	if tools == nil {
-		return nil, fmt.Errorf("%w: no dispatch tool registry", ErrInvalid)
+		return nil, fmt.Errorf("%w: no legatus tool registry", ErrInvalid)
 	}
 	s := &Sandbox{
 		plane:      plane,
@@ -248,11 +248,11 @@ func NewSandbox(plane controlplane.ControlPlane, tools *tool.Registry, specs Spe
 
 var _ Executor = (*Sandbox)(nil)
 
-// ToolName is the dispatch tool an agent's turns execute as. It is also the
+// ToolName is the legatus tool an agent's turns execute as. It is also the
 // agent's identity in the policy graph, and the object a spawn grant names.
 func ToolName(agent string) string { return "agent:" + agent }
 
-// DeploymentName is the dispatch deployment a pinned revision runs in.
+// DeploymentName is the legatus deployment a pinned revision runs in.
 func DeploymentName(agent string, rev int) string {
 	return fmt.Sprintf("mandatum-%s-r%d", agent, rev)
 }
@@ -265,7 +265,7 @@ func AnswerKey(agent, runID string) string {
 	return path.Join(AnswerArea, agent, runID, "answer")
 }
 
-// Execute submits the turn as a dispatch task and publishes what it streams.
+// Execute submits the turn as a legatus task and publishes what it streams.
 func (s *Sandbox) Execute(ctx context.Context, req Request, emit func(context.Context, agentrt.Chunk) error) (Outcome, error) {
 	if req.RunID == "" {
 		return Outcome{}, fmt.Errorf("%w: turn has no run id", ErrInvalid)
@@ -316,7 +316,7 @@ func (s *Sandbox) stream(ctx context.Context, req Request, deployment, taskID st
 	for {
 		select {
 		case <-ctx.Done():
-			// The task keeps running: dispatch owns its lifecycle and its
+			// The task keeps running: legatus owns its lifecycle and its
 			// queue is at-most-once. The run is what gets retried.
 			return Outcome{}, fmt.Errorf("runtime: run %s: %w", req.RunID, ctx.Err())
 
@@ -410,7 +410,7 @@ func (s *Sandbox) ensure(ctx context.Context, rev agentrt.Revision) (string, err
 	return name, nil
 }
 
-// register adds an agent's tool to the dispatch registry, once.
+// register adds an agent's tool to the legatus registry, once.
 func (s *Sandbox) register(name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -420,7 +420,7 @@ func (s *Sandbox) register(name string) error {
 	if err := s.tools.Register(tool.Func(name, s.call)); err != nil {
 		// Registered by another Sandbox over the same registry: the tool body
 		// is this package's either way, so adopt it rather than failing.
-		s.logger.Debug("mandatum/runtime: dispatch tool already registered", "tool", name, "error", err)
+		s.logger.Debug("mandatum/runtime: legatus tool already registered", "tool", name, "error", err)
 	}
 	s.registered[name] = true
 	return nil
@@ -452,7 +452,7 @@ func (s *Sandbox) sink(runID string) chan agentrt.Chunk {
 	return s.streams[runID]
 }
 
-// call is the dispatch tool: one agent turn, inside the sandbox.
+// call is the legatus tool: one agent turn, inside the sandbox.
 //
 // It runs on a node's goroutine, with a context that carries neither the run's
 // replay frame nor the caller's cancellation, and with a workspace already scoped
