@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 (2026-10-10)
+
+### Breaking
+
+- rename the project from opentag to mandatum (#7) ([92e7d1b](https://github.com/urmzd/mandatum/commit/92e7d1b5e0275abcef0779dc755a39e966379173))
+
+[Full Changelog](https://github.com/urmzd/mandatum/compare/v0.2.0...v0.3.0)
+
+
 ## 0.2.0 (2026-10-10)
 
 ### Features
