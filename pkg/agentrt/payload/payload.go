@@ -11,7 +11,7 @@
 //
 //	payload  -> envelope, address, stdlib          (a leaf)
 //	agentrt  -> payload, saige                     (produces them)
-//	runtime  -> payload, agentrt, duraturo, dispatch
+//	runtime  -> payload, agentrt, duraturo, legatus
 //
 // The structs are therefore a wire contract, not an implementation detail.
 // Fields are only ever added, never renamed or repurposed, and every field is

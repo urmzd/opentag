@@ -64,7 +64,7 @@ paths.
 | Bus | `pkg/bus.Memory` | `pkg/bus` Redis Streams |
 | Ledger and queue | duraturo `ledger.Memory`, `queue.Memory` | duraturo `pgledger` and `redisqueue` |
 | Model | saige `agenttest.ScriptedProvider`, via the spec's `offline` provider | `anthropic` or `ollama`, by changing two fields on the spec |
-| Execution | an in-process `runtime.Executor` | `runtime.NewSandbox`, a dispatch node under NGAC |
+| Execution | an in-process `runtime.Executor` | `runtime.NewSandbox`, a legatus node under NGAC |
 | Connectors | two fakes implementing `connector.Sink` | `pkg/connectors/slack`, `pkg/connectors/webhook` |
 
 Every row is a constructor change. `main.go` does not otherwise change.

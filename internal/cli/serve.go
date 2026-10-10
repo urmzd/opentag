@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/urmzd/dispatch/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/metrics"
 
 	"github.com/urmzd/mandatum/internal/server"
 	"github.com/urmzd/mandatum/pkg/registry"

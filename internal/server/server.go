@@ -65,7 +65,7 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/urmzd/dispatch/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/metrics"
 	"github.com/urmzd/mandatum/gen/mandatum/v1/mandatumv1connect"
 	"github.com/urmzd/mandatum/pkg/address"
 	"github.com/urmzd/mandatum/pkg/bus"

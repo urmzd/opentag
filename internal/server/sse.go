@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/dispatch/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/metrics"
 	"github.com/urmzd/mandatum/pkg/bus"
 	"github.com/urmzd/mandatum/pkg/envelope"
 	"github.com/urmzd/mandatum/pkg/topic"

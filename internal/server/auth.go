@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"github.com/urmzd/dispatch/pkg/metrics"
+	"github.com/urmzd/legatus/pkg/metrics"
 )
 
 // ErrUnauthenticated reports a caller whose credential is missing, malformed,

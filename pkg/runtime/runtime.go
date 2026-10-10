@@ -4,7 +4,7 @@
 // exists because each of them owns exactly one thing and none of them owns this:
 //
 //	duraturo  the run survives a crash and replays from its ledger
-//	dispatch  the turn executes inside a sandbox that enforces the agent's policy
+//	legatus  the turn executes inside a sandbox that enforces the agent's policy
 //	saige     the turn is an agent loop (through pkg/agentrt)
 //	pkg/bus   every event fans out live to observers and sinks
 //
@@ -57,7 +57,7 @@
 //
 // duraturo v1 workflow bodies are single-goroutine. Nothing in this package
 // forks the workflow, and every duraturo call — Call, Emit — happens on the
-// goroutine the worker invoked. Parallelism lives inside the dispatch task,
+// goroutine the worker invoked. Parallelism lives inside the legatus task,
 // where it cannot confuse replay.
 package runtime
 
@@ -119,7 +119,7 @@ type Specs interface {
 // Executor runs one turn in isolation and streams what it produces.
 //
 // It is an interface because isolation is a deployment decision: Sandbox runs
-// the turn as a dispatch task under the pinned revision's NGAC policy, and that
+// the turn as a legatus task under the pinned revision's NGAC policy, and that
 // is the implementation a deployment should use. A caller that has already
 // isolated its process differently can supply another.
 //
@@ -192,7 +192,7 @@ type Request struct {
 	Meta map[string]string `json:"meta,omitempty"`
 	// Revision is the pinned definition to execute.
 	Revision agentrt.Revision `json:"revision"`
-	// Service is set by the Sandbox: the dispatch deployment this turn runs
+	// Service is set by the Sandbox: the legatus deployment this turn runs
 	// in, so a delegated sub-task can be awaited in the right place.
 	Service string `json:"service,omitempty"`
 }

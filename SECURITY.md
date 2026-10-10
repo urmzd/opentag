@@ -50,7 +50,7 @@ boundary, and a fuzz pass proving no input panics.
 
 ### The NGAC policy path
 
-An agent's `Access` block compiles into dispatch's policy graph and is enforced
+An agent's `Access` block compiles into legatus's policy graph and is enforced
 by the sandbox with default deny. It governs both the workspace areas a tool may
 touch and the spawn allowlist that decides which agents an agent may delegate
 to.

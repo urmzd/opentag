@@ -6,8 +6,8 @@ require (
 	connectrpc.com/connect v1.20.0
 	github.com/redis/go-redis/v9 v9.21.0
 	github.com/spf13/cobra v1.10.2
-	github.com/urmzd/dispatch v0.1.0
 	github.com/urmzd/duraturo v0.1.1
+	github.com/urmzd/legatus v0.2.0
 	github.com/urmzd/saige v0.34.0
 	google.golang.org/protobuf v1.36.11
 )
