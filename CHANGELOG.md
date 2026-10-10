@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.0 (2026-10-10)
+
+### Features
+
+- **runtime**: let a host carry out a delegation for a turn that is a run (#6) ([f8d8fda](https://github.com/urmzd/opentag/commit/f8d8fda4a91831e5f6595fc9f456d724aee8c174))
+
+### Misc
+
+- **deps**: bump saige to v0.34.0 (#5) ([f4be729](https://github.com/urmzd/opentag/commit/f4be729ab035a22755b2c8e9256c5250a9b53872))
+- **release**: read the sr-releaser key from the release environment (#4) ([0d66d8f](https://github.com/urmzd/opentag/commit/0d66d8f70c16a5424c61d6c45e7f5244589aa8e4))
+- **deps**: bump saige to v0.24.0 (#3) ([e6cb2ac](https://github.com/urmzd/opentag/commit/e6cb2acf04073e84cb17acf467dcf0b1b6f16624))
+- upgrade urmzd/sr action to v9 (#2) ([d16c081](https://github.com/urmzd/opentag/commit/d16c08121bac6ac35b91d33972bad917b6ec98ef))
+
+[Full Changelog](https://github.com/urmzd/opentag/compare/v0.1.0...v0.2.0)
+
+
 ## 0.1.0 (2026-10-09)
 
 ### Features
