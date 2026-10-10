@@ -26,19 +26,19 @@ func TestEveryMappedDeltaBecomesItsKind(t *testing.T) {
 	}{
 		{
 			name: "text content",
-			in:   saigetypes.TextContentDelta{Content: "hello"},
+			in:   saigetypes.PartDelta{Text: "hello"},
 			kind: envelope.KindText,
 			want: `{"text":"hello"}`,
 		},
 		{
 			name: "thinking content",
-			in:   saigetypes.ThinkingContentDelta{Content: "weighing options"},
+			in:   saigetypes.PartDelta{Thinking: "weighing options"},
 			kind: envelope.KindThinking,
 			want: `{"text":"weighing options"}`,
 		},
 		{
 			name: "tool call start",
-			in:   saigetypes.ToolCallStartDelta{ID: "call_1", Name: "grep"},
+			in:   saigetypes.PartStart{Kind: saigetypes.KindToolCall, ID: "call_1", Name: "grep"},
 			kind: envelope.KindToolCall,
 			want: `{"id":"call_1","name":"grep","phase":"requested"}`,
 		},
@@ -62,7 +62,7 @@ func TestEveryMappedDeltaBecomesItsKind(t *testing.T) {
 		},
 		{
 			name: "nested tool delta unwraps to its inner kind",
-			in:   saigetypes.ToolExecDelta{ToolCallID: "call_5", Inner: saigetypes.TextContentDelta{Content: "from a sub-agent"}},
+			in:   saigetypes.ToolExecDelta{ToolCallID: "call_5", Inner: saigetypes.PartDelta{Text: "from a sub-agent"}},
 			kind: envelope.KindText,
 			want: `{"text":"from a sub-agent"}`,
 		},
@@ -120,20 +120,19 @@ func TestFramingAndTelemetryDeltasProduceNoEvents(t *testing.T) {
 	t.Parallel()
 
 	dropped := []saigetypes.Delta{
-		saigetypes.TextStartDelta{},
-		saigetypes.TextEndDelta{},
-		saigetypes.ThinkingStartDelta{},
-		saigetypes.ThinkingEndDelta{Signature: "sig"},
-		saigetypes.ToolCallArgumentDelta{Content: `{"path":`},
-		saigetypes.ToolCallEndDelta{Arguments: map[string]any{"path": "."}},
+		saigetypes.PartStart{Kind: saigetypes.KindText},
+		saigetypes.PartEnd{Part: saigetypes.Text("hi")},
+		saigetypes.PartStart{Kind: saigetypes.KindThinking},
+		saigetypes.PartDelta{Signature: "sig"},
+		saigetypes.PartDelta{Args: `{"path":`},
+		saigetypes.PartEnd{Part: saigetypes.ToolCallPart{ID: "call_1", Name: "grep", Arguments: map[string]any{"path": "."}}},
 		saigetypes.UsageDelta{PromptTokens: 10, CompletionTokens: 3, Latency: time.Second},
 		saigetypes.HandoffDelta{From: "a", To: "b"},
 		saigetypes.FeedbackDelta{TargetNodeID: "n1"},
 		saigetypes.DoneDelta{},
 		saigetypes.ErrorDelta{},
 		saigetypes.CitationDelta{Citation: saigetypes.Citation{Title: "model-cited"}}, // not translated yet: citations come from retrieval
-		saigetypes.TextContentDelta{},                                                 // empty fragment: nothing to render
-		saigetypes.ThinkingContentDelta{},                                             // ditto
+		saigetypes.PartDelta{}, // empty fragment: nothing to render
 	}
 	tr := agentrt.NewTranslator()
 	for _, d := range dropped {

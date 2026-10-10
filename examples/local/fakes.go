@@ -465,11 +465,11 @@ func (o *observer) sawKind(runID string, kind envelope.Kind) bool {
 // the stream arrives in pieces the way a real provider's does.
 func streamed(parts ...string) []saigetypes.Delta {
 	out := make([]saigetypes.Delta, 0, len(parts)+2)
-	out = append(out, saigetypes.TextStartDelta{})
+	out = append(out, saigetypes.PartStart{Index: 0, Kind: saigetypes.KindText})
 	for _, p := range parts {
-		out = append(out, saigetypes.TextContentDelta{Content: p})
+		out = append(out, saigetypes.PartDelta{Index: 0, Text: p})
 	}
-	return append(out, saigetypes.TextEndDelta{})
+	return append(out, saigetypes.PartEnd{Index: 0})
 }
 
 // quote renders a message body on one line, elided in the middle so the growth
