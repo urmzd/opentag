@@ -114,6 +114,9 @@ type Sandbox struct {
 	tools   *tool.Registry
 	specs   Specs
 	catalog Catalog
+	// delegator, when set, carries out a delegation for a turn that is a
+	// durable run, in place of the in-turn sub-task.
+	delegator Delegator
 
 	agentOpts []agentrt.Option
 	replicas  int
@@ -139,6 +142,32 @@ func WithCatalog(c Catalog) SandboxOption {
 			s.catalog = c
 		}
 	}
+}
+
+// Delegator carries out one delegation: parent's turn asked target to do text.
+// It returns the answer the parent's model reads as the tool's result.
+//
+// It is how a host makes a delegated turn a run in its own right, with an id, a
+// stream and a record, where the default makes it a sub-task of the parent's
+// turn whose only trace is the tool result. The host decides what that run is
+// and how it is linked to parent; the runtime only stops answering the
+// delegation itself.
+//
+// report puts an action on the parent's stream, so the host can say which run
+// it started before that run has an answer.
+//
+// The spawn allowlist has already let the tool exist: a Delegator is called
+// only for a target the parent's pinned revision names in Access.Spawn. A host
+// with limits of its own enforces them here and returns the refusal as an
+// error, which the model sees as the tool failing.
+type Delegator func(ctx context.Context, parent Request, target, text string, report func(payload.Action) error) (string, error)
+
+// WithDelegator sets who carries out a delegation made by a turn that is a
+// durable run. A turn that is itself a sub-task has no run to hang another one
+// from, so it keeps delegating by sub-task. Without a Delegator every
+// delegation is a sub-task, which is what it always was.
+func WithDelegator(d Delegator) SandboxOption {
+	return func(s *Sandbox) { s.delegator = d }
 }
 
 // WithAgentOptions passes options through to every agentrt.Runner the sandbox
@@ -524,7 +553,7 @@ func (s *Sandbox) turnTools(rt tool.Runtime, req Request, send func(agentrt.Chun
 	delegates := make(map[string]saigetypes.Tool, len(req.Revision.Spec.Access.Spawn))
 	for _, target := range req.Revision.Spec.Access.Spawn {
 		name := DelegateToolName(target)
-		delegates[name] = s.delegateTool(rt, req, target)
+		delegates[name] = s.delegateTool(rt, req, target, report)
 		add(name)
 	}
 
@@ -561,7 +590,7 @@ func (s *Sandbox) turnTools(rt tool.Runtime, req Request, send func(agentrt.Chun
 // creates a durable run of its own with its own pinned revision and its own
 // topic. That is the right shape when the delegated work should outlive this
 // turn; this one is the right shape when the parent needs the answer to continue.
-func (s *Sandbox) delegateTool(rt tool.Runtime, parent Request, target string) saigetypes.Tool {
+func (s *Sandbox) delegateTool(rt tool.Runtime, parent Request, target string, report func(payload.Action) error) saigetypes.Tool {
 	return &saigetypes.ToolFunc{
 		Def: saigetypes.ToolDef{
 			Name:        DelegateToolName(target),
@@ -578,6 +607,12 @@ func (s *Sandbox) delegateTool(rt tool.Runtime, parent Request, target string) s
 			text, _ := args["text"].(string)
 			if strings.TrimSpace(text) == "" {
 				return "", fmt.Errorf("%w: delegation to %q needs a text request", ErrInvalid, target)
+			}
+			// A host that gives delegated turns runs of their own takes it
+			// from here. A sub-task has no run id, so it cannot be a parent
+			// to one and falls through to delegating by sub-task.
+			if s.delegator != nil && parent.RunID != "" {
+				return s.delegator(ctx, parent, target, text, report)
 			}
 			if s.specs == nil {
 				return "", fmt.Errorf("%w: this deployment cannot resolve agent %q", ErrInvalid, target)
