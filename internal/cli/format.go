@@ -57,7 +57,7 @@ const (
 //
 // The separation is the whole point. Results go to out, and diagnostics —
 // progress, warnings, the address a server bound to — go to err, so that
-// `opentag listen agent:docs-bot --format json | jq` sees a clean stream of
+// `mandatum listen agent:docs-bot --format json | jq` sees a clean stream of
 // events even while the same process is logging a reconnect. A command that
 // prints a diagnostic to out has broken its own contract, which is why nothing
 // here offers a single "print" that guesses which one you meant.

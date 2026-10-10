@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 func TestParseRejectsMalformed(t *testing.T) {
@@ -16,7 +16,7 @@ func TestParseRejectsMalformed(t *testing.T) {
 		{"empty segment", "agent::run_01J"},
 		{"trailing separator", "agent:docs-bot:"},
 		{"dot in segment", "agent:docs.bot"},
-		{"slash in segment", "agent:urmzd/opentag"},
+		{"slash in segment", "agent:urmzd/mandatum"},
 		{"space in segment", "agent:docs bot"},
 		{"star is not a wildcard", "agent:*"},
 	}

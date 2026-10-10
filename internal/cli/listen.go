@@ -7,15 +7,15 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
 )
 
-// newListenCmd builds `opentag listen`, the bus made visible.
+// newListenCmd builds `mandatum listen`, the bus made visible.
 //
-// This is the command that shows opentag is a broker rather than a request/
+// This is the command that shows mandatum is a broker rather than a request/
 // response API: it subscribes to a topic nobody invoked, and receives every run
 // beneath it, including runs that start after the subscription is open. One
-// terminal on `opentag listen agent:docs-bot` sees every tag anyone raises
+// terminal on `mandatum listen agent:docs-bot` sees every tag anyone raises
 // against that agent, from any connector.
 func newListenCmd() *cobra.Command {
 	var (
@@ -37,10 +37,10 @@ func newListenCmd() *cobra.Command {
 			"  agent:docs-bot:run_01J   one run\n\n" +
 			"The stream is long-lived and does not end when a run completes, because a\n" +
 			"topic outlives the runs on it. Use --from to resume after a sequence number.",
-		Example: "  opentag listen agent:docs-bot\n" +
-			"  opentag listen agent --kinds lifecycle.completed\n" +
-			"  opentag listen agent:docs-bot --kinds delta.citation --format json\n" +
-			"  opentag listen agent:docs-bot --rev 7",
+		Example: "  mandatum listen agent:docs-bot\n" +
+			"  mandatum listen agent --kinds lifecycle.completed\n" +
+			"  mandatum listen agent:docs-bot --kinds delta.citation --format json\n" +
+			"  mandatum listen agent:docs-bot --rev 7",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			u, err := resolveUI(cmd)
@@ -56,10 +56,10 @@ func newListenCmd() *cobra.Command {
 				return err
 			}
 
-			req := &opentagv1.SubscribeRequest{
-				Subscription: &opentagv1.Subscription{
+			req := &mandatumv1.SubscribeRequest{
+				Subscription: &mandatumv1.Subscription{
 					Topic: t.String(),
-					Filter: &opentagv1.Filter{
+					Filter: &mandatumv1.Filter{
 						Kinds:  kinds,
 						Rev:    rev,
 						Origin: origin,

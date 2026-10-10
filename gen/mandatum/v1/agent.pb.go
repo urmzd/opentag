@@ -1,4 +1,4 @@
-// opentag.v1 is the wire contract every opentag client speaks. This file is
+// mandatum.v1 is the wire contract every mandatum client speaks. This file is
 // the control plane: what an agent is, how its history is kept, and the RPCs
 // that manage it.
 //
@@ -20,9 +20,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: opentag/v1/agent.proto
+// source: mandatum/v1/agent.proto
 
-package opentagv1
+package mandatumv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -96,7 +96,7 @@ type AgentSpec struct {
 
 func (x *AgentSpec) Reset() {
 	*x = AgentSpec{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[0]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -108,7 +108,7 @@ func (x *AgentSpec) String() string {
 func (*AgentSpec) ProtoMessage() {}
 
 func (x *AgentSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[0]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -121,7 +121,7 @@ func (x *AgentSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AgentSpec.ProtoReflect.Descriptor instead.
 func (*AgentSpec) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{0}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AgentSpec) GetName() string {
@@ -191,7 +191,7 @@ type Source struct {
 	// back to the reader.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Uri locates the corpus. Address URIs name mesh surfaces
-	// ("github://urmzd/opentag/docs"); ordinary URLs name anything else.
+	// ("github://urmzd/mandatum/docs"); ordinary URLs name anything else.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Options carry retriever-specific configuration, such as a chunk size or a
 	// branch name. Unknown keys are ignored by retrievers that do not use them.
@@ -202,7 +202,7 @@ type Source struct {
 
 func (x *Source) Reset() {
 	*x = Source{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[1]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -214,7 +214,7 @@ func (x *Source) String() string {
 func (*Source) ProtoMessage() {}
 
 func (x *Source) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[1]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -227,7 +227,7 @@ func (x *Source) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Source.ProtoReflect.Descriptor instead.
 func (*Source) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{1}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Source) GetName() string {
@@ -276,7 +276,7 @@ type Access struct {
 
 func (x *Access) Reset() {
 	*x = Access{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[2]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -288,7 +288,7 @@ func (x *Access) String() string {
 func (*Access) ProtoMessage() {}
 
 func (x *Access) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[2]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -301,7 +301,7 @@ func (x *Access) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Access.ProtoReflect.Descriptor instead.
 func (*Access) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{2}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Access) GetSpawn() []string {
@@ -323,7 +323,7 @@ func (x *Access) GetWorkspaceAreas() []string {
 //
 // Revisions are the unit the rest of the system references. A run pins one, an
 // Event reports one, and a canary comparison is a filter over two of them on
-// the same topic (see Filter.rev in bus.proto). Nothing in opentag references
+// the same topic (see Filter.rev in bus.proto). Nothing in mandatum references
 // "the agent" without also resolving which revision of it.
 type Revision struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -348,7 +348,7 @@ type Revision struct {
 
 func (x *Revision) Reset() {
 	*x = Revision{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[3]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -360,7 +360,7 @@ func (x *Revision) String() string {
 func (*Revision) ProtoMessage() {}
 
 func (x *Revision) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[3]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -373,7 +373,7 @@ func (x *Revision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Revision.ProtoReflect.Descriptor instead.
 func (*Revision) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{3}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Revision) GetSpec() *AgentSpec {
@@ -422,7 +422,7 @@ type CreateAgentRequest struct {
 
 func (x *CreateAgentRequest) Reset() {
 	*x = CreateAgentRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[4]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -434,7 +434,7 @@ func (x *CreateAgentRequest) String() string {
 func (*CreateAgentRequest) ProtoMessage() {}
 
 func (x *CreateAgentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[4]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -447,7 +447,7 @@ func (x *CreateAgentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAgentRequest.ProtoReflect.Descriptor instead.
 func (*CreateAgentRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{4}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateAgentRequest) GetSpec() *AgentSpec {
@@ -468,7 +468,7 @@ type CreateAgentResponse struct {
 
 func (x *CreateAgentResponse) Reset() {
 	*x = CreateAgentResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[5]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +480,7 @@ func (x *CreateAgentResponse) String() string {
 func (*CreateAgentResponse) ProtoMessage() {}
 
 func (x *CreateAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[5]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +493,7 @@ func (x *CreateAgentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAgentResponse.ProtoReflect.Descriptor instead.
 func (*CreateAgentResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{5}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateAgentResponse) GetRevision() *Revision {
@@ -520,7 +520,7 @@ type ReviseAgentRequest struct {
 
 func (x *ReviseAgentRequest) Reset() {
 	*x = ReviseAgentRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[6]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -532,7 +532,7 @@ func (x *ReviseAgentRequest) String() string {
 func (*ReviseAgentRequest) ProtoMessage() {}
 
 func (x *ReviseAgentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[6]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -545,7 +545,7 @@ func (x *ReviseAgentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviseAgentRequest.ProtoReflect.Descriptor instead.
 func (*ReviseAgentRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{6}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ReviseAgentRequest) GetSpec() *AgentSpec {
@@ -573,7 +573,7 @@ type ReviseAgentResponse struct {
 
 func (x *ReviseAgentResponse) Reset() {
 	*x = ReviseAgentResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[7]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -585,7 +585,7 @@ func (x *ReviseAgentResponse) String() string {
 func (*ReviseAgentResponse) ProtoMessage() {}
 
 func (x *ReviseAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[7]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -598,7 +598,7 @@ func (x *ReviseAgentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviseAgentResponse.ProtoReflect.Descriptor instead.
 func (*ReviseAgentResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{7}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ReviseAgentResponse) GetRevision() *Revision {
@@ -624,7 +624,7 @@ type GetAgentRequest struct {
 
 func (x *GetAgentRequest) Reset() {
 	*x = GetAgentRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[8]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -636,7 +636,7 @@ func (x *GetAgentRequest) String() string {
 func (*GetAgentRequest) ProtoMessage() {}
 
 func (x *GetAgentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[8]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -649,7 +649,7 @@ func (x *GetAgentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAgentRequest.ProtoReflect.Descriptor instead.
 func (*GetAgentRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{8}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetAgentRequest) GetName() string {
@@ -677,7 +677,7 @@ type GetAgentResponse struct {
 
 func (x *GetAgentResponse) Reset() {
 	*x = GetAgentResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[9]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -689,7 +689,7 @@ func (x *GetAgentResponse) String() string {
 func (*GetAgentResponse) ProtoMessage() {}
 
 func (x *GetAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[9]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -702,7 +702,7 @@ func (x *GetAgentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAgentResponse.ProtoReflect.Descriptor instead.
 func (*GetAgentResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{9}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetAgentResponse) GetRevision() *Revision {
@@ -726,7 +726,7 @@ type ListAgentsRequest struct {
 
 func (x *ListAgentsRequest) Reset() {
 	*x = ListAgentsRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[10]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -738,7 +738,7 @@ func (x *ListAgentsRequest) String() string {
 func (*ListAgentsRequest) ProtoMessage() {}
 
 func (x *ListAgentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[10]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,7 +751,7 @@ func (x *ListAgentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAgentsRequest.ProtoReflect.Descriptor instead.
 func (*ListAgentsRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{10}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListAgentsRequest) GetPageSize() uint32 {
@@ -782,7 +782,7 @@ type ListAgentsResponse struct {
 
 func (x *ListAgentsResponse) Reset() {
 	*x = ListAgentsResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[11]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -794,7 +794,7 @@ func (x *ListAgentsResponse) String() string {
 func (*ListAgentsResponse) ProtoMessage() {}
 
 func (x *ListAgentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[11]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -807,7 +807,7 @@ func (x *ListAgentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAgentsResponse.ProtoReflect.Descriptor instead.
 func (*ListAgentsResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{11}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListAgentsResponse) GetAgents() []*Revision {
@@ -835,7 +835,7 @@ type GetAgentHistoryRequest struct {
 
 func (x *GetAgentHistoryRequest) Reset() {
 	*x = GetAgentHistoryRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[12]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -847,7 +847,7 @@ func (x *GetAgentHistoryRequest) String() string {
 func (*GetAgentHistoryRequest) ProtoMessage() {}
 
 func (x *GetAgentHistoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[12]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -860,7 +860,7 @@ func (x *GetAgentHistoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAgentHistoryRequest.ProtoReflect.Descriptor instead.
 func (*GetAgentHistoryRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{12}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetAgentHistoryRequest) GetName() string {
@@ -883,7 +883,7 @@ type GetAgentHistoryResponse struct {
 
 func (x *GetAgentHistoryResponse) Reset() {
 	*x = GetAgentHistoryResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[13]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -895,7 +895,7 @@ func (x *GetAgentHistoryResponse) String() string {
 func (*GetAgentHistoryResponse) ProtoMessage() {}
 
 func (x *GetAgentHistoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[13]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -908,7 +908,7 @@ func (x *GetAgentHistoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAgentHistoryResponse.ProtoReflect.Descriptor instead.
 func (*GetAgentHistoryResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{13}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetAgentHistoryResponse) GetRevisions() []*Revision {
@@ -929,7 +929,7 @@ type DeleteAgentRequest struct {
 
 func (x *DeleteAgentRequest) Reset() {
 	*x = DeleteAgentRequest{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[14]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -941,7 +941,7 @@ func (x *DeleteAgentRequest) String() string {
 func (*DeleteAgentRequest) ProtoMessage() {}
 
 func (x *DeleteAgentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[14]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -954,7 +954,7 @@ func (x *DeleteAgentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAgentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAgentRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{14}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteAgentRequest) GetName() string {
@@ -973,7 +973,7 @@ type DeleteAgentResponse struct {
 
 func (x *DeleteAgentResponse) Reset() {
 	*x = DeleteAgentResponse{}
-	mi := &file_opentag_v1_agent_proto_msgTypes[15]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -985,7 +985,7 @@ func (x *DeleteAgentResponse) String() string {
 func (*DeleteAgentResponse) ProtoMessage() {}
 
 func (x *DeleteAgentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_agent_proto_msgTypes[15]
+	mi := &file_mandatum_v1_agent_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -998,149 +998,148 @@ func (x *DeleteAgentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAgentResponse.ProtoReflect.Descriptor instead.
 func (*DeleteAgentResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_agent_proto_rawDescGZIP(), []int{15}
+	return file_mandatum_v1_agent_proto_rawDescGZIP(), []int{15}
 }
 
-var File_opentag_v1_agent_proto protoreflect.FileDescriptor
+var File_mandatum_v1_agent_proto protoreflect.FileDescriptor
 
-const file_opentag_v1_agent_proto_rawDesc = "" +
+const file_mandatum_v1_agent_proto_rawDesc = "" +
 	"\n" +
-	"\x16opentag/v1/agent.proto\x12\n" +
-	"opentag.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x02\n" +
+	"\x17mandatum/v1/agent.proto\x12\vmandatum.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x02\n" +
 	"\tAgentSpec\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05model\x18\x03 \x01(\tR\x05model\x12\x1a\n" +
 	"\bprovider\x18\x04 \x01(\tR\bprovider\x12#\n" +
 	"\rsystem_prompt\x18\x05 \x01(\tR\fsystemPrompt\x12\x14\n" +
-	"\x05tools\x18\x06 \x03(\tR\x05tools\x12,\n" +
-	"\asources\x18\a \x03(\v2\x12.opentag.v1.SourceR\asources\x12*\n" +
-	"\x06access\x18\b \x01(\v2\x12.opentag.v1.AccessR\x06accessJ\x04\b\t\x10\x19\"\xab\x01\n" +
+	"\x05tools\x18\x06 \x03(\tR\x05tools\x12-\n" +
+	"\asources\x18\a \x03(\v2\x13.mandatum.v1.SourceR\asources\x12+\n" +
+	"\x06access\x18\b \x01(\v2\x13.mandatum.v1.AccessR\x06accessJ\x04\b\t\x10\x19\"\xac\x01\n" +
 	"\x06Source\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
-	"\x03uri\x18\x02 \x01(\tR\x03uri\x129\n" +
-	"\aoptions\x18\x03 \x03(\v2\x1f.opentag.v1.Source.OptionsEntryR\aoptions\x1a:\n" +
+	"\x03uri\x18\x02 \x01(\tR\x03uri\x12:\n" +
+	"\aoptions\x18\x03 \x03(\v2 .mandatum.v1.Source.OptionsEntryR\aoptions\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01J\x04\b\x04\x10\x10\"M\n" +
 	"\x06Access\x12\x14\n" +
 	"\x05spawn\x18\x01 \x03(\tR\x05spawn\x12'\n" +
-	"\x0fworkspace_areas\x18\x02 \x03(\tR\x0eworkspaceAreasJ\x04\b\x03\x10\x10\"\xbb\x01\n" +
-	"\bRevision\x12)\n" +
-	"\x04spec\x18\x01 \x01(\v2\x15.opentag.v1.AgentSpecR\x04spec\x12\x10\n" +
+	"\x0fworkspace_areas\x18\x02 \x03(\tR\x0eworkspaceAreasJ\x04\b\x03\x10\x10\"\xbc\x01\n" +
+	"\bRevision\x12*\n" +
+	"\x04spec\x18\x01 \x01(\v2\x16.mandatum.v1.AgentSpecR\x04spec\x12\x10\n" +
 	"\x03rev\x18\x02 \x01(\x05R\x03rev\x12\x12\n" +
 	"\x04hash\x18\x03 \x01(\tR\x04hash\x129\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\x05 \x01(\tR\tcreatedByJ\x04\b\x06\x10\x14\"E\n" +
-	"\x12CreateAgentRequest\x12)\n" +
-	"\x04spec\x18\x01 \x01(\v2\x15.opentag.v1.AgentSpecR\x04specJ\x04\b\x02\x10\n" +
-	"\"M\n" +
-	"\x13CreateAgentResponse\x120\n" +
-	"\brevision\x18\x01 \x01(\v2\x14.opentag.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
-	"\"h\n" +
-	"\x12ReviseAgentRequest\x12)\n" +
-	"\x04spec\x18\x01 \x01(\v2\x15.opentag.v1.AgentSpecR\x04spec\x12!\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedByJ\x04\b\x06\x10\x14\"F\n" +
+	"\x12CreateAgentRequest\x12*\n" +
+	"\x04spec\x18\x01 \x01(\v2\x16.mandatum.v1.AgentSpecR\x04specJ\x04\b\x02\x10\n" +
+	"\"N\n" +
+	"\x13CreateAgentResponse\x121\n" +
+	"\brevision\x18\x01 \x01(\v2\x15.mandatum.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
+	"\"i\n" +
+	"\x12ReviseAgentRequest\x12*\n" +
+	"\x04spec\x18\x01 \x01(\v2\x16.mandatum.v1.AgentSpecR\x04spec\x12!\n" +
 	"\fexpected_rev\x18\x02 \x01(\x05R\vexpectedRevJ\x04\b\x03\x10\n" +
-	"\"M\n" +
-	"\x13ReviseAgentResponse\x120\n" +
-	"\brevision\x18\x01 \x01(\v2\x14.opentag.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
+	"\"N\n" +
+	"\x13ReviseAgentResponse\x121\n" +
+	"\brevision\x18\x01 \x01(\v2\x15.mandatum.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
 	"\"=\n" +
 	"\x0fGetAgentRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03rev\x18\x02 \x01(\x05R\x03revJ\x04\b\x03\x10\n" +
-	"\"J\n" +
-	"\x10GetAgentResponse\x120\n" +
-	"\brevision\x18\x01 \x01(\v2\x14.opentag.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
+	"\"K\n" +
+	"\x10GetAgentResponse\x121\n" +
+	"\brevision\x18\x01 \x01(\v2\x15.mandatum.v1.RevisionR\brevisionJ\x04\b\x02\x10\n" +
 	"\"U\n" +
 	"\x11ListAgentsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\rR\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageTokenJ\x04\b\x03\x10\n" +
-	"\"p\n" +
-	"\x12ListAgentsResponse\x12,\n" +
-	"\x06agents\x18\x01 \x03(\v2\x14.opentag.v1.RevisionR\x06agents\x12&\n" +
+	"\"q\n" +
+	"\x12ListAgentsResponse\x12-\n" +
+	"\x06agents\x18\x01 \x03(\v2\x15.mandatum.v1.RevisionR\x06agents\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenJ\x04\b\x03\x10\n" +
 	"\"2\n" +
 	"\x16GetAgentHistoryRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04nameJ\x04\b\x02\x10\n" +
-	"\"S\n" +
-	"\x17GetAgentHistoryResponse\x122\n" +
-	"\trevisions\x18\x01 \x03(\v2\x14.opentag.v1.RevisionR\trevisionsJ\x04\b\x02\x10\n" +
+	"\"T\n" +
+	"\x17GetAgentHistoryResponse\x123\n" +
+	"\trevisions\x18\x01 \x03(\v2\x15.mandatum.v1.RevisionR\trevisionsJ\x04\b\x02\x10\n" +
 	"\".\n" +
 	"\x12DeleteAgentRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04nameJ\x04\b\x02\x10\n" +
 	"\"\x1b\n" +
 	"\x13DeleteAgentResponseJ\x04\b\x01\x10\n" +
-	"2\xfa\x03\n" +
-	"\fAgentService\x12P\n" +
-	"\vCreateAgent\x12\x1e.opentag.v1.CreateAgentRequest\x1a\x1f.opentag.v1.CreateAgentResponse\"\x00\x12P\n" +
-	"\vReviseAgent\x12\x1e.opentag.v1.ReviseAgentRequest\x1a\x1f.opentag.v1.ReviseAgentResponse\"\x00\x12G\n" +
-	"\bGetAgent\x12\x1b.opentag.v1.GetAgentRequest\x1a\x1c.opentag.v1.GetAgentResponse\"\x00\x12M\n" +
+	"2\x86\x04\n" +
+	"\fAgentService\x12R\n" +
+	"\vCreateAgent\x12\x1f.mandatum.v1.CreateAgentRequest\x1a .mandatum.v1.CreateAgentResponse\"\x00\x12R\n" +
+	"\vReviseAgent\x12\x1f.mandatum.v1.ReviseAgentRequest\x1a .mandatum.v1.ReviseAgentResponse\"\x00\x12I\n" +
+	"\bGetAgent\x12\x1c.mandatum.v1.GetAgentRequest\x1a\x1d.mandatum.v1.GetAgentResponse\"\x00\x12O\n" +
 	"\n" +
-	"ListAgents\x12\x1d.opentag.v1.ListAgentsRequest\x1a\x1e.opentag.v1.ListAgentsResponse\"\x00\x12\\\n" +
-	"\x0fGetAgentHistory\x12\".opentag.v1.GetAgentHistoryRequest\x1a#.opentag.v1.GetAgentHistoryResponse\"\x00\x12P\n" +
-	"\vDeleteAgent\x12\x1e.opentag.v1.DeleteAgentRequest\x1a\x1f.opentag.v1.DeleteAgentResponse\"\x00B3Z1github.com/urmzd/opentag/gen/opentag/v1;opentagv1b\x06proto3"
+	"ListAgents\x12\x1e.mandatum.v1.ListAgentsRequest\x1a\x1f.mandatum.v1.ListAgentsResponse\"\x00\x12^\n" +
+	"\x0fGetAgentHistory\x12#.mandatum.v1.GetAgentHistoryRequest\x1a$.mandatum.v1.GetAgentHistoryResponse\"\x00\x12R\n" +
+	"\vDeleteAgent\x12\x1f.mandatum.v1.DeleteAgentRequest\x1a .mandatum.v1.DeleteAgentResponse\"\x00B6Z4github.com/urmzd/mandatum/gen/mandatum/v1;mandatumv1b\x06proto3"
 
 var (
-	file_opentag_v1_agent_proto_rawDescOnce sync.Once
-	file_opentag_v1_agent_proto_rawDescData []byte
+	file_mandatum_v1_agent_proto_rawDescOnce sync.Once
+	file_mandatum_v1_agent_proto_rawDescData []byte
 )
 
-func file_opentag_v1_agent_proto_rawDescGZIP() []byte {
-	file_opentag_v1_agent_proto_rawDescOnce.Do(func() {
-		file_opentag_v1_agent_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_opentag_v1_agent_proto_rawDesc), len(file_opentag_v1_agent_proto_rawDesc)))
+func file_mandatum_v1_agent_proto_rawDescGZIP() []byte {
+	file_mandatum_v1_agent_proto_rawDescOnce.Do(func() {
+		file_mandatum_v1_agent_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mandatum_v1_agent_proto_rawDesc), len(file_mandatum_v1_agent_proto_rawDesc)))
 	})
-	return file_opentag_v1_agent_proto_rawDescData
+	return file_mandatum_v1_agent_proto_rawDescData
 }
 
-var file_opentag_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
-var file_opentag_v1_agent_proto_goTypes = []any{
-	(*AgentSpec)(nil),               // 0: opentag.v1.AgentSpec
-	(*Source)(nil),                  // 1: opentag.v1.Source
-	(*Access)(nil),                  // 2: opentag.v1.Access
-	(*Revision)(nil),                // 3: opentag.v1.Revision
-	(*CreateAgentRequest)(nil),      // 4: opentag.v1.CreateAgentRequest
-	(*CreateAgentResponse)(nil),     // 5: opentag.v1.CreateAgentResponse
-	(*ReviseAgentRequest)(nil),      // 6: opentag.v1.ReviseAgentRequest
-	(*ReviseAgentResponse)(nil),     // 7: opentag.v1.ReviseAgentResponse
-	(*GetAgentRequest)(nil),         // 8: opentag.v1.GetAgentRequest
-	(*GetAgentResponse)(nil),        // 9: opentag.v1.GetAgentResponse
-	(*ListAgentsRequest)(nil),       // 10: opentag.v1.ListAgentsRequest
-	(*ListAgentsResponse)(nil),      // 11: opentag.v1.ListAgentsResponse
-	(*GetAgentHistoryRequest)(nil),  // 12: opentag.v1.GetAgentHistoryRequest
-	(*GetAgentHistoryResponse)(nil), // 13: opentag.v1.GetAgentHistoryResponse
-	(*DeleteAgentRequest)(nil),      // 14: opentag.v1.DeleteAgentRequest
-	(*DeleteAgentResponse)(nil),     // 15: opentag.v1.DeleteAgentResponse
-	nil,                             // 16: opentag.v1.Source.OptionsEntry
+var file_mandatum_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_mandatum_v1_agent_proto_goTypes = []any{
+	(*AgentSpec)(nil),               // 0: mandatum.v1.AgentSpec
+	(*Source)(nil),                  // 1: mandatum.v1.Source
+	(*Access)(nil),                  // 2: mandatum.v1.Access
+	(*Revision)(nil),                // 3: mandatum.v1.Revision
+	(*CreateAgentRequest)(nil),      // 4: mandatum.v1.CreateAgentRequest
+	(*CreateAgentResponse)(nil),     // 5: mandatum.v1.CreateAgentResponse
+	(*ReviseAgentRequest)(nil),      // 6: mandatum.v1.ReviseAgentRequest
+	(*ReviseAgentResponse)(nil),     // 7: mandatum.v1.ReviseAgentResponse
+	(*GetAgentRequest)(nil),         // 8: mandatum.v1.GetAgentRequest
+	(*GetAgentResponse)(nil),        // 9: mandatum.v1.GetAgentResponse
+	(*ListAgentsRequest)(nil),       // 10: mandatum.v1.ListAgentsRequest
+	(*ListAgentsResponse)(nil),      // 11: mandatum.v1.ListAgentsResponse
+	(*GetAgentHistoryRequest)(nil),  // 12: mandatum.v1.GetAgentHistoryRequest
+	(*GetAgentHistoryResponse)(nil), // 13: mandatum.v1.GetAgentHistoryResponse
+	(*DeleteAgentRequest)(nil),      // 14: mandatum.v1.DeleteAgentRequest
+	(*DeleteAgentResponse)(nil),     // 15: mandatum.v1.DeleteAgentResponse
+	nil,                             // 16: mandatum.v1.Source.OptionsEntry
 	(*timestamppb.Timestamp)(nil),   // 17: google.protobuf.Timestamp
 }
-var file_opentag_v1_agent_proto_depIdxs = []int32{
-	1,  // 0: opentag.v1.AgentSpec.sources:type_name -> opentag.v1.Source
-	2,  // 1: opentag.v1.AgentSpec.access:type_name -> opentag.v1.Access
-	16, // 2: opentag.v1.Source.options:type_name -> opentag.v1.Source.OptionsEntry
-	0,  // 3: opentag.v1.Revision.spec:type_name -> opentag.v1.AgentSpec
-	17, // 4: opentag.v1.Revision.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 5: opentag.v1.CreateAgentRequest.spec:type_name -> opentag.v1.AgentSpec
-	3,  // 6: opentag.v1.CreateAgentResponse.revision:type_name -> opentag.v1.Revision
-	0,  // 7: opentag.v1.ReviseAgentRequest.spec:type_name -> opentag.v1.AgentSpec
-	3,  // 8: opentag.v1.ReviseAgentResponse.revision:type_name -> opentag.v1.Revision
-	3,  // 9: opentag.v1.GetAgentResponse.revision:type_name -> opentag.v1.Revision
-	3,  // 10: opentag.v1.ListAgentsResponse.agents:type_name -> opentag.v1.Revision
-	3,  // 11: opentag.v1.GetAgentHistoryResponse.revisions:type_name -> opentag.v1.Revision
-	4,  // 12: opentag.v1.AgentService.CreateAgent:input_type -> opentag.v1.CreateAgentRequest
-	6,  // 13: opentag.v1.AgentService.ReviseAgent:input_type -> opentag.v1.ReviseAgentRequest
-	8,  // 14: opentag.v1.AgentService.GetAgent:input_type -> opentag.v1.GetAgentRequest
-	10, // 15: opentag.v1.AgentService.ListAgents:input_type -> opentag.v1.ListAgentsRequest
-	12, // 16: opentag.v1.AgentService.GetAgentHistory:input_type -> opentag.v1.GetAgentHistoryRequest
-	14, // 17: opentag.v1.AgentService.DeleteAgent:input_type -> opentag.v1.DeleteAgentRequest
-	5,  // 18: opentag.v1.AgentService.CreateAgent:output_type -> opentag.v1.CreateAgentResponse
-	7,  // 19: opentag.v1.AgentService.ReviseAgent:output_type -> opentag.v1.ReviseAgentResponse
-	9,  // 20: opentag.v1.AgentService.GetAgent:output_type -> opentag.v1.GetAgentResponse
-	11, // 21: opentag.v1.AgentService.ListAgents:output_type -> opentag.v1.ListAgentsResponse
-	13, // 22: opentag.v1.AgentService.GetAgentHistory:output_type -> opentag.v1.GetAgentHistoryResponse
-	15, // 23: opentag.v1.AgentService.DeleteAgent:output_type -> opentag.v1.DeleteAgentResponse
+var file_mandatum_v1_agent_proto_depIdxs = []int32{
+	1,  // 0: mandatum.v1.AgentSpec.sources:type_name -> mandatum.v1.Source
+	2,  // 1: mandatum.v1.AgentSpec.access:type_name -> mandatum.v1.Access
+	16, // 2: mandatum.v1.Source.options:type_name -> mandatum.v1.Source.OptionsEntry
+	0,  // 3: mandatum.v1.Revision.spec:type_name -> mandatum.v1.AgentSpec
+	17, // 4: mandatum.v1.Revision.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 5: mandatum.v1.CreateAgentRequest.spec:type_name -> mandatum.v1.AgentSpec
+	3,  // 6: mandatum.v1.CreateAgentResponse.revision:type_name -> mandatum.v1.Revision
+	0,  // 7: mandatum.v1.ReviseAgentRequest.spec:type_name -> mandatum.v1.AgentSpec
+	3,  // 8: mandatum.v1.ReviseAgentResponse.revision:type_name -> mandatum.v1.Revision
+	3,  // 9: mandatum.v1.GetAgentResponse.revision:type_name -> mandatum.v1.Revision
+	3,  // 10: mandatum.v1.ListAgentsResponse.agents:type_name -> mandatum.v1.Revision
+	3,  // 11: mandatum.v1.GetAgentHistoryResponse.revisions:type_name -> mandatum.v1.Revision
+	4,  // 12: mandatum.v1.AgentService.CreateAgent:input_type -> mandatum.v1.CreateAgentRequest
+	6,  // 13: mandatum.v1.AgentService.ReviseAgent:input_type -> mandatum.v1.ReviseAgentRequest
+	8,  // 14: mandatum.v1.AgentService.GetAgent:input_type -> mandatum.v1.GetAgentRequest
+	10, // 15: mandatum.v1.AgentService.ListAgents:input_type -> mandatum.v1.ListAgentsRequest
+	12, // 16: mandatum.v1.AgentService.GetAgentHistory:input_type -> mandatum.v1.GetAgentHistoryRequest
+	14, // 17: mandatum.v1.AgentService.DeleteAgent:input_type -> mandatum.v1.DeleteAgentRequest
+	5,  // 18: mandatum.v1.AgentService.CreateAgent:output_type -> mandatum.v1.CreateAgentResponse
+	7,  // 19: mandatum.v1.AgentService.ReviseAgent:output_type -> mandatum.v1.ReviseAgentResponse
+	9,  // 20: mandatum.v1.AgentService.GetAgent:output_type -> mandatum.v1.GetAgentResponse
+	11, // 21: mandatum.v1.AgentService.ListAgents:output_type -> mandatum.v1.ListAgentsResponse
+	13, // 22: mandatum.v1.AgentService.GetAgentHistory:output_type -> mandatum.v1.GetAgentHistoryResponse
+	15, // 23: mandatum.v1.AgentService.DeleteAgent:output_type -> mandatum.v1.DeleteAgentResponse
 	18, // [18:24] is the sub-list for method output_type
 	12, // [12:18] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
@@ -1148,26 +1147,26 @@ var file_opentag_v1_agent_proto_depIdxs = []int32{
 	0,  // [0:12] is the sub-list for field type_name
 }
 
-func init() { file_opentag_v1_agent_proto_init() }
-func file_opentag_v1_agent_proto_init() {
-	if File_opentag_v1_agent_proto != nil {
+func init() { file_mandatum_v1_agent_proto_init() }
+func file_mandatum_v1_agent_proto_init() {
+	if File_mandatum_v1_agent_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_opentag_v1_agent_proto_rawDesc), len(file_opentag_v1_agent_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mandatum_v1_agent_proto_rawDesc), len(file_mandatum_v1_agent_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_opentag_v1_agent_proto_goTypes,
-		DependencyIndexes: file_opentag_v1_agent_proto_depIdxs,
-		MessageInfos:      file_opentag_v1_agent_proto_msgTypes,
+		GoTypes:           file_mandatum_v1_agent_proto_goTypes,
+		DependencyIndexes: file_mandatum_v1_agent_proto_depIdxs,
+		MessageInfos:      file_mandatum_v1_agent_proto_msgTypes,
 	}.Build()
-	File_opentag_v1_agent_proto = out.File
-	file_opentag_v1_agent_proto_goTypes = nil
-	file_opentag_v1_agent_proto_depIdxs = nil
+	File_mandatum_v1_agent_proto = out.File
+	file_mandatum_v1_agent_proto_goTypes = nil
+	file_mandatum_v1_agent_proto_depIdxs = nil
 }

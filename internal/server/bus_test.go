@@ -7,16 +7,16 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 	"strings"
 )
 
-func subscribeReq(t string, filter *opentagv1.Filter, from uint64) *connect.Request[opentagv1.SubscribeRequest] {
-	return connect.NewRequest(&opentagv1.SubscribeRequest{
-		Subscription: &opentagv1.Subscription{Topic: t, Filter: filter, From: from},
+func subscribeReq(t string, filter *mandatumv1.Filter, from uint64) *connect.Request[mandatumv1.SubscribeRequest] {
+	return connect.NewRequest(&mandatumv1.SubscribeRequest{
+		Subscription: &mandatumv1.Subscription{Topic: t, Filter: filter, From: from},
 	})
 }
 
@@ -69,7 +69,7 @@ func TestSubscribeHonoursTheCursorAndTheFilter(t *testing.T) {
 	h.publish(event(tenantAcme, "run_1", 4, envelope.KindCompleted, `{}`))
 
 	stream, err := h.busClient(tokenAcme).Subscribe(ctx,
-		subscribeReq("agent:docs-bot:run_1", &opentagv1.Filter{Kinds: []string{"lifecycle.completed", "delta.citation"}}, 2))
+		subscribeReq("agent:docs-bot:run_1", &mandatumv1.Filter{Kinds: []string{"lifecycle.completed", "delta.citation"}}, 2))
 	if err != nil {
 		t.Fatalf("subscribe: %v", err)
 	}
@@ -103,8 +103,8 @@ func TestPublishOverwritesTheFieldsTheServerOwns(t *testing.T) {
 	}
 	defer func() { _ = watch.Close() }()
 
-	_, err = h.busClient(tokenAcme).Publish(ctx, connect.NewRequest(&opentagv1.PublishRequest{
-		Event: &opentagv1.Event{
+	_, err = h.busClient(tokenAcme).Publish(ctx, connect.NewRequest(&mandatumv1.PublishRequest{
+		Event: &mandatumv1.Event{
 			Topic:   "agent:docs-bot:run_1",
 			Kind:    string(envelope.KindActionTaken),
 			Payload: []byte(`{"summary":"commented"}`),
@@ -138,8 +138,8 @@ func TestPublishOverwritesTheFieldsTheServerOwns(t *testing.T) {
 func TestPublishReportsASequenceOnlyWhenTheBrokerCan(t *testing.T) {
 	t.Run("plain broker", func(t *testing.T) {
 		h := newHarness(t, nil)
-		res, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&opentagv1.PublishRequest{
-			Event: &opentagv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
+		res, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&mandatumv1.PublishRequest{
+			Event: &mandatumv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
 		}))
 		if err != nil {
 			t.Fatalf("publish: %v", err)
@@ -156,8 +156,8 @@ func TestPublishReportsASequenceOnlyWhenTheBrokerCan(t *testing.T) {
 		sequencing := &sequencingBus{fakeBus: newFakeBus()}
 		h := newHarness(t, func(cfg *Config) { cfg.Bus = sequencing })
 		for want := uint64(1); want <= 2; want++ {
-			res, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&opentagv1.PublishRequest{
-				Event: &opentagv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
+			res, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&mandatumv1.PublishRequest{
+				Event: &mandatumv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
 			}))
 			if err != nil {
 				t.Fatalf("publish: %v", err)
@@ -172,7 +172,7 @@ func TestPublishReportsASequenceOnlyWhenTheBrokerCan(t *testing.T) {
 // An event the bus cannot carry is refused as a bad request, not reported as a
 // server fault.
 func TestUnpublishableEventsAreRefusedAsBadRequests(t *testing.T) {
-	tests := map[string]*opentagv1.Event{
+	tests := map[string]*mandatumv1.Event{
 		"no topic":             {Kind: string(envelope.KindText)},
 		"topic is not a run":   {Topic: "agent:docs-bot", Kind: string(envelope.KindText)},
 		"no kind":              {Topic: "agent:docs-bot:run_1"},
@@ -187,12 +187,12 @@ func TestUnpublishableEventsAreRefusedAsBadRequests(t *testing.T) {
 	for name, e := range tests {
 		t.Run(name, func(t *testing.T) {
 			_, err := h.busClient(tokenAcme).Publish(context.Background(),
-				connect.NewRequest(&opentagv1.PublishRequest{Event: e}))
+				connect.NewRequest(&mandatumv1.PublishRequest{Event: e}))
 			requireCode(t, err, connect.CodeInvalidArgument)
 		})
 	}
 	t.Run("no event at all", func(t *testing.T) {
-		_, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&opentagv1.PublishRequest{}))
+		_, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&mandatumv1.PublishRequest{}))
 		requireCode(t, err, connect.CodeInvalidArgument)
 	})
 }
@@ -223,11 +223,11 @@ func TestSubscribeReleasesItsStreamWhenTheClientGoesAway(t *testing.T) {
 // A malformed subscription is rejected before any stream is opened.
 func TestUnaddressableSubscriptionsAreRefused(t *testing.T) {
 	h := newHarness(t, nil)
-	tests := map[string]*opentagv1.SubscribeRequest{
+	tests := map[string]*mandatumv1.SubscribeRequest{
 		"no subscription": {},
-		"empty topic":     {Subscription: &opentagv1.Subscription{}},
-		"foreign topic":   {Subscription: &opentagv1.Subscription{Topic: "run:docs-bot"}},
-		"too deep":        {Subscription: &opentagv1.Subscription{Topic: "agent:docs-bot:run_1:extra"}},
+		"empty topic":     {Subscription: &mandatumv1.Subscription{}},
+		"foreign topic":   {Subscription: &mandatumv1.Subscription{Topic: "run:docs-bot"}},
+		"too deep":        {Subscription: &mandatumv1.Subscription{Topic: "agent:docs-bot:run_1:extra"}},
 	}
 	for name, req := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -268,8 +268,8 @@ func TestSubscribeReportsASlowConsumer(t *testing.T) {
 func TestPublishReportsABrokerFailure(t *testing.T) {
 	h := newHarness(t, nil)
 	h.bus.publishErr = errInjected
-	_, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&opentagv1.PublishRequest{
-		Event: &opentagv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
+	_, err := h.busClient(tokenAcme).Publish(context.Background(), connect.NewRequest(&mandatumv1.PublishRequest{
+		Event: &mandatumv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
 	}))
 	requireCode(t, err, connect.CodeInternal)
 	if strings.Contains(err.Error(), errInjected.Error()) {

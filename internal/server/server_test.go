@@ -12,9 +12,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/urmzd/dispatch/pkg/metrics"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
 )
 
 // A configuration that cannot be secure is refused at construction, where the
@@ -83,18 +83,18 @@ func TestUnconfiguredFeaturesReportNotImplemented(t *testing.T) {
 	})
 	ctx := context.Background()
 
-	_, err := h.agentClient(tokenAcme).GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"}))
+	_, err := h.agentClient(tokenAcme).GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"}))
 	requireCode(t, err, connect.CodeUnimplemented)
 
-	_, err = h.busClient(tokenAcme).Publish(ctx, connect.NewRequest(&opentagv1.PublishRequest{
-		Event: &opentagv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
+	_, err = h.busClient(tokenAcme).Publish(ctx, connect.NewRequest(&mandatumv1.PublishRequest{
+		Event: &mandatumv1.Event{Topic: "agent:docs-bot:run_1", Kind: string(envelope.KindText)},
 	}))
 	requireCode(t, err, connect.CodeUnimplemented)
 
 	_, err = h.invokeClient(tokenAcme).Invoke(ctx, connect.NewRequest(tagMsg()))
 	requireCode(t, err, connect.CodeUnimplemented)
 
-	_, err = h.invokeClient(tokenAcme).GetRun(ctx, connect.NewRequest(&opentagv1.GetRunRequest{RunId: "run_1"}))
+	_, err = h.invokeClient(tokenAcme).GetRun(ctx, connect.NewRequest(&mandatumv1.GetRunRequest{RunId: "run_1"}))
 	requireCode(t, err, connect.CodeUnimplemented)
 
 	res, err := h.get(ctx, "/v1/sse?topic=agent", tokenAcme)
@@ -151,7 +151,7 @@ func TestHealthReportsDrainingOnceShutdownStarts(t *testing.T) {
 func TestMetricsExposeWhatTheHandlersRecorded(t *testing.T) {
 	h := newHarness(t, nil)
 	ctx := context.Background()
-	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{
+	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{
 		Spec: specMsg("docs-bot"),
 	})); err != nil {
 		t.Fatalf("create: %v", err)
@@ -167,7 +167,7 @@ func TestMetricsExposeWhatTheHandlersRecorded(t *testing.T) {
 
 	for _, want := range []string{
 		MetricUp,
-		MetricRequests + `{code="ok",procedure="/opentag.v1.AgentService/CreateAgent"} 1`,
+		MetricRequests + `{code="ok",procedure="/mandatum.v1.AgentService/CreateAgent"} 1`,
 	} {
 		if !strings.Contains(text, want) {
 			t.Errorf("want %q in the exposition, got:\n%s", want, text)
@@ -176,7 +176,7 @@ func TestMetricsExposeWhatTheHandlersRecorded(t *testing.T) {
 
 	// A refused credential is counted too: observation wraps authentication, so a
 	// spike of unauthenticated calls is visible rather than silent.
-	if _, err := h.agentClient("bogus").GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"})); err == nil {
+	if _, err := h.agentClient("bogus").GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"})); err == nil {
 		t.Fatal("want the bogus credential refused")
 	}
 	res, err = h.get(ctx, "/metrics", "")

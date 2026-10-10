@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/urmzd/opentag/pkg/address"
+	"github.com/urmzd/mandatum/pkg/address"
 )
 
 // Event.Payload is opaque to the bus, which means the runtime that publishes it

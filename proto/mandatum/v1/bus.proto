@@ -1,4 +1,4 @@
-// opentag.v1 is the wire contract every opentag client speaks. This file is the
+// mandatum.v1 is the wire contract every mandatum client speaks. This file is the
 // read path, and it is the product surface: everything an agent produces leaves
 // the system through here.
 //
@@ -25,11 +25,11 @@
 // removed field's number is never silently reused.
 syntax = "proto3";
 
-package opentag.v1;
+package mandatum.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/urmzd/opentag/gen/opentag/v1;opentagv1";
+option go_package = "github.com/urmzd/mandatum/gen/mandatum/v1;mandatumv1";
 
 // Event is one thing an agent produced.
 //
@@ -200,7 +200,7 @@ message SubscribeRequest {
 
 // PublishRequest submits one event to the bus.
 //
-// This is the seam that makes opentag a bus rather than an agent runner: a
+// This is the seam that makes mandatum a bus rather than an agent runner: a
 // connector, a sidecar, or a foreign runtime can put events onto an existing
 // run's topic, and every subscriber and every route sees them exactly as if the
 // agent loop had emitted them.

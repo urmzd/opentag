@@ -9,23 +9,23 @@ import (
 
 	"connectrpc.com/connect"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
 )
 
-func specMsg(name string) *opentagv1.AgentSpec {
-	return &opentagv1.AgentSpec{
+func specMsg(name string) *mandatumv1.AgentSpec {
+	return &mandatumv1.AgentSpec{
 		Name:         name,
 		Description:  "answers questions about the docs",
 		Model:        "claude-haiku-5-5",
 		Provider:     "anthropic",
 		SystemPrompt: "be brief",
 		Tools:        []string{"github_comment"},
-		Sources: []*opentagv1.Source{{
+		Sources: []*mandatumv1.Source{{
 			Name:    "docs",
-			Uri:     "github://urmzd/opentag/docs",
+			Uri:     "github://urmzd/mandatum/docs",
 			Options: map[string]string{"branch": "main"},
 		}},
-		Access: &opentagv1.Access{
+		Access: &mandatumv1.Access{
 			Spawn:          []string{"research-bot"},
 			WorkspaceAreas: []string{"runs/docs-bot/"},
 		},
@@ -38,17 +38,17 @@ func TestAgentsAreScopedToTheCredentialsTenant(t *testing.T) {
 	h := newHarness(t, nil)
 	ctx := context.Background()
 
-	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{
+	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{
 		Spec: specMsg("docs-bot"),
 	})); err != nil {
 		t.Fatalf("acme create: %v", err)
 	}
 
-	_, err := h.agentClient(tokenOther).GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"}))
+	_, err := h.agentClient(tokenOther).GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"}))
 	requireCode(t, err, connect.CodeNotFound)
 
 	// The name being taken in one tenant does not take it in another.
-	created, err := h.agentClient(tokenOther).CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{
+	created, err := h.agentClient(tokenOther).CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{
 		Spec: specMsg("docs-bot"),
 	}))
 	if err != nil {
@@ -63,7 +63,7 @@ func TestAgentsAreScopedToTheCredentialsTenant(t *testing.T) {
 // the wire has no author field at all.
 func TestRevisionAuthorshipComesFromTheCredential(t *testing.T) {
 	h := newHarness(t, nil)
-	res, err := h.agentClient(tokenAcme).CreateAgent(context.Background(), connect.NewRequest(&opentagv1.CreateAgentRequest{
+	res, err := h.agentClient(tokenAcme).CreateAgent(context.Background(), connect.NewRequest(&mandatumv1.CreateAgentRequest{
 		Spec: specMsg("docs-bot"),
 	}))
 	if err != nil {
@@ -81,12 +81,12 @@ func TestRevisingAppendsAndLeavesHistoryReadable(t *testing.T) {
 	ctx := context.Background()
 	client := h.agentClient(tokenAcme)
 
-	if _, err := client.CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: specMsg("docs-bot")})); err != nil {
+	if _, err := client.CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: specMsg("docs-bot")})); err != nil {
 		t.Fatalf("create: %v", err)
 	}
 	revised := specMsg("docs-bot")
 	revised.SystemPrompt = "be thorough"
-	res, err := client.ReviseAgent(ctx, connect.NewRequest(&opentagv1.ReviseAgentRequest{Spec: revised, ExpectedRev: 1}))
+	res, err := client.ReviseAgent(ctx, connect.NewRequest(&mandatumv1.ReviseAgentRequest{Spec: revised, ExpectedRev: 1}))
 	if err != nil {
 		t.Fatalf("revise: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestRevisingAppendsAndLeavesHistoryReadable(t *testing.T) {
 		t.Fatalf("want rev 2, got %d", got)
 	}
 
-	first, err := client.GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot", Rev: 1}))
+	first, err := client.GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot", Rev: 1}))
 	if err != nil {
 		t.Fatalf("get rev 1: %v", err)
 	}
@@ -102,7 +102,7 @@ func TestRevisingAppendsAndLeavesHistoryReadable(t *testing.T) {
 		t.Fatalf("revision 1 changed underneath the revise: got prompt %q", got)
 	}
 
-	history, err := client.GetAgentHistory(ctx, connect.NewRequest(&opentagv1.GetAgentHistoryRequest{Name: "docs-bot"}))
+	history, err := client.GetAgentHistory(ctx, connect.NewRequest(&mandatumv1.GetAgentHistoryRequest{Name: "docs-bot"}))
 	if err != nil {
 		t.Fatalf("history: %v", err)
 	}
@@ -111,7 +111,7 @@ func TestRevisingAppendsAndLeavesHistoryReadable(t *testing.T) {
 	}
 
 	// A stale expected revision is a conflict, not a silent overwrite.
-	_, err = client.ReviseAgent(ctx, connect.NewRequest(&opentagv1.ReviseAgentRequest{Spec: revised, ExpectedRev: 1}))
+	_, err = client.ReviseAgent(ctx, connect.NewRequest(&mandatumv1.ReviseAgentRequest{Spec: revised, ExpectedRev: 1}))
 	requireCode(t, err, connect.CodeAborted)
 }
 
@@ -123,10 +123,10 @@ func TestAgentSpecRoundTripsThroughTheWire(t *testing.T) {
 	client := h.agentClient(tokenAcme)
 
 	want := specMsg("docs-bot")
-	if _, err := client.CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: want})); err != nil {
+	if _, err := client.CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: want})); err != nil {
 		t.Fatalf("create: %v", err)
 	}
-	got, err := client.GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"}))
+	got, err := client.GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"}))
 	if err != nil {
 		t.Fatalf("get: %v", err)
 	}
@@ -177,7 +177,7 @@ func TestStoreFailuresMapToStatusCodes(t *testing.T) {
 			h := newHarness(t, nil)
 			h.store.err = tt.err
 			_, err := h.agentClient(tokenAcme).CreateAgent(context.Background(),
-				connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: specMsg("docs-bot")}))
+				connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: specMsg("docs-bot")}))
 			requireCode(t, err, tt.want)
 			if tt.want == connect.CodeInternal && strings.Contains(err.Error(), errInjected.Error()) {
 				t.Fatalf("an unclassified failure leaked its detail to the client: %v", err)
@@ -195,19 +195,19 @@ func TestAgentRequestsWithoutANameAreRefused(t *testing.T) {
 
 	tests := map[string]func() error{
 		"get": func() error {
-			_, err := client.GetAgent(ctx, connect.NewRequest(&opentagv1.GetAgentRequest{}))
+			_, err := client.GetAgent(ctx, connect.NewRequest(&mandatumv1.GetAgentRequest{}))
 			return err
 		},
 		"history": func() error {
-			_, err := client.GetAgentHistory(ctx, connect.NewRequest(&opentagv1.GetAgentHistoryRequest{}))
+			_, err := client.GetAgentHistory(ctx, connect.NewRequest(&mandatumv1.GetAgentHistoryRequest{}))
 			return err
 		},
 		"delete": func() error {
-			_, err := client.DeleteAgent(ctx, connect.NewRequest(&opentagv1.DeleteAgentRequest{}))
+			_, err := client.DeleteAgent(ctx, connect.NewRequest(&mandatumv1.DeleteAgentRequest{}))
 			return err
 		},
 		"create without a spec": func() error {
-			_, err := client.CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{}))
+			_, err := client.CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{}))
 			return err
 		},
 	}
@@ -224,11 +224,11 @@ func TestListAgentsPagesInNameOrder(t *testing.T) {
 	ctx := context.Background()
 	client := h.agentClient(tokenAcme)
 	for _, name := range []string{"c-bot", "a-bot", "b-bot"} {
-		if _, err := client.CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: specMsg(name)})); err != nil {
+		if _, err := client.CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: specMsg(name)})); err != nil {
 			t.Fatalf("create %s: %v", name, err)
 		}
 	}
-	first, err := client.ListAgents(ctx, connect.NewRequest(&opentagv1.ListAgentsRequest{PageSize: 2}))
+	first, err := client.ListAgents(ctx, connect.NewRequest(&mandatumv1.ListAgentsRequest{PageSize: 2}))
 	if err != nil {
 		t.Fatalf("list: %v", err)
 	}
@@ -238,7 +238,7 @@ func TestListAgentsPagesInNameOrder(t *testing.T) {
 	if first.Msg.GetNextPageToken() == "" {
 		t.Fatal("want a continuation token after a partial page")
 	}
-	second, err := client.ListAgents(ctx, connect.NewRequest(&opentagv1.ListAgentsRequest{
+	second, err := client.ListAgents(ctx, connect.NewRequest(&mandatumv1.ListAgentsRequest{
 		PageSize:  2,
 		PageToken: first.Msg.GetNextPageToken(),
 	}))
@@ -250,7 +250,7 @@ func TestListAgentsPagesInNameOrder(t *testing.T) {
 	}
 }
 
-func names(revs []*opentagv1.Revision) []string {
+func names(revs []*mandatumv1.Revision) []string {
 	out := make([]string, 0, len(revs))
 	for _, r := range revs {
 		out = append(out, r.GetSpec().GetName())
@@ -262,7 +262,7 @@ func names(revs []*opentagv1.Revision) []string {
 func TestDeletingAnAgentIsScopedAndReportsAbsence(t *testing.T) {
 	h := newHarness(t, nil)
 	ctx := context.Background()
-	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: specMsg("docs-bot")})); err != nil {
+	if _, err := h.agentClient(tokenAcme).CreateAgent(ctx, connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: specMsg("docs-bot")})); err != nil {
 		t.Fatalf("create: %v", err)
 	}
 	// Another tenant cannot delete it, and learns only that it is absent.
@@ -275,6 +275,6 @@ func TestDeletingAnAgentIsScopedAndReportsAbsence(t *testing.T) {
 
 func errFromDelete(h *harness, token, name string) error {
 	_, err := h.agentClient(token).DeleteAgent(context.Background(),
-		connect.NewRequest(&opentagv1.DeleteAgentRequest{Name: name}))
+		connect.NewRequest(&mandatumv1.DeleteAgentRequest{Name: name}))
 	return err
 }

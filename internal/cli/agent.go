@@ -11,10 +11,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/spf13/cobra"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
 )
 
-// newAgentCmd builds `opentag agent`, the control plane in a terminal.
+// newAgentCmd builds `mandatum agent`, the control plane in a terminal.
 //
 // Creating an agent is submitting a document, which is what makes the platform
 // self-serve: no redeploy, no code, no restart. The subcommands mirror the
@@ -70,7 +70,7 @@ type specFileAccess struct {
 	WorkspaceAreas []string `json:"workspace_areas,omitempty"`
 }
 
-func loadSpec(path string) (*opentagv1.AgentSpec, error) {
+func loadSpec(path string) (*mandatumv1.AgentSpec, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read spec: %w", err)
@@ -85,20 +85,20 @@ func loadSpec(path string) (*opentagv1.AgentSpec, error) {
 		return nil, usagef("%s is not a valid agent spec: %v", path, err)
 	}
 
-	spec := &opentagv1.AgentSpec{
+	spec := &mandatumv1.AgentSpec{
 		Name:         f.Name,
 		Description:  f.Description,
 		Model:        f.Model,
 		Provider:     f.Provider,
 		SystemPrompt: f.SystemPrompt,
 		Tools:        f.Tools,
-		Access: &opentagv1.Access{
+		Access: &mandatumv1.Access{
 			Spawn:          f.Access.Spawn,
 			WorkspaceAreas: f.Access.WorkspaceAreas,
 		},
 	}
 	for _, s := range f.Sources {
-		spec.Sources = append(spec.Sources, &opentagv1.Source{
+		spec.Sources = append(spec.Sources, &mandatumv1.Source{
 			Name:    s.Name,
 			Uri:     s.URI,
 			Options: s.Options,
@@ -112,7 +112,7 @@ func newAgentCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "create -f <spec.json>",
 		Short:   "Create an agent as revision 1",
-		Example: "  opentag agent create -f docs-bot.json",
+		Example: "  mandatum agent create -f docs-bot.json",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			u, err := resolveUI(cmd)
 			if err != nil {
@@ -130,7 +130,7 @@ func newAgentCreateCmd() *cobra.Command {
 				return err
 			}
 			res, err := cl.agents.CreateAgent(cmd.Context(),
-				connect.NewRequest(&opentagv1.CreateAgentRequest{Spec: spec}))
+				connect.NewRequest(&mandatumv1.CreateAgentRequest{Spec: spec}))
 			if err != nil {
 				return connectErr("create agent", err)
 			}
@@ -153,8 +153,8 @@ func newAgentReviseCmd() *cobra.Command {
 			"--expect makes the append conditional on the current revision, so two editors\n" +
 			"racing cannot silently overwrite each other: the loser is told the revision\n" +
 			"moved instead of quietly winning.",
-		Example: "  opentag agent revise -f docs-bot.json\n" +
-			"  opentag agent revise -f docs-bot.json --expect 6",
+		Example: "  mandatum agent revise -f docs-bot.json\n" +
+			"  mandatum agent revise -f docs-bot.json --expect 6",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			u, err := resolveUI(cmd)
 			if err != nil {
@@ -172,7 +172,7 @@ func newAgentReviseCmd() *cobra.Command {
 				return err
 			}
 			res, err := cl.agents.ReviseAgent(cmd.Context(),
-				connect.NewRequest(&opentagv1.ReviseAgentRequest{Spec: spec, ExpectedRev: expectedRev}))
+				connect.NewRequest(&mandatumv1.ReviseAgentRequest{Spec: spec, ExpectedRev: expectedRev}))
 			if err != nil {
 				return connectErr("revise agent", err)
 			}
@@ -193,7 +193,7 @@ func newAgentGetCmd() *cobra.Command {
 		Long: "Read an agent definition, defaulting to the latest revision.\n\n" +
 			"A pinned revision stays readable after the agent is deleted, because a run\n" +
 			"that executed under it must remain explicable.",
-		Example: "  opentag agent get docs-bot\n  opentag agent get docs-bot --rev 6",
+		Example: "  mandatum agent get docs-bot\n  mandatum agent get docs-bot --rev 6",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			u, err := resolveUI(cmd)
@@ -205,7 +205,7 @@ func newAgentGetCmd() *cobra.Command {
 				return err
 			}
 			res, err := cl.agents.GetAgent(cmd.Context(),
-				connect.NewRequest(&opentagv1.GetAgentRequest{Name: args[0], Rev: rev}))
+				connect.NewRequest(&mandatumv1.GetAgentRequest{Name: args[0], Rev: rev}))
 			if err != nil {
 				return connectErr("get agent", err)
 			}
@@ -234,11 +234,11 @@ func newAgentListCmd() *cobra.Command {
 			// Pages are followed to exhaustion here rather than exposed as a
 			// flag: a person listing agents wants the list, and a script piping
 			// json wants all of it too.
-			var all []*opentagv1.Revision
+			var all []*mandatumv1.Revision
 			token := ""
 			for {
 				res, err := cl.agents.ListAgents(cmd.Context(),
-					connect.NewRequest(&opentagv1.ListAgentsRequest{PageToken: token}))
+					connect.NewRequest(&mandatumv1.ListAgentsRequest{PageToken: token}))
 				if err != nil {
 					return connectErr("list agents", err)
 				}
@@ -292,7 +292,7 @@ func newAgentHistoryCmd() *cobra.Command {
 				return err
 			}
 			res, err := cl.agents.GetAgentHistory(cmd.Context(),
-				connect.NewRequest(&opentagv1.GetAgentHistoryRequest{Name: args[0]}))
+				connect.NewRequest(&mandatumv1.GetAgentHistoryRequest{Name: args[0]}))
 			if err != nil {
 				return connectErr("agent history", err)
 			}
@@ -340,7 +340,7 @@ func newAgentDeleteCmd() *cobra.Command {
 				return err
 			}
 			if _, err := cl.agents.DeleteAgent(cmd.Context(),
-				connect.NewRequest(&opentagv1.DeleteAgentRequest{Name: args[0]})); err != nil {
+				connect.NewRequest(&mandatumv1.DeleteAgentRequest{Name: args[0]})); err != nil {
 				return connectErr("delete agent", err)
 			}
 			if u.format == FormatJSON {
@@ -354,7 +354,7 @@ func newAgentDeleteCmd() *cobra.Command {
 	return cmd
 }
 
-func printRevision(u *ui, r *opentagv1.Revision) error {
+func printRevision(u *ui, r *mandatumv1.Revision) error {
 	if u.format == FormatJSON {
 		return u.json(revisionMap(r))
 	}
@@ -363,7 +363,7 @@ func printRevision(u *ui, r *opentagv1.Revision) error {
 	return nil
 }
 
-func printRevisionFull(u *ui, r *opentagv1.Revision) error {
+func printRevisionFull(u *ui, r *mandatumv1.Revision) error {
 	if u.format == FormatJSON {
 		return u.json(revisionMap(r))
 	}
@@ -394,7 +394,7 @@ func printRevisionFull(u *ui, r *opentagv1.Revision) error {
 	return nil
 }
 
-func revisionMap(r *opentagv1.Revision) map[string]any {
+func revisionMap(r *mandatumv1.Revision) map[string]any {
 	s := r.GetSpec()
 	sources := make([]map[string]any, 0, len(s.GetSources()))
 	for _, src := range s.GetSources() {
@@ -426,7 +426,7 @@ func revisionMap(r *opentagv1.Revision) map[string]any {
 	return m
 }
 
-func stamp(r *opentagv1.Revision) string {
+func stamp(r *mandatumv1.Revision) string {
 	if ts := r.GetCreatedAt(); ts != nil {
 		return ts.AsTime().UTC().Format(time.RFC3339)
 	}

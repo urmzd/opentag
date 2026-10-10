@@ -1,29 +1,31 @@
 <p align="center">
-  <h1 align="center">opentag</h1>
+  <h1 align="center">mandatum</h1>
   <p align="center">
     Tag an agent from anywhere. Stream it to everyone. Deliver it anywhere.
     <br /><br />
-    <a href="https://github.com/urmzd/opentag/releases">Download</a>
+    <a href="https://github.com/urmzd/mandatum/releases">Download</a>
     &middot;
-    <a href="https://github.com/urmzd/opentag/issues">Report Bug</a>
+    <a href="https://github.com/urmzd/mandatum/issues">Report Bug</a>
     &middot;
-    <a href="https://pkg.go.dev/github.com/urmzd/opentag">Go Docs</a>
+    <a href="https://pkg.go.dev/github.com/urmzd/mandatum">Go Docs</a>
   </p>
 </p>
 
 <p align="center">
   <a href="#status"><img src="https://img.shields.io/badge/status-beta-orange" alt="Status: Beta"></a>
   &nbsp;
-  <a href="https://github.com/urmzd/opentag/actions/workflows/ci.yml"><img src="https://github.com/urmzd/opentag/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/urmzd/mandatum/actions/workflows/ci.yml"><img src="https://github.com/urmzd/mandatum/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   &nbsp;
-  <a href="https://pkg.go.dev/github.com/urmzd/opentag"><img src="https://pkg.go.dev/badge/github.com/urmzd/opentag.svg" alt="Go Reference"></a>
+  <a href="https://pkg.go.dev/github.com/urmzd/mandatum"><img src="https://pkg.go.dev/badge/github.com/urmzd/mandatum.svg" alt="Go Reference"></a>
   &nbsp;
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/urmzd/opentag" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/urmzd/mandatum" alt="License"></a>
 </p>
+
+Formerly `opentag`.
 
 > ## Status
 >
-> **opentag is beta software. It is pre-1.0 and not yet recommended for
+> **mandatum is beta software. It is pre-1.0 and not yet recommended for
 > production.**
 >
 > Interfaces are stabilizing but may change between minor versions, and a minor
@@ -43,7 +45,7 @@
 >
 > See [Limitations](#limitations) for the full list.
 
-opentag is an agent platform and a low-latency pub/sub bus. Define an agent with
+mandatum is an agent platform and a low-latency pub/sub bus. Define an agent with
 a spec, tag it from Slack, GitHub, Jira or a schedule, and its events stream to
 any subscriber while being delivered to any destination you name.
 
@@ -69,19 +71,19 @@ rather than a pile of integrations.
 ### Script (macOS / Linux)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/urmzd/opentag/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/urmzd/mandatum/main/install.sh | sh
 ```
 
 ### Go
 
 ```sh
-go install github.com/urmzd/opentag/cmd/opentag@latest
+go install github.com/urmzd/mandatum/cmd/mandatum@latest
 ```
 
 ### Library
 
 ```sh
-go get github.com/urmzd/opentag
+go get github.com/urmzd/mandatum
 ```
 
 ## Quick Start
@@ -101,7 +103,7 @@ twice.
 Or run the real thing:
 
 ```sh
-opentag serve &
+mandatum serve &
 
 cat > docs-bot.json <<'JSON'
 {
@@ -113,37 +115,37 @@ cat > docs-bot.json <<'JSON'
 }
 JSON
 
-opentag agent create -f docs-bot.json
-opentag tag docs-bot "how does a release get out the door?"
+mandatum agent create -f docs-bot.json
+mandatum tag docs-bot "how does a release get out the door?"
 ```
 
 Deliver the answer somewhere other than your terminal, with each destination
 choosing its own granularity:
 
 ```sh
-opentag tag review-bot "review this change" \
-  --deliver 'github://urmzd/opentag/issues/42|delta' \
+mandatum tag review-bot "review this change" \
+  --deliver 'github://urmzd/mandatum/issues/42|delta' \
   --deliver 'webhook://acme/deploys|lifecycle.completed'
 ```
 
 Watch the bus. This subscriber invoked nothing and still sees every run:
 
 ```sh
-opentag listen agent:docs-bot
-opentag listen agent --kinds lifecycle.completed --format json | jq
+mandatum listen agent:docs-bot
+mandatum listen agent --kinds lifecycle.completed --format json | jq
 ```
 
 ## Commands
 
 | Command | Purpose |
 |---------|---------|
-| `opentag serve` | Run the core: API, SSE, webhooks, bus, router, worker |
-| `opentag work` | Run an execution node with no inbound API |
-| `opentag agent` | Create, revise, get, list, history, delete |
-| `opentag tag` | Tag an agent and stream its answer |
-| `opentag listen` | Subscribe to a topic and print events |
-| `opentag version` | Version, commit, build date |
-| `opentag update` | Self-update from GitHub releases |
+| `mandatum serve` | Run the core: API, SSE, webhooks, bus, router, worker |
+| `mandatum work` | Run an execution node with no inbound API |
+| `mandatum agent` | Create, revise, get, list, history, delete |
+| `mandatum tag` | Tag an agent and stream its answer |
+| `mandatum listen` | Subscribe to a topic and print events |
+| `mandatum version` | Version, commit, build date |
+| `mandatum update` | Self-update from GitHub releases |
 
 Every command takes `--format text|json`. Results go to stdout, diagnostics to
 stderr, so `--format json` output pipes cleanly into `jq` even while the same
@@ -159,11 +161,11 @@ process logs a reconnect.
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Development workflow and commit convention |
 | [SECURITY.md](SECURITY.md) | Security boundaries and reporting |
 
-API reference: [pkg.go.dev/github.com/urmzd/opentag](https://pkg.go.dev/github.com/urmzd/opentag)
+API reference: [pkg.go.dev/github.com/urmzd/mandatum](https://pkg.go.dev/github.com/urmzd/mandatum)
 
 ## How it composes
 
-opentag builds on three libraries and adds addressing, distribution and the
+mandatum builds on three libraries and adds addressing, distribution and the
 control plane:
 
 | Concern | Owner |
@@ -171,7 +173,7 @@ control plane:
 | Agent loop, typed deltas, RAG, citations | [saige](https://github.com/urmzd/saige) |
 | Durability, replay, per-run journal | [duraturo](https://github.com/urmzd/duraturo) |
 | Sandboxed execution nodes, NGAC | [dispatch](https://github.com/urmzd/dispatch) |
-| Topics, bus, routing, connectors, specs | opentag |
+| Topics, bus, routing, connectors, specs | mandatum |
 
 ## Limitations
 

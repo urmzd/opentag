@@ -17,12 +17,12 @@ import (
 	drun "github.com/urmzd/duraturo/pkg/run"
 	"github.com/urmzd/duraturo/pkg/worker"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentrt"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/runtime"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentrt"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/runtime"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // ── fixtures ────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ func (s *specs) revise(agent, prompt string) agentrt.Revision {
 }
 
 // at overwrites a stored revision, which only a broken control plane would do.
-// It exists so a test can prove that opentag notices.
+// It exists so a test can prove that mandatum notices.
 func (s *specs) corrupt(agent string, rev int, hash string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -266,7 +266,7 @@ func tag(agent, id, text string) envelope.Tag {
 		Tenant: "acme",
 		Agent:  agent,
 		Origin: "github",
-		Source: address.MustParse("github://urmzd/opentag/issues/42"),
+		Source: address.MustParse("github://urmzd/mandatum/issues/42"),
 		Text:   text,
 		At:     time.Date(2026, 7, 26, 12, 0, 0, 0, time.UTC),
 	}

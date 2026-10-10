@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // eventEnvelope is the outer body of an Events API request. Only the fields the

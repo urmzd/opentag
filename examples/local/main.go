@@ -1,4 +1,4 @@
-// Command local is opentag, end to end, in one process.
+// Command local is mandatum, end to end, in one process.
 //
 //	go run ./examples/local
 //
@@ -17,7 +17,7 @@
 //
 // None of those are stubs standing in for the design. They are the design,
 // with the storage swapped. The seven sections below are the seven claims
-// opentag makes, each one demonstrated rather than described.
+// mandatum makes, each one demonstrated rather than described.
 //
 //  1. an agent is a declarative spec
 //  2. a revision is immutable; revising creates the next one
@@ -45,15 +45,15 @@ import (
 	"github.com/urmzd/duraturo/pkg/worker"
 	ragtypes "github.com/urmzd/saige/rag/types"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentspec"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/registry"
-	"github.com/urmzd/opentag/pkg/router"
-	"github.com/urmzd/opentag/pkg/runtime"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/registry"
+	"github.com/urmzd/mandatum/pkg/router"
+	"github.com/urmzd/mandatum/pkg/runtime"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // tenant is the authorization scope. It comes from the caller's credential in
@@ -543,7 +543,7 @@ const rule = "──────────────────────
 
 func banner() {
 	fmt.Println()
-	fmt.Println("  opentag — tag an agent from anywhere, run it durably, stream it to")
+	fmt.Println("  mandatum — tag an agent from anywhere, run it durably, stream it to")
 	fmt.Println("            everyone, deliver it anywhere.")
 	fmt.Println()
 	fmt.Println("  one process, no API key, no network, no infrastructure.")

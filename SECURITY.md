@@ -3,13 +3,13 @@
 ## Reporting a Vulnerability
 
 Report security issues privately through
-[GitHub Security Advisories](https://github.com/urmzd/opentag/security/advisories/new)
+[GitHub Security Advisories](https://github.com/urmzd/mandatum/security/advisories/new)
 rather than in a public issue. Please include a description, the affected
 version or commit, and a reproduction if you have one.
 
 ## Security boundaries
 
-Two parts of opentag are security boundaries. A change near either one needs
+Two parts of mandatum are security boundaries. A change near either one needs
 tests proving confinement still holds, and a pull request that touches them
 without such tests will not be merged.
 
@@ -67,4 +67,4 @@ spelling a tenant name, and there is a test asserting exactly that.
 
 ## Supported Versions
 
-opentag is pre-1.0. Security fixes land on the latest minor release.
+mandatum is pre-1.0. Security fixes land on the latest minor release.

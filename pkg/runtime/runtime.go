@@ -1,6 +1,6 @@
 // Package runtime is the durable turn: where a tag becomes a run.
 //
-// It is the composition root of the three libraries opentag is built on, and it
+// It is the composition root of the three libraries mandatum is built on, and it
 // exists because each of them owns exactly one thing and none of them owns this:
 //
 //	duraturo  the run survives a crash and replays from its ledger
@@ -74,10 +74,10 @@ import (
 	"github.com/urmzd/duraturo"
 	"github.com/urmzd/duraturo/pkg/run"
 
-	"github.com/urmzd/opentag/pkg/agentrt"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/agentrt"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Activity names. They are the correlation contract with the ledger: records
@@ -85,12 +85,12 @@ import (
 // name, never a redefinition of an existing one.
 const (
 	// ActivityTurn is the run's entry point: one durable turn.
-	ActivityTurn = "opentag.turn"
+	ActivityTurn = "mandatum.turn"
 	// ActivityAgent is the nested activity that executes the agent. It is
 	// separate from the turn so that its result is memoized on its own: a
 	// replay of the turn re-publishes lifecycle events but must never pay for
 	// the model a second time.
-	ActivityAgent = "opentag.turn.agent"
+	ActivityAgent = "mandatum.turn.agent"
 )
 
 // ErrInvalid reports a tag or configuration this package cannot run.
@@ -220,7 +220,7 @@ type Outcome struct {
 }
 
 // Acceptance is what a caller learns when a tag is accepted. It mirrors
-// opentag.v1.InvokeResponse: the caller never builds a topic itself.
+// mandatum.v1.InvokeResponse: the caller never builds a topic itself.
 type Acceptance struct {
 	RunID string
 	// Rev is the revision this call resolved. For the delivery that created
@@ -596,7 +596,7 @@ func (r *Runtime) publishRaw(ctx context.Context, in Input, seq uint64, kind env
 		if errors.Is(err, run.ErrSuperseded) {
 			return fmt.Errorf("runtime: journal %s seq %d: %w", kind, seq, err)
 		}
-		r.logger.Warn("opentag/runtime: journal append failed; the bus has the event",
+		r.logger.Warn("mandatum/runtime: journal append failed; the bus has the event",
 			"run_id", e.RunID, "seq", seq, "kind", string(kind), "error", err)
 	}
 	return nil
@@ -607,7 +607,7 @@ func (r *Runtime) publishRaw(ctx context.Context, in Input, seq uint64, kind env
 // announcement of it is worth a log line, not a different error.
 func (r *Runtime) report(ctx context.Context, in Input, seq uint64, kind envelope.Kind, body any) {
 	if err := r.publish(ctx, in, seq, kind, body); err != nil {
-		r.logger.Warn("opentag/runtime: could not publish lifecycle event",
+		r.logger.Warn("mandatum/runtime: could not publish lifecycle event",
 			"run_id", RunID(in.Tag.ID), "kind", string(kind), "seq", seq, "error", err)
 	}
 }
@@ -622,7 +622,7 @@ func (r *Runtime) event(in Input, seq uint64, kind envelope.Kind) envelope.Event
 		// Accept validated this topic before the run existed, so a failure
 		// here is impossible; the zero topic makes the bus reject the event
 		// rather than publishing it somewhere unintended.
-		r.logger.Error("opentag/runtime: run topic is invalid", "agent", in.Tag.Agent, "run_id", runID, "error", err)
+		r.logger.Error("mandatum/runtime: run topic is invalid", "agent", in.Tag.Agent, "run_id", runID, "error", err)
 	}
 	return envelope.Event{
 		Seq:    seq,

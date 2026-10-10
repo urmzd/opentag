@@ -8,13 +8,13 @@ import (
 
 	"connectrpc.com/connect"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
 )
 
 // Spec is an agent definition as the edge carries it: a document the server
 // validates the identity of and otherwise does not interpret.
 //
-// It mirrors opentag.v1.AgentSpec field for field, and it exists as a Go type
+// It mirrors mandatum.v1.AgentSpec field for field, and it exists as a Go type
 // so that the Store seam does not speak protobuf. A store implementation is
 // free to hold its own richer type — hashing, tool-catalog validation and
 // canonicalisation all belong to it — and adapts at this boundary.
@@ -103,7 +103,7 @@ type Store interface {
 	Delete(ctx context.Context, tenant, name string) error
 }
 
-// agentService serves opentag.v1.AgentService. It authenticates, scopes every
+// agentService serves mandatum.v1.AgentService. It authenticates, scopes every
 // call to the caller's tenant, attributes authorship to the caller's subject,
 // and forwards. Everything else is the Store's.
 type agentService struct {
@@ -111,7 +111,7 @@ type agentService struct {
 	log   *slog.Logger
 }
 
-func (s *agentService) CreateAgent(ctx context.Context, req *connect.Request[opentagv1.CreateAgentRequest]) (*connect.Response[opentagv1.CreateAgentResponse], error) {
+func (s *agentService) CreateAgent(ctx context.Context, req *connect.Request[mandatumv1.CreateAgentRequest]) (*connect.Response[mandatumv1.CreateAgentResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -124,10 +124,10 @@ func (s *agentService) CreateAgent(ctx context.Context, req *connect.Request[ope
 	if err != nil {
 		return nil, fail(s.log, "create agent", err)
 	}
-	return connect.NewResponse(&opentagv1.CreateAgentResponse{Revision: revisionToProto(rev)}), nil
+	return connect.NewResponse(&mandatumv1.CreateAgentResponse{Revision: revisionToProto(rev)}), nil
 }
 
-func (s *agentService) ReviseAgent(ctx context.Context, req *connect.Request[opentagv1.ReviseAgentRequest]) (*connect.Response[opentagv1.ReviseAgentResponse], error) {
+func (s *agentService) ReviseAgent(ctx context.Context, req *connect.Request[mandatumv1.ReviseAgentRequest]) (*connect.Response[mandatumv1.ReviseAgentResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -140,10 +140,10 @@ func (s *agentService) ReviseAgent(ctx context.Context, req *connect.Request[ope
 	if err != nil {
 		return nil, fail(s.log, "revise agent", err)
 	}
-	return connect.NewResponse(&opentagv1.ReviseAgentResponse{Revision: revisionToProto(rev)}), nil
+	return connect.NewResponse(&mandatumv1.ReviseAgentResponse{Revision: revisionToProto(rev)}), nil
 }
 
-func (s *agentService) GetAgent(ctx context.Context, req *connect.Request[opentagv1.GetAgentRequest]) (*connect.Response[opentagv1.GetAgentResponse], error) {
+func (s *agentService) GetAgent(ctx context.Context, req *connect.Request[mandatumv1.GetAgentRequest]) (*connect.Response[mandatumv1.GetAgentResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -155,10 +155,10 @@ func (s *agentService) GetAgent(ctx context.Context, req *connect.Request[openta
 	if err != nil {
 		return nil, fail(s.log, "get agent", err)
 	}
-	return connect.NewResponse(&opentagv1.GetAgentResponse{Revision: revisionToProto(rev)}), nil
+	return connect.NewResponse(&mandatumv1.GetAgentResponse{Revision: revisionToProto(rev)}), nil
 }
 
-func (s *agentService) ListAgents(ctx context.Context, req *connect.Request[opentagv1.ListAgentsRequest]) (*connect.Response[opentagv1.ListAgentsResponse], error) {
+func (s *agentService) ListAgents(ctx context.Context, req *connect.Request[mandatumv1.ListAgentsRequest]) (*connect.Response[mandatumv1.ListAgentsResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -170,8 +170,8 @@ func (s *agentService) ListAgents(ctx context.Context, req *connect.Request[open
 	if err != nil {
 		return nil, fail(s.log, "list agents", err)
 	}
-	out := &opentagv1.ListAgentsResponse{
-		Agents:        make([]*opentagv1.Revision, 0, len(revs)),
+	out := &mandatumv1.ListAgentsResponse{
+		Agents:        make([]*mandatumv1.Revision, 0, len(revs)),
 		NextPageToken: next,
 	}
 	for _, rev := range revs {
@@ -180,7 +180,7 @@ func (s *agentService) ListAgents(ctx context.Context, req *connect.Request[open
 	return connect.NewResponse(out), nil
 }
 
-func (s *agentService) GetAgentHistory(ctx context.Context, req *connect.Request[opentagv1.GetAgentHistoryRequest]) (*connect.Response[opentagv1.GetAgentHistoryResponse], error) {
+func (s *agentService) GetAgentHistory(ctx context.Context, req *connect.Request[mandatumv1.GetAgentHistoryRequest]) (*connect.Response[mandatumv1.GetAgentHistoryResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -192,14 +192,14 @@ func (s *agentService) GetAgentHistory(ctx context.Context, req *connect.Request
 	if err != nil {
 		return nil, fail(s.log, "get agent history", err)
 	}
-	out := &opentagv1.GetAgentHistoryResponse{Revisions: make([]*opentagv1.Revision, 0, len(revs))}
+	out := &mandatumv1.GetAgentHistoryResponse{Revisions: make([]*mandatumv1.Revision, 0, len(revs))}
 	for _, rev := range revs {
 		out.Revisions = append(out.Revisions, revisionToProto(rev))
 	}
 	return connect.NewResponse(out), nil
 }
 
-func (s *agentService) DeleteAgent(ctx context.Context, req *connect.Request[opentagv1.DeleteAgentRequest]) (*connect.Response[opentagv1.DeleteAgentResponse], error) {
+func (s *agentService) DeleteAgent(ctx context.Context, req *connect.Request[mandatumv1.DeleteAgentRequest]) (*connect.Response[mandatumv1.DeleteAgentResponse], error) {
 	id, store, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -210,7 +210,7 @@ func (s *agentService) DeleteAgent(ctx context.Context, req *connect.Request[ope
 	if err := store.Delete(ctx, id.Tenant, req.Msg.GetName()); err != nil {
 		return nil, fail(s.log, "delete agent", err)
 	}
-	return connect.NewResponse(&opentagv1.DeleteAgentResponse{}), nil
+	return connect.NewResponse(&mandatumv1.DeleteAgentResponse{}), nil
 }
 
 // ready resolves the two preconditions every method shares: an authenticated

@@ -7,10 +7,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // This file is the only place in the package where a generated type meets a
@@ -24,8 +24,8 @@ import (
 // one.
 
 // eventToProto renders an event for the wire.
-func eventToProto(e envelope.Event) *opentagv1.Event {
-	return &opentagv1.Event{
+func eventToProto(e envelope.Event) *mandatumv1.Event {
+	return &mandatumv1.Event{
 		Seq:     e.Seq,
 		Topic:   e.Topic.String(),
 		RunId:   e.RunID,
@@ -45,7 +45,7 @@ func eventToProto(e envelope.Event) *opentagv1.Event {
 // server owns the clock, and the tenant comes from the credential; a client
 // that sets any of the three is ignored rather than rejected, because rejecting
 // would break a client that faithfully echoed an event it received.
-func eventFromProto(p *opentagv1.Event) (envelope.Event, error) {
+func eventFromProto(p *mandatumv1.Event) (envelope.Event, error) {
 	if p == nil {
 		return envelope.Event{}, fmt.Errorf("%w: no event", ErrInvalid)
 	}
@@ -65,7 +65,7 @@ func eventFromProto(p *opentagv1.Event) (envelope.Event, error) {
 }
 
 // subscriptionFromProto parses a subscription request.
-func subscriptionFromProto(p *opentagv1.Subscription) (envelope.Subscription, error) {
+func subscriptionFromProto(p *mandatumv1.Subscription) (envelope.Subscription, error) {
 	if p == nil {
 		return envelope.Subscription{}, fmt.Errorf("%w: no subscription", ErrInvalid)
 	}
@@ -82,7 +82,7 @@ func subscriptionFromProto(p *opentagv1.Subscription) (envelope.Subscription, er
 
 // filterFromProto parses a filter. A nil filter is the identity filter, which
 // is what an absent message should mean: unset fields are wildcards.
-func filterFromProto(p *opentagv1.Filter) envelope.Filter {
+func filterFromProto(p *mandatumv1.Filter) envelope.Filter {
 	if p == nil {
 		return envelope.Filter{}
 	}
@@ -99,7 +99,7 @@ func filterFromProto(p *opentagv1.Filter) envelope.Filter {
 // Tenant is absent from the wire and is stamped by the caller of this function
 // from the credential. At is defaulted by the handler, not here, so that the
 // clock seam stays in one place.
-func tagFromProto(p *opentagv1.Tag) (envelope.Tag, error) {
+func tagFromProto(p *mandatumv1.Tag) (envelope.Tag, error) {
 	if p == nil {
 		return envelope.Tag{}, fmt.Errorf("%w: no tag", ErrInvalid)
 	}
@@ -130,13 +130,13 @@ func tagFromProto(p *opentagv1.Tag) (envelope.Tag, error) {
 }
 
 // tagToProto renders a tag, so a run's record can carry the request verbatim.
-func tagToProto(t envelope.Tag) *opentagv1.Tag {
-	p := &opentagv1.Tag{
+func tagToProto(t envelope.Tag) *mandatumv1.Tag {
+	p := &mandatumv1.Tag{
 		Id:     t.ID,
 		Agent:  t.Agent,
 		Origin: t.Origin,
 		Text:   t.Text,
-		Actor:  &opentagv1.Actor{Id: t.Actor.ID, Display: t.Actor.Display, Bot: t.Actor.Bot},
+		Actor:  &mandatumv1.Actor{Id: t.Actor.ID, Display: t.Actor.Display, Bot: t.Actor.Bot},
 		Meta:   t.Meta,
 		At:     timeToProto(t.At),
 	}
@@ -144,12 +144,12 @@ func tagToProto(t envelope.Tag) *opentagv1.Tag {
 		p.Source = addressToProto(t.Source)
 	}
 	for _, r := range t.Deliver {
-		p.Deliver = append(p.Deliver, &opentagv1.Route{Target: addressToProto(r.Target), Kinds: r.Kinds})
+		p.Deliver = append(p.Deliver, &mandatumv1.Route{Target: addressToProto(r.Target), Kinds: r.Kinds})
 	}
 	return p
 }
 
-func actorFromProto(p *opentagv1.Actor) envelope.Actor {
+func actorFromProto(p *mandatumv1.Actor) envelope.Actor {
 	if p == nil {
 		return envelope.Actor{}
 	}
@@ -160,7 +160,7 @@ func actorFromProto(p *opentagv1.Actor) envelope.Actor {
 // on the wire is convenient, not trusted: it is rendered to its URI and parsed
 // back, so a workspace that is not token-safe is refused here exactly as it
 // would be if it had arrived as a string.
-func addressFromProto(p *opentagv1.Address) (address.Address, error) {
+func addressFromProto(p *mandatumv1.Address) (address.Address, error) {
 	if p == nil {
 		return address.Address{}, fmt.Errorf("%w: no address", ErrInvalid)
 	}
@@ -186,8 +186,8 @@ func addressFromProto(p *opentagv1.Address) (address.Address, error) {
 	return parsed, nil
 }
 
-func addressToProto(a address.Address) *opentagv1.Address {
-	return &opentagv1.Address{
+func addressToProto(a address.Address) *mandatumv1.Address {
+	return &mandatumv1.Address{
 		Connector: a.Connector,
 		Workspace: a.Workspace,
 		Path:      a.Path,
@@ -195,7 +195,7 @@ func addressToProto(a address.Address) *opentagv1.Address {
 	}
 }
 
-func routeFromProto(p *opentagv1.Route) (envelope.Route, error) {
+func routeFromProto(p *mandatumv1.Route) (envelope.Route, error) {
 	if p == nil {
 		return envelope.Route{}, fmt.Errorf("%w: no route", ErrInvalid)
 	}
@@ -215,7 +215,7 @@ func routeFromProto(p *opentagv1.Route) (envelope.Route, error) {
 // to the Store: whether a tool exists, whether a source resolves, and what the
 // content hash is are all the control plane's business, and duplicating any of
 // them here would create a second, quietly diverging answer.
-func specFromProto(p *opentagv1.AgentSpec) (Spec, error) {
+func specFromProto(p *mandatumv1.AgentSpec) (Spec, error) {
 	if p == nil {
 		return Spec{}, fmt.Errorf("%w: no agent spec", ErrInvalid)
 	}
@@ -243,18 +243,18 @@ func specFromProto(p *opentagv1.AgentSpec) (Spec, error) {
 	return s, nil
 }
 
-func specToProto(s Spec) *opentagv1.AgentSpec {
-	p := &opentagv1.AgentSpec{
+func specToProto(s Spec) *mandatumv1.AgentSpec {
+	p := &mandatumv1.AgentSpec{
 		Name:         s.Name,
 		Description:  s.Description,
 		Model:        s.Model,
 		Provider:     s.Provider,
 		SystemPrompt: s.SystemPrompt,
 		Tools:        s.Tools,
-		Access:       &opentagv1.Access{Spawn: s.Access.Spawn, WorkspaceAreas: s.Access.WorkspaceAreas},
+		Access:       &mandatumv1.Access{Spawn: s.Access.Spawn, WorkspaceAreas: s.Access.WorkspaceAreas},
 	}
 	for _, src := range s.Sources {
-		p.Sources = append(p.Sources, &opentagv1.Source{
+		p.Sources = append(p.Sources, &mandatumv1.Source{
 			Name:    src.Name,
 			Uri:     src.URI,
 			Options: src.Options,
@@ -263,8 +263,8 @@ func specToProto(s Spec) *opentagv1.AgentSpec {
 	return p
 }
 
-func revisionToProto(r Revision) *opentagv1.Revision {
-	return &opentagv1.Revision{
+func revisionToProto(r Revision) *mandatumv1.Revision {
+	return &mandatumv1.Revision{
 		Spec:      specToProto(r.Spec),
 		Rev:       int32Of(r.Rev),
 		Hash:      r.Hash,
@@ -276,8 +276,8 @@ func revisionToProto(r Revision) *opentagv1.Revision {
 // runToProto renders a durable run record. The tag is carried verbatim because
 // it is the input half of the audit trail: with the pinned revision it is
 // everything needed to explain what the agent did.
-func runToProto(r Run) *opentagv1.Run {
-	return &opentagv1.Run{
+func runToProto(r Run) *mandatumv1.Run {
+	return &mandatumv1.Run{
 		RunId:     r.ID,
 		Tenant:    r.Tenant,
 		Agent:     r.Agent,
@@ -297,20 +297,20 @@ func runToProto(r Run) *opentagv1.Run {
 // statusToProto maps a run status onto the wire enum. An unrecognised status
 // becomes UNSPECIFIED rather than a guess: the enum's zero value exists exactly
 // so that "I do not know this state" is expressible.
-func statusToProto(s Status) opentagv1.RunStatus {
+func statusToProto(s Status) mandatumv1.RunStatus {
 	switch s {
 	case StatusAccepted:
-		return opentagv1.RunStatus_RUN_STATUS_ACCEPTED
+		return mandatumv1.RunStatus_RUN_STATUS_ACCEPTED
 	case StatusRunning:
-		return opentagv1.RunStatus_RUN_STATUS_RUNNING
+		return mandatumv1.RunStatus_RUN_STATUS_RUNNING
 	case StatusParked:
-		return opentagv1.RunStatus_RUN_STATUS_PARKED
+		return mandatumv1.RunStatus_RUN_STATUS_PARKED
 	case StatusCompleted:
-		return opentagv1.RunStatus_RUN_STATUS_COMPLETED
+		return mandatumv1.RunStatus_RUN_STATUS_COMPLETED
 	case StatusFailed:
-		return opentagv1.RunStatus_RUN_STATUS_FAILED
+		return mandatumv1.RunStatus_RUN_STATUS_FAILED
 	default:
-		return opentagv1.RunStatus_RUN_STATUS_UNSPECIFIED
+		return mandatumv1.RunStatus_RUN_STATUS_UNSPECIFIED
 	}
 }
 

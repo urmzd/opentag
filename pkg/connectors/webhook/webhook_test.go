@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/webhook"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/webhook"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 const secret = "an outbound signing secret"
@@ -320,7 +320,7 @@ func TestDeliveryToATargetThisConnectorDoesNotServeIsRefused(t *testing.T) {
 	c := connectorAt(t, rec.URL, nil)
 
 	tests := []struct{ name, target string }{
-		{"another connector", "github://urmzd/opentag/issues/1"},
+		{"another connector", "github://urmzd/mandatum/issues/1"},
 		{"a workspace with no configured endpoint", "webhook://someone-else/deploys"},
 	}
 	for _, tc := range tests {

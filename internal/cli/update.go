@@ -16,9 +16,9 @@ import (
 )
 
 // releasesURL is where update looks for the newest build.
-const releasesURL = "https://api.github.com/repos/urmzd/opentag/releases/latest"
+const releasesURL = "https://api.github.com/repos/urmzd/mandatum/releases/latest"
 
-// newUpdateCmd builds `opentag update`, replacing the running binary in place.
+// newUpdateCmd builds `mandatum update`, replacing the running binary in place.
 //
 // The replacement is written to a temporary file beside the target and then
 // renamed over it. Rename within a directory is atomic, so a download that
@@ -29,7 +29,7 @@ func newUpdateCmd(v Version) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update opentag to the latest release",
+		Short: "Update mandatum to the latest release",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			u, err := resolveUI(cmd)
@@ -51,10 +51,10 @@ func newUpdateCmd(v Version) *cobra.Command {
 					})
 				}
 				if current == latest {
-					u.printf("opentag %s is current\n", current)
+					u.printf("mandatum %s is current\n", current)
 					return nil
 				}
-				u.printf("opentag %s is available (running %s)\n", latest, current)
+				u.printf("mandatum %s is available (running %s)\n", latest, current)
 				return nil
 			}
 
@@ -134,7 +134,7 @@ func latestRelease(ctx context.Context) (*release, error) {
 // assetName is the release artifact for this platform. It matches the naming
 // the release workflow uses when it uploads builds.
 func assetName() string {
-	name := fmt.Sprintf("opentag-%s-%s", runtime.GOOS, runtime.GOARCH)
+	name := fmt.Sprintf("mandatum-%s-%s", runtime.GOOS, runtime.GOARCH)
 	if runtime.GOOS == "windows" {
 		name += ".exe"
 	}
@@ -159,7 +159,7 @@ func replaceBinary(ctx context.Context, exe, url string) error {
 	// The temporary file must share a directory with the target: rename is
 	// atomic only within a filesystem, and /tmp is frequently a different one.
 	dir := filepath.Dir(exe)
-	tmp, err := os.CreateTemp(dir, ".opentag-update-*")
+	tmp, err := os.CreateTemp(dir, ".mandatum-update-*")
 	if err != nil {
 		return fmt.Errorf("update: stage into %s: %w", dir, err)
 	}

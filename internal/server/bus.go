@@ -9,9 +9,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/urmzd/dispatch/pkg/metrics"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Sequencer is the optional extension a broker implements when it can report
@@ -28,7 +28,7 @@ type Sequencer interface {
 	PublishSeq(ctx context.Context, e envelope.Event) (uint64, error)
 }
 
-// busService serves opentag.v1.BusService: the read path, plus the write seam
+// busService serves mandatum.v1.BusService: the read path, plus the write seam
 // that lets something other than the agent loop put events on a run's topic.
 type busService struct {
 	bus bus.Bus
@@ -44,7 +44,7 @@ type busService struct {
 // are not tenant-scoped by design. So this is the layer that must not hand a
 // caller another tenant's events, and it does it by comparison rather than by
 // trusting the topic to have narrowed anything.
-func (s *busService) Subscribe(ctx context.Context, req *connect.Request[opentagv1.SubscribeRequest], stream *connect.ServerStream[opentagv1.Event]) error {
+func (s *busService) Subscribe(ctx context.Context, req *connect.Request[mandatumv1.SubscribeRequest], stream *connect.ServerStream[mandatumv1.Event]) error {
 	id, b, err := s.ready(ctx)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func (s *busService) Subscribe(ctx context.Context, req *connect.Request[opentag
 // at, because clocks disagree; and seq, because only the broker can order a
 // run. Zeroing seq is also what stops a client from parking a run's sequence
 // space at a number no real event can ever exceed.
-func (s *busService) Publish(ctx context.Context, req *connect.Request[opentagv1.PublishRequest]) (*connect.Response[opentagv1.PublishResponse], error) {
+func (s *busService) Publish(ctx context.Context, req *connect.Request[mandatumv1.PublishRequest]) (*connect.Response[mandatumv1.PublishResponse], error) {
 	id, b, err := s.ready(ctx)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (s *busService) Publish(ctx context.Context, req *connect.Request[opentagv1
 		metrics.Label{Key: "transport", Value: "publish"},
 		metrics.Label{Key: "kind", Value: string(e.Kind)},
 	)
-	return connect.NewResponse(&opentagv1.PublishResponse{Seq: seq, At: timeToProto(e.At)}), nil
+	return connect.NewResponse(&mandatumv1.PublishResponse{Seq: seq, At: timeToProto(e.At)}), nil
 }
 
 func (s *busService) ready(ctx context.Context) (Identity, bus.Bus, error) {
@@ -126,7 +126,7 @@ func (s *Server) streamEvents(
 	sub envelope.Subscription,
 	tenant string,
 	transport string,
-	send func(*opentagv1.Event) error,
+	send func(*mandatumv1.Event) error,
 	terminal func(envelope.Event) bool,
 ) error {
 	ctx, release := s.streamContext(ctx)

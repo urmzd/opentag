@@ -1,4 +1,4 @@
-// opentag.v1 is the wire contract every opentag client speaks. This file is the
+// mandatum.v1 is the wire contract every mandatum client speaks. This file is the
 // read path, and it is the product surface: everything an agent produces leaves
 // the system through here.
 //
@@ -28,9 +28,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: opentag/v1/bus.proto
+// source: mandatum/v1/bus.proto
 
-package opentagv1
+package mandatumv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -135,7 +135,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[0]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -147,7 +147,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[0]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -160,7 +160,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{0}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Event) GetSeq() uint64 {
@@ -262,7 +262,7 @@ type Filter struct {
 
 func (x *Filter) Reset() {
 	*x = Filter{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[1]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -274,7 +274,7 @@ func (x *Filter) String() string {
 func (*Filter) ProtoMessage() {}
 
 func (x *Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[1]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -287,7 +287,7 @@ func (x *Filter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Filter.ProtoReflect.Descriptor instead.
 func (*Filter) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{1}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Filter) GetKinds() []string {
@@ -349,7 +349,7 @@ type Subscription struct {
 
 func (x *Subscription) Reset() {
 	*x = Subscription{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[2]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +361,7 @@ func (x *Subscription) String() string {
 func (*Subscription) ProtoMessage() {}
 
 func (x *Subscription) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[2]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +374,7 @@ func (x *Subscription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Subscription.ProtoReflect.Descriptor instead.
 func (*Subscription) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{2}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Subscription) GetTopic() string {
@@ -412,7 +412,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[3]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +424,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[3]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,7 +437,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{3}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SubscribeRequest) GetSubscription() *Subscription {
@@ -449,7 +449,7 @@ func (x *SubscribeRequest) GetSubscription() *Subscription {
 
 // PublishRequest submits one event to the bus.
 //
-// This is the seam that makes opentag a bus rather than an agent runner: a
+// This is the seam that makes mandatum a bus rather than an agent runner: a
 // connector, a sidecar, or a foreign runtime can put events onto an existing
 // run's topic, and every subscriber and every route sees them exactly as if the
 // agent loop had emitted them.
@@ -467,7 +467,7 @@ type PublishRequest struct {
 
 func (x *PublishRequest) Reset() {
 	*x = PublishRequest{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[4]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +479,7 @@ func (x *PublishRequest) String() string {
 func (*PublishRequest) ProtoMessage() {}
 
 func (x *PublishRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[4]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +492,7 @@ func (x *PublishRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishRequest.ProtoReflect.Descriptor instead.
 func (*PublishRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{4}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PublishRequest) GetEvent() *Event {
@@ -517,7 +517,7 @@ type PublishResponse struct {
 
 func (x *PublishResponse) Reset() {
 	*x = PublishResponse{}
-	mi := &file_opentag_v1_bus_proto_msgTypes[5]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -529,7 +529,7 @@ func (x *PublishResponse) String() string {
 func (*PublishResponse) ProtoMessage() {}
 
 func (x *PublishResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_bus_proto_msgTypes[5]
+	mi := &file_mandatum_v1_bus_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,7 +542,7 @@ func (x *PublishResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishResponse.ProtoReflect.Descriptor instead.
 func (*PublishResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_bus_proto_rawDescGZIP(), []int{5}
+	return file_mandatum_v1_bus_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PublishResponse) GetSeq() uint64 {
@@ -559,12 +559,11 @@ func (x *PublishResponse) GetAt() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_opentag_v1_bus_proto protoreflect.FileDescriptor
+var File_mandatum_v1_bus_proto protoreflect.FileDescriptor
 
-const file_opentag_v1_bus_proto_rawDesc = "" +
+const file_mandatum_v1_bus_proto_rawDesc = "" +
 	"\n" +
-	"\x14opentag/v1/bus.proto\x12\n" +
-	"opentag.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x01\n" +
+	"\x15mandatum/v1/bus.proto\x12\vmandatum.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x01\n" +
 	"\x05Event\x12\x10\n" +
 	"\x03seq\x18\x01 \x01(\x04R\x03seq\x12\x14\n" +
 	"\x05topic\x18\x02 \x01(\tR\x05topic\x12\x15\n" +
@@ -581,58 +580,58 @@ const file_opentag_v1_bus_proto_rawDesc = "" +
 	"\x05kinds\x18\x01 \x03(\tR\x05kinds\x12\x10\n" +
 	"\x03rev\x18\x02 \x01(\x05R\x03rev\x12\x16\n" +
 	"\x06origin\x18\x03 \x01(\tR\x06origin\x12\x15\n" +
-	"\x06run_id\x18\x04 \x01(\tR\x05runIdJ\x04\b\x05\x10\x10\"j\n" +
+	"\x06run_id\x18\x04 \x01(\tR\x05runIdJ\x04\b\x05\x10\x10\"k\n" +
 	"\fSubscription\x12\x14\n" +
-	"\x05topic\x18\x01 \x01(\tR\x05topic\x12*\n" +
-	"\x06filter\x18\x02 \x01(\v2\x12.opentag.v1.FilterR\x06filter\x12\x12\n" +
-	"\x04from\x18\x03 \x01(\x04R\x04fromJ\x04\b\x04\x10\x10\"V\n" +
-	"\x10SubscribeRequest\x12<\n" +
-	"\fsubscription\x18\x01 \x01(\v2\x18.opentag.v1.SubscriptionR\fsubscriptionJ\x04\b\x02\x10\n" +
-	"\"?\n" +
-	"\x0ePublishRequest\x12'\n" +
-	"\x05event\x18\x01 \x01(\v2\x11.opentag.v1.EventR\x05eventJ\x04\b\x02\x10\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\x12+\n" +
+	"\x06filter\x18\x02 \x01(\v2\x13.mandatum.v1.FilterR\x06filter\x12\x12\n" +
+	"\x04from\x18\x03 \x01(\x04R\x04fromJ\x04\b\x04\x10\x10\"W\n" +
+	"\x10SubscribeRequest\x12=\n" +
+	"\fsubscription\x18\x01 \x01(\v2\x19.mandatum.v1.SubscriptionR\fsubscriptionJ\x04\b\x02\x10\n" +
+	"\"@\n" +
+	"\x0ePublishRequest\x12(\n" +
+	"\x05event\x18\x01 \x01(\v2\x12.mandatum.v1.EventR\x05eventJ\x04\b\x02\x10\n" +
 	"\"U\n" +
 	"\x0fPublishResponse\x12\x10\n" +
 	"\x03seq\x18\x01 \x01(\x04R\x03seq\x12*\n" +
 	"\x02at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x02atJ\x04\b\x03\x10\n" +
-	"2\x94\x01\n" +
+	"2\x98\x01\n" +
 	"\n" +
-	"BusService\x12@\n" +
-	"\tSubscribe\x12\x1c.opentag.v1.SubscribeRequest\x1a\x11.opentag.v1.Event\"\x000\x01\x12D\n" +
-	"\aPublish\x12\x1a.opentag.v1.PublishRequest\x1a\x1b.opentag.v1.PublishResponse\"\x00B3Z1github.com/urmzd/opentag/gen/opentag/v1;opentagv1b\x06proto3"
+	"BusService\x12B\n" +
+	"\tSubscribe\x12\x1d.mandatum.v1.SubscribeRequest\x1a\x12.mandatum.v1.Event\"\x000\x01\x12F\n" +
+	"\aPublish\x12\x1b.mandatum.v1.PublishRequest\x1a\x1c.mandatum.v1.PublishResponse\"\x00B6Z4github.com/urmzd/mandatum/gen/mandatum/v1;mandatumv1b\x06proto3"
 
 var (
-	file_opentag_v1_bus_proto_rawDescOnce sync.Once
-	file_opentag_v1_bus_proto_rawDescData []byte
+	file_mandatum_v1_bus_proto_rawDescOnce sync.Once
+	file_mandatum_v1_bus_proto_rawDescData []byte
 )
 
-func file_opentag_v1_bus_proto_rawDescGZIP() []byte {
-	file_opentag_v1_bus_proto_rawDescOnce.Do(func() {
-		file_opentag_v1_bus_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_opentag_v1_bus_proto_rawDesc), len(file_opentag_v1_bus_proto_rawDesc)))
+func file_mandatum_v1_bus_proto_rawDescGZIP() []byte {
+	file_mandatum_v1_bus_proto_rawDescOnce.Do(func() {
+		file_mandatum_v1_bus_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mandatum_v1_bus_proto_rawDesc), len(file_mandatum_v1_bus_proto_rawDesc)))
 	})
-	return file_opentag_v1_bus_proto_rawDescData
+	return file_mandatum_v1_bus_proto_rawDescData
 }
 
-var file_opentag_v1_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_opentag_v1_bus_proto_goTypes = []any{
-	(*Event)(nil),                 // 0: opentag.v1.Event
-	(*Filter)(nil),                // 1: opentag.v1.Filter
-	(*Subscription)(nil),          // 2: opentag.v1.Subscription
-	(*SubscribeRequest)(nil),      // 3: opentag.v1.SubscribeRequest
-	(*PublishRequest)(nil),        // 4: opentag.v1.PublishRequest
-	(*PublishResponse)(nil),       // 5: opentag.v1.PublishResponse
+var file_mandatum_v1_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_mandatum_v1_bus_proto_goTypes = []any{
+	(*Event)(nil),                 // 0: mandatum.v1.Event
+	(*Filter)(nil),                // 1: mandatum.v1.Filter
+	(*Subscription)(nil),          // 2: mandatum.v1.Subscription
+	(*SubscribeRequest)(nil),      // 3: mandatum.v1.SubscribeRequest
+	(*PublishRequest)(nil),        // 4: mandatum.v1.PublishRequest
+	(*PublishResponse)(nil),       // 5: mandatum.v1.PublishResponse
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
-var file_opentag_v1_bus_proto_depIdxs = []int32{
-	6, // 0: opentag.v1.Event.at:type_name -> google.protobuf.Timestamp
-	1, // 1: opentag.v1.Subscription.filter:type_name -> opentag.v1.Filter
-	2, // 2: opentag.v1.SubscribeRequest.subscription:type_name -> opentag.v1.Subscription
-	0, // 3: opentag.v1.PublishRequest.event:type_name -> opentag.v1.Event
-	6, // 4: opentag.v1.PublishResponse.at:type_name -> google.protobuf.Timestamp
-	3, // 5: opentag.v1.BusService.Subscribe:input_type -> opentag.v1.SubscribeRequest
-	4, // 6: opentag.v1.BusService.Publish:input_type -> opentag.v1.PublishRequest
-	0, // 7: opentag.v1.BusService.Subscribe:output_type -> opentag.v1.Event
-	5, // 8: opentag.v1.BusService.Publish:output_type -> opentag.v1.PublishResponse
+var file_mandatum_v1_bus_proto_depIdxs = []int32{
+	6, // 0: mandatum.v1.Event.at:type_name -> google.protobuf.Timestamp
+	1, // 1: mandatum.v1.Subscription.filter:type_name -> mandatum.v1.Filter
+	2, // 2: mandatum.v1.SubscribeRequest.subscription:type_name -> mandatum.v1.Subscription
+	0, // 3: mandatum.v1.PublishRequest.event:type_name -> mandatum.v1.Event
+	6, // 4: mandatum.v1.PublishResponse.at:type_name -> google.protobuf.Timestamp
+	3, // 5: mandatum.v1.BusService.Subscribe:input_type -> mandatum.v1.SubscribeRequest
+	4, // 6: mandatum.v1.BusService.Publish:input_type -> mandatum.v1.PublishRequest
+	0, // 7: mandatum.v1.BusService.Subscribe:output_type -> mandatum.v1.Event
+	5, // 8: mandatum.v1.BusService.Publish:output_type -> mandatum.v1.PublishResponse
 	7, // [7:9] is the sub-list for method output_type
 	5, // [5:7] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -640,26 +639,26 @@ var file_opentag_v1_bus_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_opentag_v1_bus_proto_init() }
-func file_opentag_v1_bus_proto_init() {
-	if File_opentag_v1_bus_proto != nil {
+func init() { file_mandatum_v1_bus_proto_init() }
+func file_mandatum_v1_bus_proto_init() {
+	if File_mandatum_v1_bus_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_opentag_v1_bus_proto_rawDesc), len(file_opentag_v1_bus_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mandatum_v1_bus_proto_rawDesc), len(file_mandatum_v1_bus_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_opentag_v1_bus_proto_goTypes,
-		DependencyIndexes: file_opentag_v1_bus_proto_depIdxs,
-		MessageInfos:      file_opentag_v1_bus_proto_msgTypes,
+		GoTypes:           file_mandatum_v1_bus_proto_goTypes,
+		DependencyIndexes: file_mandatum_v1_bus_proto_depIdxs,
+		MessageInfos:      file_mandatum_v1_bus_proto_msgTypes,
 	}.Build()
-	File_opentag_v1_bus_proto = out.File
-	file_opentag_v1_bus_proto_goTypes = nil
-	file_opentag_v1_bus_proto_depIdxs = nil
+	File_mandatum_v1_bus_proto = out.File
+	file_mandatum_v1_bus_proto_goTypes = nil
+	file_mandatum_v1_bus_proto_depIdxs = nil
 }

@@ -3,7 +3,7 @@ package mention_test
 import (
 	"testing"
 
-	"github.com/urmzd/opentag/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
 )
 
 func TestFindReturnsTheFirstTokenTheSetAccepts(t *testing.T) {

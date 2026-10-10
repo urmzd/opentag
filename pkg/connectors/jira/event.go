@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Headers on an inbound Jira webhook.
@@ -29,7 +29,7 @@ const (
 	// HeaderSecret is the default header carrying the shared secret. Jira does
 	// not sign its webhooks, so authentication is whatever header the person who
 	// registered the webhook was able to add. See the package doc.
-	HeaderSecret = "X-OpenTag-Secret"
+	HeaderSecret = "X-Mandatum-Secret"
 )
 
 // Jira's webhookEvent values that this connector reads.

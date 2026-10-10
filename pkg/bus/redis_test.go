@@ -9,15 +9,15 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/bus/bustest"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/bus/bustest"
 )
 
 // addrEnv names the Redis the conformance suite runs against. Without it the
 // Redis subtests skip, so the suite stays runnable with no infrastructure —
 // but the moment someone exports it, the Redis backend is held to exactly the
 // same contract as Memory.
-const addrEnv = "OPENTAG_REDIS_ADDR"
+const addrEnv = "MANDATUM_REDIS_ADDR"
 
 // keyspace numbers each bus the suite builds, so subtests sharing one Redis
 // cannot see each other's events.
@@ -30,7 +30,7 @@ func TestRedisConformance(t *testing.T) {
 	}
 	bustest.Run(t, func(t *testing.T, cfg bustest.Config) bus.Bus {
 		client := redis.NewClient(&redis.Options{Addr: addr})
-		prefix := fmt.Sprintf("opentagtest:%d", keyspace.Add(1))
+		prefix := fmt.Sprintf("mandatumtest:%d", keyspace.Add(1))
 		t.Cleanup(func() {
 			drop(t, client, prefix)
 			_ = client.Close()

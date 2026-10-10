@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connectors/internal/render"
-	"github.com/urmzd/opentag/pkg/connectors/internal/sink"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/render"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/sink"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // fakeSurface is a complete in-memory surface: it holds a body per handle, just
@@ -418,7 +418,7 @@ func TestLayoutOmitsEmptySectionsAndNumbersFootnotes(t *testing.T) {
 	d.Apply(ev(3, envelope.KindToolDone, `{"id":"t1","result":"3 hits"}`))
 	d.Apply(text(4, "the answer"))
 	d.Apply(ev(5, envelope.KindCitation, `{"title":"Design","uri":"https://example.com/d"}`))
-	d.Apply(ev(6, envelope.KindActionTaken, `{"summary":"commented","address":"github://urmzd/opentag/issues/42"}`))
+	d.Apply(ev(6, envelope.KindActionTaken, `{"summary":"commented","address":"github://urmzd/mandatum/issues/42"}`))
 	d.Apply(ev(7, envelope.KindCompleted, ""))
 
 	want := strings.Join([]string{
@@ -430,7 +430,7 @@ func TestLayoutOmitsEmptySectionsAndNumbersFootnotes(t *testing.T) {
 		"",
 		"[1] Design <https://example.com/d>",
 		"",
-		"- changed: commented (github://urmzd/opentag/issues/42 <github://urmzd/opentag/issues/42>)",
+		"- changed: commented (github://urmzd/mandatum/issues/42 <github://urmzd/mandatum/issues/42>)",
 	}, "\n")
 	if got := layout(d.View()); got != want {
 		t.Errorf("layout =\n%q\nwant\n%q", got, want)

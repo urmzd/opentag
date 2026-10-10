@@ -54,7 +54,7 @@
 // Building a running agent should depend on the definition of one and not on
 // how definitions are validated, hashed, stored or authorized; validating and
 // hashing a definition should not drag an LLM SDK into a linter or a control
-// plane. The two shapes mirror opentag.v1.AgentSpec field for field, so the
+// plane. The two shapes mirror mandatum.v1.AgentSpec field for field, so the
 // conversion at the seam is assignment (see pkg/registry).
 //
 // This package is a leaf: the standard library, plus pkg/topic for the one
@@ -69,7 +69,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // ErrInvalid reports a definition that will not be accepted. Callers match with
@@ -111,7 +111,7 @@ func KnownProviders() []string {
 
 // AgentSpec is what an agent IS.
 //
-// It mirrors opentag.v1.AgentSpec, pkg/agentrt.Spec and internal/server.Spec
+// It mirrors mandatum.v1.AgentSpec, pkg/agentrt.Spec and internal/server.Spec
 // field for field, so adaptation between them is assignment.
 type AgentSpec struct {
 	Name         string   `json:"name"`

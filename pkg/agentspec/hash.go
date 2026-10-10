@@ -20,7 +20,7 @@ const HashAlgorithm = "sha256"
 // separator can be made to collide across schemes; a definition and, say, a
 // run's input must never be able to produce the same digest, whatever a caller
 // puts in a free-text field.
-const hashDomain = "opentag/agentspec/v1"
+const hashDomain = "mandatum/agentspec/v1"
 
 // Hash is the content address of the definition: the digest of its canonical
 // form, and of nothing else.

@@ -1,4 +1,4 @@
-// Package envelope is the contract every opentag client speaks, independent
+// Package envelope is the contract every mandatum client speaks, independent
 // of transport. gRPC, SSE, and the in-process path all carry these types.
 //
 // Two directions:
@@ -27,8 +27,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // ErrInvalid reports a malformed envelope value. Callers match with errors.Is.

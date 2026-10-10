@@ -41,13 +41,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/internal/inbound"
-	"github.com/urmzd/opentag/pkg/connectors/internal/render"
-	"github.com/urmzd/opentag/pkg/connectors/internal/sink"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/inbound"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/render"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/sink"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Name is the address scheme this connector owns.

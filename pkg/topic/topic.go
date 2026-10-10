@@ -1,4 +1,4 @@
-// Package topic is the addressing scheme of the opentag bus.
+// Package topic is the addressing scheme of the mandatum bus.
 //
 // The mental model is one line: users listen to an agent.
 //

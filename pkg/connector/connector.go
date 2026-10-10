@@ -33,8 +33,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Errors returned by connectors and by the registry.

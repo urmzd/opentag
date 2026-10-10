@@ -94,7 +94,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
-          BIN_NAME="${{ github.event.repository.name }}"
+          BIN_NAME="mandatum"
           go build -trimpath \
             -ldflags "-X main.version=${{ needs.release.outputs.version }} -X main.commit=${{ github.sha }} -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             -o "build/bin/${BIN_NAME}${{ matrix.artifact_suffix }}" ./cmd/${BIN_NAME}
@@ -102,5 +102,5 @@ jobs:
       - name: Upload to release
         shell: bash
         run: |
-          BIN_NAME="${{ github.event.repository.name }}"
+          BIN_NAME="mandatum"
           gh release upload "${{ needs.release.outputs.tag }}" "build/bin/${BIN_NAME}${{ matrix.artifact_suffix }}" --clobber

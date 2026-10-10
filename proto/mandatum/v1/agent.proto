@@ -1,4 +1,4 @@
-// opentag.v1 is the wire contract every opentag client speaks. This file is
+// mandatum.v1 is the wire contract every mandatum client speaks. This file is
 // the control plane: what an agent is, how its history is kept, and the RPCs
 // that manage it.
 //
@@ -17,11 +17,11 @@
 // removed field's number is never silently reused.
 syntax = "proto3";
 
-package opentag.v1;
+package mandatum.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/urmzd/opentag/gen/opentag/v1;opentagv1";
+option go_package = "github.com/urmzd/mandatum/gen/mandatum/v1;mandatumv1";
 
 // AgentSpec is the complete definition of an agent: everything needed to
 // construct the agent loop that answers a tag.
@@ -95,7 +95,7 @@ message Source {
   string name = 1;
 
   // Uri locates the corpus. Address URIs name mesh surfaces
-  // ("github://urmzd/opentag/docs"); ordinary URLs name anything else.
+  // ("github://urmzd/mandatum/docs"); ordinary URLs name anything else.
   string uri = 2;
 
   // Options carry retriever-specific configuration, such as a chunk size or a
@@ -135,7 +135,7 @@ message Access {
 //
 // Revisions are the unit the rest of the system references. A run pins one, an
 // Event reports one, and a canary comparison is a filter over two of them on
-// the same topic (see Filter.rev in bus.proto). Nothing in opentag references
+// the same topic (see Filter.rev in bus.proto). Nothing in mandatum references
 // "the agent" without also resolving which revision of it.
 message Revision {
   // Spec is the immutable definition at this revision.

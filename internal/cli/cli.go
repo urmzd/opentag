@@ -1,8 +1,8 @@
-// Package cli is the opentag command tree and the process's composition root.
+// Package cli is the mandatum command tree and the process's composition root.
 //
 // It owns one concern: turning a command line and an environment into a running
 // system, and turning that system's answers into bytes on a terminal. Every
-// decision about what opentag IS lives in pkg/ and internal/server; every
+// decision about what mandatum IS lives in pkg/ and internal/server; every
 // decision about how a person or a script drives it lives here.
 //
 // # Where to start reading
@@ -10,7 +10,7 @@
 // core.go. It is the composition root: the one place where the bus, the agent
 // registry, the router, the durable runtime, the connectors and the transport
 // are assembled into a system, in the order the data flows through them. Reading
-// it top to bottom is the fastest way to understand how opentag fits together,
+// it top to bottom is the fastest way to understand how mandatum fits together,
 // and it is deliberately linear — no helper indirection, no options struct
 // three levels deep — because a composition root that needs a diagram has
 // failed at its only job.
@@ -105,12 +105,12 @@ var (
 // configured once instead of every command carrying two flags.
 const (
 	// EnvServer is the default for --server.
-	EnvServer = "OPENTAG_SERVER"
+	EnvServer = "MANDATUM_SERVER"
 	// EnvToken is the default for --token. A credential belongs in the
 	// environment rather than in shell history, which is why it has one.
-	EnvToken = "OPENTAG_TOKEN"
+	EnvToken = "MANDATUM_TOKEN"
 	// EnvTenant is the tenant `serve` issues its bootstrap credential for.
-	EnvTenant = "OPENTAG_TENANT"
+	EnvTenant = "MANDATUM_TENANT"
 )
 
 // DefaultServer is where the client commands look for a server, and what
@@ -118,11 +118,11 @@ const (
 const DefaultServer = "http://localhost:8383"
 
 // DefaultAddr is `serve`'s listen address. It matches DefaultServer so that
-// running `opentag serve` in one shell and `opentag tag ...` in another needs
+// running `mandatum serve` in one shell and `mandatum tag ...` in another needs
 // no configuration at all.
 const DefaultAddr = ":8383"
 
-// Execute runs the opentag CLI and returns its exit code.
+// Execute runs the mandatum CLI and returns its exit code.
 //
 // It returns a code rather than calling os.Exit so that main stays a one-liner
 // and so a test can drive the whole tree in-process. Cobra's own error printing
@@ -152,9 +152,9 @@ func Execute(v Version) int {
 
 func newRootCmd(v Version) *cobra.Command {
 	root := &cobra.Command{
-		Use:   "opentag",
+		Use:   "mandatum",
 		Short: "Tag an agent from anywhere; stream its events everywhere",
-		Long: "opentag is an agent platform and a low-latency pub/sub bus.\n\n" +
+		Long: "mandatum is an agent platform and a low-latency pub/sub bus.\n\n" +
 			"Tag an agent from Slack, GitHub, Jira, a schedule or a webhook; the platform\n" +
 			"runs it durably, streams its events to any subscriber, and delivers them to any\n" +
 			"destination. Origin and destination are independent: a tag raised in GitHub can\n" +
@@ -166,7 +166,7 @@ func newRootCmd(v Version) *cobra.Command {
 	root.PersistentFlags().StringVar(&formatFlag, "format", string(FormatText),
 		"Output format: text|json")
 	root.PersistentFlags().StringVar(&serverFlag, "server", envOr(EnvServer, DefaultServer),
-		"opentag server base URL ($"+EnvServer+")")
+		"mandatum server base URL ($"+EnvServer+")")
 	root.PersistentFlags().StringVar(&tokenFlag, "token", os.Getenv(EnvToken),
 		"Bearer credential ($"+EnvToken+")")
 

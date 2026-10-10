@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/agentspec"
 )
 
 // Memory is a complete Store held in process memory.

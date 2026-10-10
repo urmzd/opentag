@@ -52,7 +52,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // DefaultWindow is how many sequence numbers above the mark a document

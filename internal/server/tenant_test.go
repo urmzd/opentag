@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Tenant is an authorization scope, and the whole point of deriving it from the
@@ -24,7 +24,7 @@ func TestTenantCannotBeForgedFromTheRequestBody(t *testing.T) {
 	t.Run("invoke", func(t *testing.T) {
 		h := newHarness(t, nil)
 		body := `{"id":"slack-evt-1","agent":"docs-bot","origin":"slack","text":"hi","tenant":"` + tenantOther + `"}`
-		res, got := h.postJSON(t, "/opentag.v1.InvokeService/Invoke", tokenAcme, body)
+		res, got := h.postJSON(t, "/mandatum.v1.InvokeService/Invoke", tokenAcme, body)
 		if res.StatusCode != http.StatusOK {
 			t.Fatalf("invoke: status %d: %s", res.StatusCode, got)
 		}
@@ -49,7 +49,7 @@ func TestTenantCannotBeForgedFromTheRequestBody(t *testing.T) {
 		defer func() { _ = watch.Close() }()
 
 		body := `{"event":{"topic":"agent:docs-bot:run_1","kind":"delta.text","tenant":"` + tenantOther + `"}}`
-		res, got := h.postJSON(t, "/opentag.v1.BusService/Publish", tokenAcme, body)
+		res, got := h.postJSON(t, "/mandatum.v1.BusService/Publish", tokenAcme, body)
 		if res.StatusCode != http.StatusOK {
 			t.Fatalf("publish: status %d: %s", res.StatusCode, got)
 		}

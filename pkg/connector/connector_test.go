@@ -6,9 +6,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Three connectors covering the three shapes the mesh actually has: a full
@@ -97,7 +97,7 @@ func TestSinkResolvesByTargetScheme(t *testing.T) {
 		}
 	}
 
-	if _, err := r.Sink(address.MustParse("github://urmzd/opentag/issues/42")); err != nil {
+	if _, err := r.Sink(address.MustParse("github://urmzd/mandatum/issues/42")); err != nil {
 		t.Errorf("github sink: %v", err)
 	}
 	if _, err := r.Sink(address.MustParse("webhook://acme/deploys")); err != nil {

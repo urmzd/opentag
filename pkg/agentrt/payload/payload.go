@@ -28,8 +28,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Tool call phases reported in ToolCall.Phase. They distinguish the model

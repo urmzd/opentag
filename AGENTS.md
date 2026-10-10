@@ -1,8 +1,8 @@
-# opentag
+# mandatum
 
 Agent platform and low-latency pub/sub bus. Tag an agent from anywhere, stream
 its events to anyone, deliver them anywhere. Go module
-`github.com/urmzd/opentag`, binary `opentag`.
+`github.com/urmzd/mandatum`, binary `mandatum`.
 
 **Status: beta, pre-1.0, not recommended for production.** Interfaces are
 stabilizing but may change between minor versions. The single-binary deployment
@@ -23,7 +23,7 @@ sandboxing and access control.
 | Package | Role |
 |---------|------|
 | `pkg/topic` | Topic addressing: `agent`, `agent:<name>`, `agent:<name>:<run>`. Prefix containment, no wildcards. Leaf. |
-| `pkg/address` | Mesh endpoint URIs: `github://urmzd/opentag/issues/42`, `slack://T01/C02?thread=...`. Leaf. |
+| `pkg/address` | Mesh endpoint URIs: `github://urmzd/mandatum/issues/42`, `slack://T01/C02?thread=...`. Leaf. |
 | `pkg/envelope` | Wire contract: `Tag`, `Event`, `Kind`, `Route`, `Filter`, `Subscription`. Leaf. |
 | `pkg/signature` | HMAC verification for inbound webhooks (Slack v0, GitHub sha256). Leaf. Security boundary. |
 | `pkg/agentspec` | Immutable agent specs, content-addressed revisions. Leaf. |
@@ -51,7 +51,7 @@ Discover layout with `tree` or ripgrep; do not trust stale listings.
 | lint | `golangci-lint run` |
 | fmt | `gofmt -w .` |
 | quality gate | `make check` |
-| run server | `make run` (or `go run ./cmd/opentag serve`) |
+| run server | `make run` (or `go run ./cmd/mandatum serve`) |
 | regenerate proto | `make proto` (needs `buf` on PATH) |
 | end-to-end demo | `go run ./examples/local` |
 

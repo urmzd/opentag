@@ -1,6 +1,6 @@
 .PHONY: all init build test lint fmt check run proto install
 
-MOD := $(shell basename $(CURDIR))
+MOD := mandatum
 CMD := cmd/$(MOD)
 
 all: check

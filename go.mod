@@ -1,4 +1,4 @@
-module github.com/urmzd/opentag
+module github.com/urmzd/mandatum
 
 go 1.26.9
 

@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/urmzd/dispatch/pkg/metrics"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Server-sent events are the browser-native read path. A dashboard opens one
@@ -56,7 +56,7 @@ func (s *Server) handleSSE(w http.ResponseWriter, r *http.Request) {
 	}
 	id, err := s.auth.Authenticate(r.Context(), r.Header)
 	if err != nil {
-		w.Header().Set("WWW-Authenticate", `Bearer realm="opentag"`)
+		w.Header().Set("WWW-Authenticate", `Bearer realm="mandatum"`)
 		s.httpFail(w, "sse", err)
 		return
 	}

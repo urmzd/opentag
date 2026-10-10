@@ -1,20 +1,20 @@
 #!/bin/sh
-# install.sh — Installs opentag from GitHub releases.
+# install.sh — Installs mandatum from GitHub releases.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/urmzd/opentag/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/urmzd/mandatum/main/install.sh | sh
 #
 # Environment variables:
-#   OPENTAG_VERSION     — version to install (default: latest)
-#   OPENTAG_INSTALL_DIR — installation directory (default: $HOME/.local/bin)
-#   OPENTAG_SHA256      — optional SHA256 checksum to verify against
+#   MANDATUM_VERSION     — version to install (default: latest)
+#   MANDATUM_INSTALL_DIR — installation directory (default: $HOME/.local/bin)
+#   MANDATUM_SHA256      — optional SHA256 checksum to verify against
 
 set -eu
 
-REPO="urmzd/opentag"
-BINARY="opentag"
-VERSION="${OPENTAG_VERSION:-latest}"
-INSTALL_DIR="${OPENTAG_INSTALL_DIR:-$HOME/.local/bin}"
+REPO="urmzd/mandatum"
+BINARY="mandatum"
+VERSION="${MANDATUM_VERSION:-latest}"
+INSTALL_DIR="${MANDATUM_INSTALL_DIR:-$HOME/.local/bin}"
 
 os=$(uname -s | tr '[:upper:]' '[:lower:]')
 arch=$(uname -m)
@@ -51,8 +51,8 @@ trap 'rm -rf "$tmp"' EXIT
 echo "downloading $url" >&2
 curl -fsSL "$url" -o "$tmp/$BINARY"
 
-if [ -n "${OPENTAG_SHA256:-}" ]; then
-  echo "${OPENTAG_SHA256}  $tmp/$BINARY" | (sha256sum -c - 2>/dev/null || shasum -a 256 -c -) >&2
+if [ -n "${MANDATUM_SHA256:-}" ]; then
+  echo "${MANDATUM_SHA256}  $tmp/$BINARY" | (sha256sum -c - 2>/dev/null || shasum -a 256 -c -) >&2
 fi
 
 chmod +x "$tmp/$BINARY"
