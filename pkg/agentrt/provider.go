@@ -67,7 +67,11 @@ func anthropicProvider(spec Spec) (saigetypes.Provider, error) {
 	if spec.Model == "" {
 		return nil, fmt.Errorf("%w: agent %q asks for the %s provider with no model", ErrInvalid, spec.Name, ProviderAnthropic)
 	}
-	return withRetry(anthropic.NewAdapter(key, spec.Model)), nil
+	a, err := anthropic.New(anthropic.Config{APIKey: key, Model: saigetypes.ModelID(spec.Model)})
+	if err != nil {
+		return nil, fmt.Errorf("%w: agent %q: %v", ErrInvalid, spec.Name, err)
+	}
+	return withRetry(a)
 }
 
 func ollamaProvider(spec Spec) (saigetypes.Provider, error) {
@@ -80,7 +84,11 @@ func ollamaProvider(spec Spec) (saigetypes.Provider, error) {
 	}
 	// The embedding model is empty: an agent turn generates, it does not
 	// embed. Retrieval brings its own embedder (see Retriever).
-	return withRetry(ollama.NewAdapter(ollama.NewClient(host, spec.Model, ""))), nil
+	a, err := ollama.New(ollama.Config{Host: host, Model: saigetypes.ModelID(spec.Model)})
+	if err != nil {
+		return nil, fmt.Errorf("%w: agent %q: %v", ErrInvalid, spec.Name, err)
+	}
+	return withRetry(a)
 }
 
 // withRetry wraps a model adapter in saige's retry decorator. saige's adapters
@@ -88,8 +96,12 @@ func ollamaProvider(spec Spec) (saigetypes.Provider, error) {
 // is the only retry layer: transient failures such as rate limits and
 // overloads are retried with jittered backoff that honors Retry-After, and
 // everything else surfaces at once.
-func withRetry(p saigetypes.Provider) saigetypes.Provider {
-	return retry.New(p, retry.DefaultConfig())
+func withRetry(p saigetypes.Provider) (saigetypes.Provider, error) {
+	r, err := retry.New(p, retry.DefaultConfig())
+	if err != nil {
+		return nil, fmt.Errorf("agentrt: retry: %w", err)
+	}
+	return r, nil
 }
 
 // offlineProvider replays script, one entry per model call.

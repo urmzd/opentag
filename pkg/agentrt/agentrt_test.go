@@ -366,8 +366,8 @@ func TestAnEmitFailureAbortsTheTurn(t *testing.T) {
 
 type providerFunc func(context.Context, []saigetypes.Message, []saigetypes.ToolDef) (<-chan saigetypes.Delta, error)
 
-func (f providerFunc) ChatStream(ctx context.Context, m []saigetypes.Message, t []saigetypes.ToolDef) (<-chan saigetypes.Delta, error) {
-	return f(ctx, m, t)
+func (f providerFunc) Stream(ctx context.Context, req saigetypes.Request) (<-chan saigetypes.Delta, error) {
+	return f(ctx, req.Messages, req.Tools)
 }
 
 func scripted(deltas []saigetypes.Delta) <-chan saigetypes.Delta {
