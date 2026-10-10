@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 (2026-10-10)
+
+### Breaking
+
+- depend on legatus, the renamed dispatch (#8) ([61ff1f1](https://github.com/urmzd/mandatum/commit/61ff1f1aa4dba9ed04e29901d49d1c5fd65a36ca))
+
+[Full Changelog](https://github.com/urmzd/mandatum/compare/v0.3.0...v0.4.0)
+
+
 ## 0.3.0 (2026-10-10)
 
 ### Breaking
