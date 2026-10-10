@@ -33,16 +33,16 @@ func NewTranslator() *Translator { return &Translator{} }
 // Delta maps one saige delta to an event body. The second result reports
 // whether this delta becomes an event at all.
 //
-// Most deltas do not. saige's delta set is a rendering protocol — block starts
+// Most deltas do not. saige's delta set is a rendering protocol — part starts
 // and ends, token usage, marker prompts, handoffs — while envelope.Kind is a
 // published contract with a fixed set of members. Rather than invent kinds for
 // the rest, or overload one, this package publishes the five that mean
 // something to a subscriber and drops the framing:
 //
-//	TextContentDelta                        -> delta.text
-//	ThinkingContentDelta                    -> delta.thinking
-//	ToolCallStartDelta, ToolExecStartDelta  -> delta.tool.call
-//	ToolExecEndDelta                        -> delta.tool.done
+//	PartDelta with Text                        -> delta.text
+//	PartDelta with Thinking                    -> delta.thinking
+//	PartStart of a tool_call, ToolExecStartDelta -> delta.tool.call
+//	ToolExecEndDelta                           -> delta.tool.done
 //
 // Citations are the exception that is not in this list: they are derived from
 // retrieval instead (see Citations). saige's CitationDelta, which reports what
@@ -59,19 +59,20 @@ func NewTranslator() *Translator { return &Translator{} }
 //     Slack threads.
 func (t *Translator) Delta(d saigetypes.Delta) (Chunk, bool) {
 	switch v := d.(type) {
-	case saigetypes.TextContentDelta:
-		if v.Content == "" {
+	case saigetypes.PartDelta:
+		switch {
+		case v.Text != "":
+			return chunk(envelope.KindText, payload.Text{Text: v.Text})
+		case v.Thinking != "":
+			return chunk(envelope.KindThinking, payload.Thinking{Text: v.Thinking})
+		default:
 			return Chunk{}, false
 		}
-		return chunk(envelope.KindText, payload.Text{Text: v.Content})
 
-	case saigetypes.ThinkingContentDelta:
-		if v.Content == "" {
+	case saigetypes.PartStart:
+		if v.Kind != saigetypes.KindToolCall {
 			return Chunk{}, false
 		}
-		return chunk(envelope.KindThinking, payload.Thinking{Text: v.Content})
-
-	case saigetypes.ToolCallStartDelta:
 		return chunk(envelope.KindToolCall, payload.ToolCall{
 			ID: v.ID, Name: v.Name, Phase: payload.PhaseRequested,
 		})

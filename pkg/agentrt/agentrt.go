@@ -257,7 +257,7 @@ func (r *Runner) Run(ctx context.Context, t Turn, emit func(context.Context, Chu
 		prompt = meta + "\n\n" + prompt
 	}
 
-	agent := saige.NewAgent(saige.AgentConfig{
+	agent, err := saige.New(saige.Config{
 		Name:         r.rev.Spec.Name,
 		SystemPrompt: r.rev.Spec.SystemPrompt,
 		Provider:     r.provider,
@@ -265,16 +265,19 @@ func (r *Runner) Run(ctx context.Context, t Turn, emit func(context.Context, Chu
 		MaxIter:      r.maxIter,
 		Logger:       r.logger,
 	})
+	if err != nil {
+		return res, fmt.Errorf("agentrt: agent %q revision %d: %w", r.rev.Spec.Name, r.rev.Rev, err)
+	}
 
-	stream := agent.Invoke(ctx, []saigetypes.Message{saigetypes.NewUserMessage(prompt)})
+	stream := agent.Invoke(ctx, []saigetypes.Message{saigetypes.UserMsg(saigetypes.Text(prompt))})
 	translator := NewTranslator()
 
 	var answer strings.Builder
 	var streamErr error
 	for d := range stream.Deltas() {
 		switch v := d.(type) {
-		case saigetypes.TextContentDelta:
-			answer.WriteString(v.Content)
+		case saigetypes.PartDelta:
+			answer.WriteString(v.Text)
 		case saigetypes.ErrorDelta:
 			// Failure is a lifecycle fact, not an event of its own (see
 			// Translator.Delta). Keep the first one and let the stream
