@@ -86,7 +86,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Errors returned by every backend. Callers match with errors.Is.
@@ -143,7 +143,7 @@ const (
 	// DefaultMaxRuns bounds how many runs Memory retains at once.
 	DefaultMaxRuns = 4096
 	// DefaultKeyPrefix namespaces every Redis key the bus owns.
-	DefaultKeyPrefix = "opentag"
+	DefaultKeyPrefix = "mandatum"
 	// DefaultPollInterval bounds how long a Redis subscriber blocks in one
 	// XREAD, and so how quickly it notices a new run or a closed stream.
 	DefaultPollInterval = 250 * time.Millisecond
@@ -221,7 +221,7 @@ func WithMaxRuns(n int) Option {
 	}
 }
 
-// WithKeyPrefix namespaces the Redis keys the bus owns (default "opentag").
+// WithKeyPrefix namespaces the Redis keys the bus owns (default "mandatum").
 // Memory ignores it.
 func WithKeyPrefix(p string) Option {
 	return func(o *options) {

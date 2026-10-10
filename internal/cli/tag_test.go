@@ -19,8 +19,8 @@ func TestParseRoutesSeparatesKindsWithoutEatingQueryParameters(t *testing.T) {
 	}{
 		{
 			name:     "address only",
-			spec:     "github://urmzd/opentag/issues/42",
-			wantAddr: "github://urmzd/opentag/issues/42",
+			spec:     "github://urmzd/mandatum/issues/42",
+			wantAddr: "github://urmzd/mandatum/issues/42",
 		},
 		{
 			name:      "address with one kind",
@@ -30,8 +30,8 @@ func TestParseRoutesSeparatesKindsWithoutEatingQueryParameters(t *testing.T) {
 		},
 		{
 			name:      "address with several kinds",
-			spec:      "github://urmzd/opentag/issues/42|delta,lifecycle.completed",
-			wantAddr:  "github://urmzd/opentag/issues/42",
+			spec:      "github://urmzd/mandatum/issues/42|delta,lifecycle.completed",
+			wantAddr:  "github://urmzd/mandatum/issues/42",
 			wantKinds: []string{"delta", "lifecycle.completed"},
 		},
 		{
@@ -136,7 +136,7 @@ func TestKindFilterMatchesFamiliesAndExactKinds(t *testing.T) {
 }
 
 func TestParseKeyValues(t *testing.T) {
-	got, err := parseKeyValues([]string{"repo=opentag", "pr=42", "title=fix: a=b"})
+	got, err := parseKeyValues([]string{"repo=mandatum", "pr=42", "title=fix: a=b"})
 	if err != nil {
 		t.Fatalf("parseKeyValues: %v", err)
 	}
@@ -145,7 +145,7 @@ func TestParseKeyValues(t *testing.T) {
 	if got["title"] != "fix: a=b" {
 		t.Errorf("title = %q, want %q", got["title"], "fix: a=b")
 	}
-	if got["repo"] != "opentag" || got["pr"] != "42" {
+	if got["repo"] != "mandatum" || got["pr"] != "42" {
 		t.Errorf("got %v", got)
 	}
 

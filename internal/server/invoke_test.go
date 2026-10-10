@@ -7,26 +7,26 @@ import (
 
 	"connectrpc.com/connect"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
-func tagMsg() *opentagv1.Tag {
-	return &opentagv1.Tag{
+func tagMsg() *mandatumv1.Tag {
+	return &mandatumv1.Tag{
 		Id:     "slack-evt-1",
 		Agent:  "docs-bot",
 		Origin: "slack",
 		Text:   "what changed in v2?",
-		Actor:  &opentagv1.Actor{Id: "U1", Display: "Alice"},
-		Source: &opentagv1.Address{
+		Actor:  &mandatumv1.Actor{Id: "U1", Display: "Alice"},
+		Source: &mandatumv1.Address{
 			Connector: "slack",
 			Workspace: "T0123",
 			Path:      []string{"C0456"},
 			Params:    map[string]string{"thread": "1699123456.001"},
 		},
-		Deliver: []*opentagv1.Route{{
-			Target: &opentagv1.Address{Connector: "jira", Workspace: "acme", Path: []string{"PROJ-5"}},
+		Deliver: []*mandatumv1.Route{{
+			Target: &mandatumv1.Address{Connector: "jira", Workspace: "acme", Path: []string{"PROJ-5"}},
 			Kinds:  []string{"lifecycle.completed"},
 		}},
 		Meta: map[string]string{"channel_name": "docs"},
@@ -101,13 +101,13 @@ func TestInvokeIsAnsweredIdempotentlyForARedeliveredTag(t *testing.T) {
 
 // A tag missing what makes it a tag is refused by the edge.
 func TestUnrunnableTagsAreRefused(t *testing.T) {
-	tests := map[string]func(*opentagv1.Tag){
-		"no id":           func(tag *opentagv1.Tag) { tag.Id = "" },
-		"no agent":        func(tag *opentagv1.Tag) { tag.Agent = "" },
-		"no origin":       func(tag *opentagv1.Tag) { tag.Origin = "" },
-		"unusable source": func(tag *opentagv1.Tag) { tag.Source.Workspace = "not a workspace" },
-		"route no target": func(tag *opentagv1.Tag) { tag.Deliver[0].Target = nil },
-		"unusable route":  func(tag *opentagv1.Tag) { tag.Deliver[0].Target.Connector = "" },
+	tests := map[string]func(*mandatumv1.Tag){
+		"no id":           func(tag *mandatumv1.Tag) { tag.Id = "" },
+		"no agent":        func(tag *mandatumv1.Tag) { tag.Agent = "" },
+		"no origin":       func(tag *mandatumv1.Tag) { tag.Origin = "" },
+		"unusable source": func(tag *mandatumv1.Tag) { tag.Source.Workspace = "not a workspace" },
+		"route no target": func(tag *mandatumv1.Tag) { tag.Deliver[0].Target = nil },
+		"unusable route":  func(tag *mandatumv1.Tag) { tag.Deliver[0].Target.Connector = "" },
 	}
 	h := newHarness(t, nil)
 	for name, break_ := range tests {
@@ -229,11 +229,11 @@ func TestGetRunIsScopedToTheCallersTenant(t *testing.T) {
 	})
 	h.runs.put(Run{ID: "run_2", Tenant: tenantOther, Agent: "docs-bot", Status: StatusRunning})
 
-	got, err := h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&opentagv1.GetRunRequest{RunId: "run_1"}))
+	got, err := h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&mandatumv1.GetRunRequest{RunId: "run_1"}))
 	if err != nil {
 		t.Fatalf("get run: %v", err)
 	}
-	if got.Msg.GetStatus() != opentagv1.RunStatus_RUN_STATUS_COMPLETED {
+	if got.Msg.GetStatus() != mandatumv1.RunStatus_RUN_STATUS_COMPLETED {
 		t.Errorf("status: got %v", got.Msg.GetStatus())
 	}
 	if got.Msg.GetLastSeq() != 12 {
@@ -249,10 +249,10 @@ func TestGetRunIsScopedToTheCallersTenant(t *testing.T) {
 		t.Errorf("a run that never started must not report a start time, got %v", got.Msg.GetStartedAt().AsTime())
 	}
 
-	_, err = h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&opentagv1.GetRunRequest{RunId: "run_2"}))
+	_, err = h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&mandatumv1.GetRunRequest{RunId: "run_2"}))
 	requireCode(t, err, connect.CodeNotFound)
 
-	_, err = h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&opentagv1.GetRunRequest{}))
+	_, err = h.invokeClient(tokenAcme).GetRun(context.Background(), connect.NewRequest(&mandatumv1.GetRunRequest{}))
 	requireCode(t, err, connect.CodeInvalidArgument)
 }
 

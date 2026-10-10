@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/urmzd/opentag/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
 )
 
 // This file turns whatever Jira put in a body field into the plain text with

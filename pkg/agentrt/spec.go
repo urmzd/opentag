@@ -18,7 +18,7 @@ var ErrInvalid = errors.New("agentrt: invalid")
 // next Revision, because a run pins the revision it accepted and replays under
 // that revision forever.
 //
-// The type mirrors opentag.v1.AgentSpec field for field so the control plane's
+// The type mirrors mandatum.v1.AgentSpec field for field so the control plane's
 // wire form converts by assignment. It is declared here, rather than imported
 // from a control-plane package, so that building an agent depends only on the
 // definition of one and not on how definitions are stored, versioned, or

@@ -3,8 +3,8 @@ package agentrt
 import (
 	saigetypes "github.com/urmzd/saige/agent/types"
 
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Chunk is one event body a turn produced: a kind and its marshalled payload.

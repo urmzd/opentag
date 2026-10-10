@@ -12,19 +12,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/router"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/router"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Targets used throughout. Each one belongs to a different connector, so a
 // route's target names both the surface and the sink that renders it.
 const (
 	slackTarget  = "slack://T01/C02?thread=1699123456.001"
-	githubTarget = "github://acme/opentag/issues/7"
+	githubTarget = "github://acme/mandatum/issues/7"
 	hookTarget   = "webhook://acme/deploys"
 	cronTarget   = "cron://acme/nightly"
 )

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // A payload is a wire contract: a reader that only has the JSON must be able to
@@ -105,8 +105,8 @@ func TestEmptyPayloadDecodesToZeroValue(t *testing.T) {
 func TestActionAddressesRoundTripThroughTheirURIs(t *testing.T) {
 	t.Parallel()
 
-	target := address.MustParse("github://urmzd/opentag/issues/42")
-	result := address.MustParse("github://urmzd/opentag/issues/42/comments/7")
+	target := address.MustParse("github://urmzd/mandatum/issues/42")
+	result := address.MustParse("github://urmzd/mandatum/issues/42/comments/7")
 	a := payload.Action{Name: "github_comment", Target: target.String(), Address: result.String()}
 
 	raw, err := payload.Encode(a)

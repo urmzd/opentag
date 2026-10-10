@@ -8,9 +8,9 @@ import (
 
 	saigetypes "github.com/urmzd/saige/agent/types"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/connector"
 )
 
 // Tools resolves the names in Spec.Tools to executable tools.

@@ -17,11 +17,11 @@ import (
 	"github.com/urmzd/dispatch/pkg/tool"
 	saigetypes "github.com/urmzd/saige/agent/types"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentrt"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentrt"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Sandbox defaults.
@@ -254,7 +254,7 @@ func ToolName(agent string) string { return "agent:" + agent }
 
 // DeploymentName is the dispatch deployment a pinned revision runs in.
 func DeploymentName(agent string, rev int) string {
-	return fmt.Sprintf("opentag-%s-r%d", agent, rev)
+	return fmt.Sprintf("mandatum-%s-r%d", agent, rev)
 }
 
 // DelegateToolName is the tool an agent calls to tag another agent.
@@ -420,7 +420,7 @@ func (s *Sandbox) register(name string) error {
 	if err := s.tools.Register(tool.Func(name, s.call)); err != nil {
 		// Registered by another Sandbox over the same registry: the tool body
 		// is this package's either way, so adopt it rather than failing.
-		s.logger.Debug("opentag/runtime: dispatch tool already registered", "tool", name, "error", err)
+		s.logger.Debug("mandatum/runtime: dispatch tool already registered", "tool", name, "error", err)
 	}
 	s.registered[name] = true
 	return nil

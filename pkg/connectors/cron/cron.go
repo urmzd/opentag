@@ -57,9 +57,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/internal/inbound"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/inbound"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Name is the address scheme this connector owns.

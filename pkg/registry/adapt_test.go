@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/urmzd/opentag/internal/server"
-	"github.com/urmzd/opentag/pkg/agentrt"
-	"github.com/urmzd/opentag/pkg/agentspec"
-	"github.com/urmzd/opentag/pkg/registry"
-	"github.com/urmzd/opentag/pkg/runtime"
+	"github.com/urmzd/mandatum/internal/server"
+	"github.com/urmzd/mandatum/pkg/agentrt"
+	"github.com/urmzd/mandatum/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/registry"
+	"github.com/urmzd/mandatum/pkg/runtime"
 )
 
 // The two seams this package exists to fit. Both are compile-time claims, and

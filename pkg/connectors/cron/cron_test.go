@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/cron"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/cron"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // ── Expression parsing ──────────────────────────────────────────────

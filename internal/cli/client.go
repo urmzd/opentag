@@ -8,7 +8,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/urmzd/opentag/gen/opentag/v1/opentagv1connect"
+	"github.com/urmzd/mandatum/gen/mandatum/v1/mandatumv1connect"
 )
 
 // clients are the three Connect stubs a client command talks through. They are
@@ -16,9 +16,9 @@ import (
 // because a command that has resolved a server has already paid for all three:
 // there is no cost to holding a stub you do not call.
 type clients struct {
-	agents opentagv1connect.AgentServiceClient
-	bus    opentagv1connect.BusServiceClient
-	invoke opentagv1connect.InvokeServiceClient
+	agents mandatumv1connect.AgentServiceClient
+	bus    mandatumv1connect.BusServiceClient
+	invoke mandatumv1connect.InvokeServiceClient
 }
 
 // dial resolves --server and --token into stubs.
@@ -46,9 +46,9 @@ func dial() (*clients, error) {
 
 	hc := &http.Client{Transport: bearer{token: strings.TrimSpace(tokenFlag), next: http.DefaultTransport}}
 	return &clients{
-		agents: opentagv1connect.NewAgentServiceClient(hc, base),
-		bus:    opentagv1connect.NewBusServiceClient(hc, base),
-		invoke: opentagv1connect.NewInvokeServiceClient(hc, base),
+		agents: mandatumv1connect.NewAgentServiceClient(hc, base),
+		bus:    mandatumv1connect.NewBusServiceClient(hc, base),
+		invoke: mandatumv1connect.NewInvokeServiceClient(hc, base),
 	}, nil
 }
 

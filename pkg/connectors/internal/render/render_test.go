@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/connectors/internal/render"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/render"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // ev builds a run-scoped event the way the bus delivers one.
@@ -202,12 +202,12 @@ func TestToolCallAndCompletionJoinOnTheirIDInEitherOrder(t *testing.T) {
 		order []envelope.Event
 	}{
 		{name: "call then done", order: []envelope.Event{
-			ev(1, envelope.KindToolCall, `{"id":"t1","name":"search","args":{"q":  "opentag"}}`),
+			ev(1, envelope.KindToolCall, `{"id":"t1","name":"search","args":{"q":  "mandatum"}}`),
 			ev(2, envelope.KindToolDone, `{"id":"t1","result":"3 hits"}`),
 		}},
 		{name: "done then call", order: []envelope.Event{
 			ev(2, envelope.KindToolDone, `{"id":"t1","result":"3 hits"}`),
-			ev(1, envelope.KindToolCall, `{"id":"t1","name":"search","args":{"q":  "opentag"}}`),
+			ev(1, envelope.KindToolCall, `{"id":"t1","name":"search","args":{"q":  "mandatum"}}`),
 		}},
 	}
 	for _, tc := range tests {
@@ -221,7 +221,7 @@ func TestToolCallAndCompletionJoinOnTheirIDInEitherOrder(t *testing.T) {
 				t.Fatalf("got %d tools, want 1: %+v", len(tools), tools)
 			}
 			got := tools[0]
-			want := render.Tool{ID: "t1", Name: "search", Args: `{"q":"opentag"}`, Result: "3 hits", Done: true}
+			want := render.Tool{ID: "t1", Name: "search", Args: `{"q":"mandatum"}`, Result: "3 hits", Done: true}
 			if got.ID != want.ID || got.Name != want.Name || got.Args != want.Args ||
 				got.Result != want.Result || got.Error != want.Error || got.Done != want.Done {
 				t.Errorf("tool = %+v, want %+v", got, want)
@@ -264,13 +264,13 @@ func TestActionsRenderTheirAddressWhicheverFormItWasMarshalledIn(t *testing.T) {
 	}{
 		{
 			name:    "address as a uri string",
-			payload: `{"summary":"commented","address":"github://urmzd/opentag/issues/42"}`,
-			want:    render.Action{Summary: "commented", Address: "github://urmzd/opentag/issues/42"},
+			payload: `{"summary":"commented","address":"github://urmzd/mandatum/issues/42"}`,
+			want:    render.Action{Summary: "commented", Address: "github://urmzd/mandatum/issues/42"},
 		},
 		{
 			name:    "address as the struct it marshals to",
-			payload: `{"summary":"commented","address":{"Connector":"github","Workspace":"urmzd","Path":["opentag","issues","42"]}}`,
-			want:    render.Action{Summary: "commented", Address: "github://urmzd/opentag/issues/42"},
+			payload: `{"summary":"commented","address":{"Connector":"github","Workspace":"urmzd","Path":["mandatum","issues","42"]}}`,
+			want:    render.Action{Summary: "commented", Address: "github://urmzd/mandatum/issues/42"},
 		},
 		{
 			name:    "zero address is dropped, not rendered as a broken link",

@@ -3,7 +3,7 @@ package sink
 import (
 	"strings"
 
-	"github.com/urmzd/opentag/pkg/connectors/internal/render"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/render"
 )
 
 // Markup is a surface's alphabet: the handful of things every one of these
@@ -97,7 +97,7 @@ func StatusLabel(s render.Status) string {
 // The shape, top to bottom:
 //
 //	docs-bot · working                     who is answering, and whether it still is
-//	· search {"q":"opentag"} -> 3 hits     what it did, so a slow answer is legible
+//	· search {"q":"mandatum"} -> 3 hits     what it did, so a slow answer is legible
 //	the answer, streaming                  the answer itself
 //	[1] Design doc                         footnotes, one per cited source
 //	changed: commented on PR #42           what it changed on a real surface

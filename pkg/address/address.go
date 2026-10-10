@@ -1,7 +1,7 @@
 // Package address is the naming layer of the mesh: a stable URI for any place
 // a tag can come from or be delivered to.
 //
-//	github://urmzd/opentag/issues/42
+//	github://urmzd/mandatum/issues/42
 //	slack://T0123/C0456?thread=1699123456.001
 //	jira://acme/PROJ-5
 //	cron://acme/nightly-review

@@ -1,8 +1,8 @@
-# buf.yaml is the module and lint configuration for the opentag wire contract.
+# buf.yaml is the module and lint configuration for the mandatum wire contract.
 #
 # One module rooted at proto/, so that every import path in a .proto file is the
-# path a generated Go import will mirror ("opentag/v1/bus.proto" ->
-# gen/opentag/v1/bus.pb.go). Buf v2 declares modules here; there is deliberately
+# path a generated Go import will mirror ("mandatum/v1/bus.proto" ->
+# gen/mandatum/v1/bus.pb.go). Buf v2 declares modules here; there is deliberately
 # no buf.work.yaml, which v2 replaced with the modules list below. There is no
 # buf.lock either: the only import outside this module is
 # google/protobuf/timestamp.proto, a well-known type buf resolves from its own

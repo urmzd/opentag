@@ -32,7 +32,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/signature"
 )
 
 const (

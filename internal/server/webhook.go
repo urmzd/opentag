@@ -8,9 +8,9 @@ import (
 	"net/http"
 
 	"github.com/urmzd/dispatch/pkg/metrics"
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
 )
 
 // Webhook ingress is the untrusted edge of the system: anyone who learns the URL

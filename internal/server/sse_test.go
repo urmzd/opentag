@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // sseReader reads one frame at a time from a live SSE response. Frames are

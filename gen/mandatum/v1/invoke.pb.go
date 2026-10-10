@@ -1,4 +1,4 @@
-// opentag.v1 is the wire contract every opentag client speaks. This file is the
+// mandatum.v1 is the wire contract every mandatum client speaks. This file is the
 // write path: how a tag gets raised, where its output is sent, and how the run
 // it created is inspected afterwards.
 //
@@ -23,9 +23,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: opentag/v1/invoke.proto
+// source: mandatum/v1/invoke.proto
 
-package opentagv1
+package mandatumv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -103,11 +103,11 @@ func (x RunStatus) String() string {
 }
 
 func (RunStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_opentag_v1_invoke_proto_enumTypes[0].Descriptor()
+	return file_mandatum_v1_invoke_proto_enumTypes[0].Descriptor()
 }
 
 func (RunStatus) Type() protoreflect.EnumType {
-	return &file_opentag_v1_invoke_proto_enumTypes[0]
+	return &file_mandatum_v1_invoke_proto_enumTypes[0]
 }
 
 func (x RunStatus) Number() protoreflect.EnumNumber {
@@ -116,14 +116,14 @@ func (x RunStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RunStatus.Descriptor instead.
 func (RunStatus) EnumDescriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{0}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{0}
 }
 
 // Address is a stable URI for any place a tag can come from or be delivered to.
 // It is the naming layer of the mesh, and it is structured rather than a bare
 // string so that a server can authorize a target without re-parsing it:
 //
-//	github://urmzd/opentag/issues/42
+//	github://urmzd/mandatum/issues/42
 //	slack://T0123/C0456?thread=1699123456.001
 //	jira://acme/PROJ-5
 //	cron://acme/nightly-review
@@ -155,7 +155,7 @@ type Address struct {
 
 func (x *Address) Reset() {
 	*x = Address{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[0]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -167,7 +167,7 @@ func (x *Address) String() string {
 func (*Address) ProtoMessage() {}
 
 func (x *Address) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[0]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -180,7 +180,7 @@ func (x *Address) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Address.ProtoReflect.Descriptor instead.
 func (*Address) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{0}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Address) GetConnector() string {
@@ -231,7 +231,7 @@ type Route struct {
 
 func (x *Route) Reset() {
 	*x = Route{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[1]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -243,7 +243,7 @@ func (x *Route) String() string {
 func (*Route) ProtoMessage() {}
 
 func (x *Route) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[1]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -256,7 +256,7 @@ func (x *Route) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Route.ProtoReflect.Descriptor instead.
 func (*Route) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{1}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Route) GetTarget() *Address {
@@ -295,7 +295,7 @@ type Actor struct {
 
 func (x *Actor) Reset() {
 	*x = Actor{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[2]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -307,7 +307,7 @@ func (x *Actor) String() string {
 func (*Actor) ProtoMessage() {}
 
 func (x *Actor) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[2]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -320,7 +320,7 @@ func (x *Actor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Actor.ProtoReflect.Descriptor instead.
 func (*Actor) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{2}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Actor) GetId() string {
@@ -400,7 +400,7 @@ type Tag struct {
 
 func (x *Tag) Reset() {
 	*x = Tag{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[3]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +412,7 @@ func (x *Tag) String() string {
 func (*Tag) ProtoMessage() {}
 
 func (x *Tag) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[3]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +425,7 @@ func (x *Tag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tag.ProtoReflect.Descriptor instead.
 func (*Tag) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{3}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Tag) GetId() string {
@@ -518,7 +518,7 @@ type InvokeResponse struct {
 
 func (x *InvokeResponse) Reset() {
 	*x = InvokeResponse{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[4]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -530,7 +530,7 @@ func (x *InvokeResponse) String() string {
 func (*InvokeResponse) ProtoMessage() {}
 
 func (x *InvokeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[4]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +543,7 @@ func (x *InvokeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InvokeResponse.ProtoReflect.Descriptor instead.
 func (*InvokeResponse) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{4}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *InvokeResponse) GetRunId() string {
@@ -599,7 +599,7 @@ type Run struct {
 	// Topic is where this run's events were published.
 	Topic string `protobuf:"bytes,6,opt,name=topic,proto3" json:"topic,omitempty"`
 	// Status is the run's current lifecycle state.
-	Status RunStatus `protobuf:"varint,7,opt,name=status,proto3,enum=opentag.v1.RunStatus" json:"status,omitempty"`
+	Status RunStatus `protobuf:"varint,7,opt,name=status,proto3,enum=mandatum.v1.RunStatus" json:"status,omitempty"`
 	// Tag is the request the run was accepted from, retained verbatim. It is the
 	// input side of the audit trail: with the pinned revision, it is everything
 	// needed to explain, or reproduce, what the agent did.
@@ -627,7 +627,7 @@ type Run struct {
 
 func (x *Run) Reset() {
 	*x = Run{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[5]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -639,7 +639,7 @@ func (x *Run) String() string {
 func (*Run) ProtoMessage() {}
 
 func (x *Run) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[5]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -652,7 +652,7 @@ func (x *Run) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Run.ProtoReflect.Descriptor instead.
 func (*Run) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{5}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Run) GetRunId() string {
@@ -757,7 +757,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_opentag_v1_invoke_proto_msgTypes[6]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -769,7 +769,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_opentag_v1_invoke_proto_msgTypes[6]
+	mi := &file_mandatum_v1_invoke_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -782,7 +782,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_opentag_v1_invoke_proto_rawDescGZIP(), []int{6}
+	return file_mandatum_v1_invoke_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetRunRequest) GetRunId() string {
@@ -792,36 +792,35 @@ func (x *GetRunRequest) GetRunId() string {
 	return ""
 }
 
-var File_opentag_v1_invoke_proto protoreflect.FileDescriptor
+var File_mandatum_v1_invoke_proto protoreflect.FileDescriptor
 
-const file_opentag_v1_invoke_proto_rawDesc = "" +
+const file_mandatum_v1_invoke_proto_rawDesc = "" +
 	"\n" +
-	"\x17opentag/v1/invoke.proto\x12\n" +
-	"opentag.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x14opentag/v1/bus.proto\"\xd3\x01\n" +
+	"\x18mandatum/v1/invoke.proto\x12\vmandatum.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15mandatum/v1/bus.proto\"\xd4\x01\n" +
 	"\aAddress\x12\x1c\n" +
 	"\tconnector\x18\x01 \x01(\tR\tconnector\x12\x1c\n" +
 	"\tworkspace\x18\x02 \x01(\tR\tworkspace\x12\x12\n" +
-	"\x04path\x18\x03 \x03(\tR\x04path\x127\n" +
-	"\x06params\x18\x04 \x03(\v2\x1f.opentag.v1.Address.ParamsEntryR\x06params\x1a9\n" +
+	"\x04path\x18\x03 \x03(\tR\x04path\x128\n" +
+	"\x06params\x18\x04 \x03(\v2 .mandatum.v1.Address.ParamsEntryR\x06params\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01J\x04\b\x05\x10\x10\"P\n" +
-	"\x05Route\x12+\n" +
-	"\x06target\x18\x01 \x01(\v2\x13.opentag.v1.AddressR\x06target\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01J\x04\b\x05\x10\x10\"Q\n" +
+	"\x05Route\x12,\n" +
+	"\x06target\x18\x01 \x01(\v2\x14.mandatum.v1.AddressR\x06target\x12\x14\n" +
 	"\x05kinds\x18\x02 \x03(\tR\x05kindsJ\x04\b\x03\x10\x10\"I\n" +
 	"\x05Actor\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\adisplay\x18\x02 \x01(\tR\adisplay\x12\x10\n" +
-	"\x03bot\x18\x03 \x01(\bR\x03botJ\x04\b\x04\x10\x10\"\xf4\x02\n" +
+	"\x03bot\x18\x03 \x01(\bR\x03botJ\x04\b\x04\x10\x10\"\xf8\x02\n" +
 	"\x03Tag\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05agent\x18\x02 \x01(\tR\x05agent\x12\x16\n" +
-	"\x06origin\x18\x03 \x01(\tR\x06origin\x12+\n" +
-	"\x06source\x18\x04 \x01(\v2\x13.opentag.v1.AddressR\x06source\x12\x12\n" +
-	"\x04text\x18\x05 \x01(\tR\x04text\x12'\n" +
-	"\x05actor\x18\x06 \x01(\v2\x11.opentag.v1.ActorR\x05actor\x12+\n" +
-	"\adeliver\x18\a \x03(\v2\x11.opentag.v1.RouteR\adeliver\x12-\n" +
-	"\x04meta\x18\b \x03(\v2\x19.opentag.v1.Tag.MetaEntryR\x04meta\x12*\n" +
+	"\x06origin\x18\x03 \x01(\tR\x06origin\x12,\n" +
+	"\x06source\x18\x04 \x01(\v2\x14.mandatum.v1.AddressR\x06source\x12\x12\n" +
+	"\x04text\x18\x05 \x01(\tR\x04text\x12(\n" +
+	"\x05actor\x18\x06 \x01(\v2\x12.mandatum.v1.ActorR\x05actor\x12,\n" +
+	"\adeliver\x18\a \x03(\v2\x12.mandatum.v1.RouteR\adeliver\x12.\n" +
+	"\x04meta\x18\b \x03(\v2\x1a.mandatum.v1.Tag.MetaEntryR\x04meta\x12*\n" +
 	"\x02at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x1a7\n" +
 	"\tMetaEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -832,16 +831,16 @@ const file_opentag_v1_invoke_proto_rawDesc = "" +
 	"\x03rev\x18\x02 \x01(\x05R\x03rev\x12\x14\n" +
 	"\x05topic\x18\x03 \x01(\tR\x05topic\x12;\n" +
 	"\vaccepted_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"acceptedAtJ\x04\b\x05\x10\x10\"\xc0\x03\n" +
+	"acceptedAtJ\x04\b\x05\x10\x10\"\xc2\x03\n" +
 	"\x03Run\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\x12\x16\n" +
 	"\x06tenant\x18\x02 \x01(\tR\x06tenant\x12\x14\n" +
 	"\x05agent\x18\x03 \x01(\tR\x05agent\x12\x10\n" +
 	"\x03rev\x18\x04 \x01(\x05R\x03rev\x12\x16\n" +
 	"\x06origin\x18\x05 \x01(\tR\x06origin\x12\x14\n" +
-	"\x05topic\x18\x06 \x01(\tR\x05topic\x12-\n" +
-	"\x06status\x18\a \x01(\x0e2\x15.opentag.v1.RunStatusR\x06status\x12!\n" +
-	"\x03tag\x18\b \x01(\v2\x0f.opentag.v1.TagR\x03tag\x12\x19\n" +
+	"\x05topic\x18\x06 \x01(\tR\x05topic\x12.\n" +
+	"\x06status\x18\a \x01(\x0e2\x16.mandatum.v1.RunStatusR\x06status\x12\"\n" +
+	"\x03tag\x18\b \x01(\v2\x10.mandatum.v1.TagR\x03tag\x12\x19\n" +
 	"\blast_seq\x18\t \x01(\x04R\alastSeq\x12\x14\n" +
 	"\x05error\x18\n" +
 	" \x01(\tR\x05error\x129\n" +
@@ -859,60 +858,60 @@ const file_opentag_v1_invoke_proto_rawDesc = "" +
 	"\x12RUN_STATUS_RUNNING\x10\x02\x12\x15\n" +
 	"\x11RUN_STATUS_PARKED\x10\x03\x12\x18\n" +
 	"\x14RUN_STATUS_COMPLETED\x10\x04\x12\x15\n" +
-	"\x11RUN_STATUS_FAILED\x10\x05\"\x04\b\x06\x10\x0f2\xb8\x01\n" +
-	"\rInvokeService\x127\n" +
-	"\x06Invoke\x12\x0f.opentag.v1.Tag\x1a\x1a.opentag.v1.InvokeResponse\"\x00\x126\n" +
-	"\fInvokeStream\x12\x0f.opentag.v1.Tag\x1a\x11.opentag.v1.Event\"\x000\x01\x126\n" +
-	"\x06GetRun\x12\x19.opentag.v1.GetRunRequest\x1a\x0f.opentag.v1.Run\"\x00B3Z1github.com/urmzd/opentag/gen/opentag/v1;opentagv1b\x06proto3"
+	"\x11RUN_STATUS_FAILED\x10\x05\"\x04\b\x06\x10\x0f2\xbe\x01\n" +
+	"\rInvokeService\x129\n" +
+	"\x06Invoke\x12\x10.mandatum.v1.Tag\x1a\x1b.mandatum.v1.InvokeResponse\"\x00\x128\n" +
+	"\fInvokeStream\x12\x10.mandatum.v1.Tag\x1a\x12.mandatum.v1.Event\"\x000\x01\x128\n" +
+	"\x06GetRun\x12\x1a.mandatum.v1.GetRunRequest\x1a\x10.mandatum.v1.Run\"\x00B6Z4github.com/urmzd/mandatum/gen/mandatum/v1;mandatumv1b\x06proto3"
 
 var (
-	file_opentag_v1_invoke_proto_rawDescOnce sync.Once
-	file_opentag_v1_invoke_proto_rawDescData []byte
+	file_mandatum_v1_invoke_proto_rawDescOnce sync.Once
+	file_mandatum_v1_invoke_proto_rawDescData []byte
 )
 
-func file_opentag_v1_invoke_proto_rawDescGZIP() []byte {
-	file_opentag_v1_invoke_proto_rawDescOnce.Do(func() {
-		file_opentag_v1_invoke_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_opentag_v1_invoke_proto_rawDesc), len(file_opentag_v1_invoke_proto_rawDesc)))
+func file_mandatum_v1_invoke_proto_rawDescGZIP() []byte {
+	file_mandatum_v1_invoke_proto_rawDescOnce.Do(func() {
+		file_mandatum_v1_invoke_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mandatum_v1_invoke_proto_rawDesc), len(file_mandatum_v1_invoke_proto_rawDesc)))
 	})
-	return file_opentag_v1_invoke_proto_rawDescData
+	return file_mandatum_v1_invoke_proto_rawDescData
 }
 
-var file_opentag_v1_invoke_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_opentag_v1_invoke_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_opentag_v1_invoke_proto_goTypes = []any{
-	(RunStatus)(0),                // 0: opentag.v1.RunStatus
-	(*Address)(nil),               // 1: opentag.v1.Address
-	(*Route)(nil),                 // 2: opentag.v1.Route
-	(*Actor)(nil),                 // 3: opentag.v1.Actor
-	(*Tag)(nil),                   // 4: opentag.v1.Tag
-	(*InvokeResponse)(nil),        // 5: opentag.v1.InvokeResponse
-	(*Run)(nil),                   // 6: opentag.v1.Run
-	(*GetRunRequest)(nil),         // 7: opentag.v1.GetRunRequest
-	nil,                           // 8: opentag.v1.Address.ParamsEntry
-	nil,                           // 9: opentag.v1.Tag.MetaEntry
+var file_mandatum_v1_invoke_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_mandatum_v1_invoke_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_mandatum_v1_invoke_proto_goTypes = []any{
+	(RunStatus)(0),                // 0: mandatum.v1.RunStatus
+	(*Address)(nil),               // 1: mandatum.v1.Address
+	(*Route)(nil),                 // 2: mandatum.v1.Route
+	(*Actor)(nil),                 // 3: mandatum.v1.Actor
+	(*Tag)(nil),                   // 4: mandatum.v1.Tag
+	(*InvokeResponse)(nil),        // 5: mandatum.v1.InvokeResponse
+	(*Run)(nil),                   // 6: mandatum.v1.Run
+	(*GetRunRequest)(nil),         // 7: mandatum.v1.GetRunRequest
+	nil,                           // 8: mandatum.v1.Address.ParamsEntry
+	nil,                           // 9: mandatum.v1.Tag.MetaEntry
 	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*Event)(nil),                 // 11: opentag.v1.Event
+	(*Event)(nil),                 // 11: mandatum.v1.Event
 }
-var file_opentag_v1_invoke_proto_depIdxs = []int32{
-	8,  // 0: opentag.v1.Address.params:type_name -> opentag.v1.Address.ParamsEntry
-	1,  // 1: opentag.v1.Route.target:type_name -> opentag.v1.Address
-	1,  // 2: opentag.v1.Tag.source:type_name -> opentag.v1.Address
-	3,  // 3: opentag.v1.Tag.actor:type_name -> opentag.v1.Actor
-	2,  // 4: opentag.v1.Tag.deliver:type_name -> opentag.v1.Route
-	9,  // 5: opentag.v1.Tag.meta:type_name -> opentag.v1.Tag.MetaEntry
-	10, // 6: opentag.v1.Tag.at:type_name -> google.protobuf.Timestamp
-	10, // 7: opentag.v1.InvokeResponse.accepted_at:type_name -> google.protobuf.Timestamp
-	0,  // 8: opentag.v1.Run.status:type_name -> opentag.v1.RunStatus
-	4,  // 9: opentag.v1.Run.tag:type_name -> opentag.v1.Tag
-	10, // 10: opentag.v1.Run.created_at:type_name -> google.protobuf.Timestamp
-	10, // 11: opentag.v1.Run.started_at:type_name -> google.protobuf.Timestamp
-	10, // 12: opentag.v1.Run.ended_at:type_name -> google.protobuf.Timestamp
-	4,  // 13: opentag.v1.InvokeService.Invoke:input_type -> opentag.v1.Tag
-	4,  // 14: opentag.v1.InvokeService.InvokeStream:input_type -> opentag.v1.Tag
-	7,  // 15: opentag.v1.InvokeService.GetRun:input_type -> opentag.v1.GetRunRequest
-	5,  // 16: opentag.v1.InvokeService.Invoke:output_type -> opentag.v1.InvokeResponse
-	11, // 17: opentag.v1.InvokeService.InvokeStream:output_type -> opentag.v1.Event
-	6,  // 18: opentag.v1.InvokeService.GetRun:output_type -> opentag.v1.Run
+var file_mandatum_v1_invoke_proto_depIdxs = []int32{
+	8,  // 0: mandatum.v1.Address.params:type_name -> mandatum.v1.Address.ParamsEntry
+	1,  // 1: mandatum.v1.Route.target:type_name -> mandatum.v1.Address
+	1,  // 2: mandatum.v1.Tag.source:type_name -> mandatum.v1.Address
+	3,  // 3: mandatum.v1.Tag.actor:type_name -> mandatum.v1.Actor
+	2,  // 4: mandatum.v1.Tag.deliver:type_name -> mandatum.v1.Route
+	9,  // 5: mandatum.v1.Tag.meta:type_name -> mandatum.v1.Tag.MetaEntry
+	10, // 6: mandatum.v1.Tag.at:type_name -> google.protobuf.Timestamp
+	10, // 7: mandatum.v1.InvokeResponse.accepted_at:type_name -> google.protobuf.Timestamp
+	0,  // 8: mandatum.v1.Run.status:type_name -> mandatum.v1.RunStatus
+	4,  // 9: mandatum.v1.Run.tag:type_name -> mandatum.v1.Tag
+	10, // 10: mandatum.v1.Run.created_at:type_name -> google.protobuf.Timestamp
+	10, // 11: mandatum.v1.Run.started_at:type_name -> google.protobuf.Timestamp
+	10, // 12: mandatum.v1.Run.ended_at:type_name -> google.protobuf.Timestamp
+	4,  // 13: mandatum.v1.InvokeService.Invoke:input_type -> mandatum.v1.Tag
+	4,  // 14: mandatum.v1.InvokeService.InvokeStream:input_type -> mandatum.v1.Tag
+	7,  // 15: mandatum.v1.InvokeService.GetRun:input_type -> mandatum.v1.GetRunRequest
+	5,  // 16: mandatum.v1.InvokeService.Invoke:output_type -> mandatum.v1.InvokeResponse
+	11, // 17: mandatum.v1.InvokeService.InvokeStream:output_type -> mandatum.v1.Event
+	6,  // 18: mandatum.v1.InvokeService.GetRun:output_type -> mandatum.v1.Run
 	16, // [16:19] is the sub-list for method output_type
 	13, // [13:16] is the sub-list for method input_type
 	13, // [13:13] is the sub-list for extension type_name
@@ -920,28 +919,28 @@ var file_opentag_v1_invoke_proto_depIdxs = []int32{
 	0,  // [0:13] is the sub-list for field type_name
 }
 
-func init() { file_opentag_v1_invoke_proto_init() }
-func file_opentag_v1_invoke_proto_init() {
-	if File_opentag_v1_invoke_proto != nil {
+func init() { file_mandatum_v1_invoke_proto_init() }
+func file_mandatum_v1_invoke_proto_init() {
+	if File_mandatum_v1_invoke_proto != nil {
 		return
 	}
-	file_opentag_v1_bus_proto_init()
+	file_mandatum_v1_bus_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_opentag_v1_invoke_proto_rawDesc), len(file_opentag_v1_invoke_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mandatum_v1_invoke_proto_rawDesc), len(file_mandatum_v1_invoke_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_opentag_v1_invoke_proto_goTypes,
-		DependencyIndexes: file_opentag_v1_invoke_proto_depIdxs,
-		EnumInfos:         file_opentag_v1_invoke_proto_enumTypes,
-		MessageInfos:      file_opentag_v1_invoke_proto_msgTypes,
+		GoTypes:           file_mandatum_v1_invoke_proto_goTypes,
+		DependencyIndexes: file_mandatum_v1_invoke_proto_depIdxs,
+		EnumInfos:         file_mandatum_v1_invoke_proto_enumTypes,
+		MessageInfos:      file_mandatum_v1_invoke_proto_msgTypes,
 	}.Build()
-	File_opentag_v1_invoke_proto = out.File
-	file_opentag_v1_invoke_proto_goTypes = nil
-	file_opentag_v1_invoke_proto_depIdxs = nil
+	File_mandatum_v1_invoke_proto = out.File
+	file_mandatum_v1_invoke_proto_goTypes = nil
+	file_mandatum_v1_invoke_proto_depIdxs = nil
 }

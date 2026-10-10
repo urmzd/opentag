@@ -1,7 +1,7 @@
 // Package agentrt builds a running agent from a pinned agent revision.
 //
 // It is the seam between two vocabularies. saige speaks providers, messages,
-// tools, and a stream of typed deltas; opentag speaks revisions, kinds, and
+// tools, and a stream of typed deltas; mandatum speaks revisions, kinds, and
 // events. agentrt translates in exactly one direction — a Revision in, event
 // bodies out — and knows nothing about how the revision was stored, which run
 // it is executing, or where its events end up. That ignorance is the point: the
@@ -296,7 +296,7 @@ func (r *Runner) Run(ctx context.Context, t Turn, emit func(context.Context, Chu
 			// A refusal that cannot be delivered would leave the tool
 			// waiting, so it fails the turn and stops the stream instead.
 			err := stream.ResolveMarkerErr(v.ToolCallID, saige.Resolution{
-				Message: "opentag: interactive approval is not available inside a durable run",
+				Message: "mandatum: interactive approval is not available inside a durable run",
 			})
 			if err != nil {
 				streamErr = errors.Join(streamErr, fmt.Errorf("refuse approval for tool call %s: %w", v.ToolCallID, err))

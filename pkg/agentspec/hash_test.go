@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/agentspec"
 )
 
 // The hash is compared across processes, restarts and replays, so it must be a

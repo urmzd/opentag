@@ -1,8 +1,8 @@
-// Package server is opentag's transport edge.
+// Package server is mandatum's transport edge.
 //
 // It owns three things, and deliberately nothing else:
 //
-//   - The wire, in both directions. The generated opentag.v1 contract on one
+//   - The wire, in both directions. The generated mandatum.v1 contract on one
 //     side, the domain types (envelope, topic, address) on the other, with the
 //     translation confined to convert.go so no handler has to think about it.
 //   - Who the caller is. Every request's tenant is derived from its credential
@@ -20,7 +20,7 @@
 // # Tenant
 //
 // Tenant is an authorization scope, never a value the wire may claim. No
-// request message in opentag.v1 carries one. This package derives it from the
+// request message in mandatum.v1 carries one. This package derives it from the
 // caller's credential (see Authenticator) and overwrites the field on
 // everything it forwards: the Tag handed to the Invoker, the Event handed to
 // the bus, and the Event handed back to a subscriber. A client that hand-rolls
@@ -66,11 +66,11 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/urmzd/dispatch/pkg/metrics"
-	"github.com/urmzd/opentag/gen/opentag/v1/opentagv1connect"
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/gen/mandatum/v1/mandatumv1connect"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Errors a dependency returns to tell the edge which answer to give. They are
@@ -114,7 +114,7 @@ const (
 	// DefaultRetry is the reconnection delay advertised to SSE clients.
 	DefaultRetry = 3 * time.Second
 
-	// DefaultMaxBodyBytes caps a webhook body. Every surface opentag ingests
+	// DefaultMaxBodyBytes caps a webhook body. Every surface mandatum ingests
 	// from sends payloads far below this, and the cap exists because the body
 	// must be buffered whole before it can be authenticated.
 	DefaultMaxBodyBytes = 1 << 20
@@ -126,13 +126,13 @@ const (
 
 // Metric names this package records through a metrics.Recorder.
 const (
-	MetricRequests    = "opentag_server_requests_total"
-	MetricStreams     = "opentag_server_streams_total"
-	MetricStreamsOpen = "opentag_server_streams_open"
-	MetricEvents      = "opentag_server_events_streamed_total"
-	MetricWebhooks    = "opentag_server_webhooks_total"
-	MetricInvocations = "opentag_server_invocations_total"
-	MetricUp          = "opentag_server_up"
+	MetricRequests    = "mandatum_server_requests_total"
+	MetricStreams     = "mandatum_server_streams_total"
+	MetricStreamsOpen = "mandatum_server_streams_open"
+	MetricEvents      = "mandatum_server_events_streamed_total"
+	MetricWebhooks    = "mandatum_server_webhooks_total"
+	MetricInvocations = "mandatum_server_invocations_total"
+	MetricUp          = "mandatum_server_up"
 )
 
 // Config assembles a Server from the pieces a deployment has. Every dependency
@@ -272,11 +272,11 @@ func New(cfg Config) (*Server, error) {
 		observeInterceptor{metrics: s.metrics},
 		authInterceptor{auth: cfg.Auth},
 	)
-	s.mux.Handle(opentagv1connect.NewAgentServiceHandler(
+	s.mux.Handle(mandatumv1connect.NewAgentServiceHandler(
 		&agentService{store: cfg.Store, log: s.log}, opts))
-	s.mux.Handle(opentagv1connect.NewBusServiceHandler(
+	s.mux.Handle(mandatumv1connect.NewBusServiceHandler(
 		&busService{bus: cfg.Bus, srv: s, log: s.log}, opts))
-	s.mux.Handle(opentagv1connect.NewInvokeServiceHandler(
+	s.mux.Handle(mandatumv1connect.NewInvokeServiceHandler(
 		&invokeService{invoker: cfg.Invoker, runs: cfg.Runs, bus: cfg.Bus, srv: s, log: s.log}, opts))
 
 	s.mux.HandleFunc("GET /v1/sse", s.handleSSE)

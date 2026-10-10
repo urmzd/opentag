@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/topic"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
-// newTagCmd builds `opentag tag`, the command the whole product is named after.
+// newTagCmd builds `mandatum tag`, the command that hands an agent its commission.
 //
 // It is the mesh in one line: tag an agent here, and say where the answer
 // should go. With no --deliver the answer streams to this terminal and nowhere
@@ -38,9 +38,9 @@ func newTagCmd() *cobra.Command {
 			"the mesh: where a tag is raised and where its answer lands are independent.\n" +
 			"Each --deliver may carry a kind filter after '|', so one destination can take\n" +
 			"the whole stream while another takes only the outcome.",
-		Example: "  opentag tag docs-bot \"what is RAG?\"\n" +
-			"  opentag tag review-bot \"review this\" --deliver github://urmzd/opentag/issues/42\n" +
-			"  opentag tag nightly \"summarise\" \\\n" +
+		Example: "  mandatum tag docs-bot \"what is RAG?\"\n" +
+			"  mandatum tag review-bot \"review this\" --deliver github://urmzd/mandatum/issues/42\n" +
+			"  mandatum tag nightly \"summarise\" \\\n" +
 			"    --deliver 'slack://T01/C02?thread=1699.001|delta' \\\n" +
 			"    --deliver 'webhook://acme/deploys|lifecycle.completed'",
 		Args: cobra.MinimumNArgs(2),
@@ -63,7 +63,7 @@ func newTagCmd() *cobra.Command {
 				return err
 			}
 
-			tag := &opentagv1.Tag{
+			tag := &mandatumv1.Tag{
 				// The id is the run's idempotency key. A terminal invocation
 				// has no provider event to borrow one from, so it gets a fresh
 				// one per invocation: re-running the command is a new question,
@@ -129,7 +129,7 @@ func newTagCmd() *cobra.Command {
 			// matters: the answer above is a prefix, not the whole thing, and
 			// the run can still be followed by id.
 			if !ended {
-				u.warnf("stream ended before the run did; follow it with: opentag listen agent:%s:%s\n",
+				u.warnf("stream ended before the run did; follow it with: mandatum listen agent:%s:%s\n",
 					tag.Agent, tag.Id)
 			}
 			// The answer arrived as unterminated fragments so it would read as
@@ -169,15 +169,15 @@ const kindsSeparator = "|"
 //
 // The syntax is "<address>" or "<address>|<kind>[,<kind>...]". An empty kind
 // list means every kind, which is the same default a Route with no Kinds has.
-func parseRoutes(specs []string) ([]*opentagv1.Route, error) {
-	var out []*opentagv1.Route
+func parseRoutes(specs []string) ([]*mandatumv1.Route, error) {
+	var out []*mandatumv1.Route
 	for _, spec := range specs {
 		raw, kinds, _ := strings.Cut(spec, kindsSeparator)
 		addr, err := address.Parse(strings.TrimSpace(raw))
 		if err != nil {
 			return nil, usagef("--deliver %q: %v", spec, err)
 		}
-		route := &opentagv1.Route{Target: toProtoAddress(addr)}
+		route := &mandatumv1.Route{Target: toProtoAddress(addr)}
 		for _, k := range strings.Split(kinds, ",") {
 			if k = strings.TrimSpace(k); k != "" {
 				route.Kinds = append(route.Kinds, k)
@@ -188,8 +188,8 @@ func parseRoutes(specs []string) ([]*opentagv1.Route, error) {
 	return out, nil
 }
 
-func toProtoAddress(a address.Address) *opentagv1.Address {
-	return &opentagv1.Address{
+func toProtoAddress(a address.Address) *mandatumv1.Address {
+	return &mandatumv1.Address{
 		Connector: a.Connector,
 		Workspace: a.Workspace,
 		Path:      a.Path,

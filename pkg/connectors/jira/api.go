@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/urmzd/opentag/pkg/connectors/internal/httpjson"
+	"github.com/urmzd/mandatum/pkg/connectors/internal/httpjson"
 )
 
 // Site is one Jira instance: where it lives, and the credential for it.

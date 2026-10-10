@@ -1,6 +1,6 @@
 # Examples
 
-Runnable programs that demonstrate opentag rather than describe it. Every
+Runnable programs that demonstrate mandatum rather than describe it. Every
 example in this directory runs with no API key, no network and no
 infrastructure: the in-memory implementations of the same interfaces stand in
 for Postgres, Redis and a model provider, so `go run` is the only setup.
@@ -16,7 +16,7 @@ go run ./examples/local
 ```
 
 One process, one file of story (`main.go`) and one file of scaffolding
-(`fakes.go`). It prints seven numbered sections, each one a claim opentag makes
+(`fakes.go`). It prints seven numbered sections, each one a claim mandatum makes
 and a demonstration of it:
 
 1. **An agent is a declarative spec.** A name, a provider, a model, a system

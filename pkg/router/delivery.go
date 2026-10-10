@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // lane is the delivery path for one (run, target) pair: a bounded FIFO queue

@@ -1,8 +1,8 @@
-# opentag
+# mandatum
 
 > **Beta, pre-1.0, not recommended for production.** Interfaces are stabilizing but may change between minor versions. The single-binary deployment (in-memory bus, ledger and registry) is complete and tested; the Redis Streams bus backend is conformance-tested but its integration tests skip without a Redis; there is no persistent registry yet, so agent specs do not survive a restart.
 
-> Agent platform and low-latency pub/sub bus for agents. Define an agent with a declarative spec, tag it from Slack, GitHub, Jira or a schedule, and stream its events to any subscriber while delivering them to any destination. The design turns on one idea: where a tag is raised and where its answer lands are independent, which is what makes it a mesh rather than a set of integrations. Composes three libraries: saige (agent loop, typed deltas, RAG citations), duraturo (durable execution, ledger as truth, replay), and dispatch (sandboxed execution nodes, NGAC access control). Go module `github.com/urmzd/opentag`, binary `opentag` with `serve`, `work`, `agent`, `tag`, `listen`, `version`, `update`.
+> Agent platform and low-latency pub/sub bus for agents. Define an agent with a declarative spec, tag it from Slack, GitHub, Jira or a schedule, and stream its events to any subscriber while delivering them to any destination. The design turns on one idea: where a tag is raised and where its answer lands are independent, which is what makes it a mesh rather than a set of integrations. Composes three libraries: saige (agent loop, typed deltas, RAG citations), duraturo (durable execution, ledger as truth, replay), and dispatch (sandboxed execution nodes, NGAC access control). Go module `github.com/urmzd/mandatum`, binary `mandatum` with `serve`, `work`, `agent`, `tag`, `listen`, `version`, `update`.
 
 ## Key Concepts
 
@@ -30,18 +30,18 @@
 - Seams: pkg/connector/connector.go, pkg/bus/{bus,memory,redis}.go, pkg/bus/bustest/suite.go, pkg/registry/{registry,memory,adapt,token}.go
 - Composition: pkg/agentrt/{agentrt,translate,citation,provider,spec,tools}.go, pkg/agentrt/payload/payload.go, pkg/runtime/{runtime,sandbox,seq}.go, pkg/router/{router,delivery}.go
 - Connectors: pkg/connectors/{slack,github,jira,cron,webhook}/, shared helpers in pkg/connectors/internal/{httpjson,inbound,render,sink}/ and pkg/connectors/mention/
-- Transport: proto/opentag/v1/{agent,bus,invoke}.proto, gen/opentag/v1/ (committed), internal/server/{server,agent,bus,invoke,sse,webhook,auth,convert}.go
-- CLI: cmd/opentag/main.go, internal/cli/core.go (the composition root), internal/cli/{serve,work,agent,tag,listen,version,update,format,client,render}.go
+- Transport: proto/mandatum/v1/{agent,bus,invoke}.proto, gen/mandatum/v1/ (committed), internal/server/{server,agent,bus,invoke,sse,webhook,auth,convert}.go
+- CLI: cmd/mandatum/main.go, internal/cli/core.go (the composition root), internal/cli/{serve,work,agent,tag,listen,version,update,format,client,render}.go
 - Example: examples/local/main.go (zero infrastructure, no API key, no network)
 
 ## API Cheatsheet
 
 - Topics: `topic.Parse(s)`, `topic.All()`, `topic.Agent(name)`, `topic.Run(agent, runID)`, `t.Covers(other)`, `t.Name()`, `t.RunID()`
-- Addresses: `address.Parse("github://urmzd/opentag/issues/42")`, `a.Connector`, `a.Workspace`, `a.Path`, `a.Param(k)`, `a.WithParam(k, v)`, `a.Resource()`
+- Addresses: `address.Parse("github://urmzd/mandatum/issues/42")`, `a.Connector`, `a.Workspace`, `a.Path`, `a.Param(k)`, `a.WithParam(k, v)`, `a.Resource()`
 - Envelope: `envelope.Tag{ID, Tenant, Agent, Origin, Source, Text, Actor, Deliver, Meta, At}`, `tag.Validate()`, `tag.Routes()`; `envelope.Event{Seq, Topic, RunID, Tenant, Agent, Rev, Origin, Kind, Payload, At}`; `envelope.Route{Target, Kinds}.Wants(kind)`; `envelope.Filter{Kinds, Rev, Origin, RunID}.Allows(e)`; `envelope.Subscription{Topic, Filter, From}.Accepts(e)`
 - Kinds: `delta.text`, `delta.thinking`, `delta.tool.call`, `delta.tool.done`, `delta.citation`, `lifecycle.{accepted,started,parked,resumed,completed,failed}`, `action.taken`, `control.{created,revised,deleted}`. `Kind.Family()` and `Kind.Matches(sel)` select a family or an exact kind.
 - Connectors: `connector.Trigger{Ingest(ctx, out chan<- envelope.Tag)}`, `connector.Sink{Deliver(ctx, target, event)}`, `connector.Actor{Actions() []Action}`, `connector.RolesOf(c)`, `registry.Sink(target)`; sentinels `ErrUnsupported`, `ErrNotFound`, `ErrUndeliverable`
 - Bus: `bus.Bus{Publish(ctx, e), Subscribe(ctx, sub) (Stream, error)}`, `Stream.Recv(ctx)`, `bustest.Run(t, factory)` holds any backend to the same contract
 - Signature: `signature.NewSlack(secret)`, `signature.NewGitHub(secret)`, `Verify(header, body)`; sentinels `ErrSignatureMismatch`, `ErrTimestampSkew`, `ErrMalformed`, `ErrNoSecret`; `DefaultWindow` is 5 minutes and the boundary is inclusive
 - Payloads: `payload.Of(event)` returns the typed body; `payload.Decode[T](event)`; types `Text`, `Thinking`, `ToolCall`, `ToolDone`, `Citation{Label, Text, Source, Index}`, `Lifecycle{Attempt, Rev, Terminal}`, `Action`
-- CLI: `opentag tag <agent> <text> [--deliver 'addr=kind,kind'] [--kinds] [--detach]`, `opentag listen <topic> [--kinds] [--rev] [--origin] [--from]`, `opentag agent {create,revise,get,list,history,delete}`, global `--format text|json`
+- CLI: `mandatum tag <agent> <text> [--deliver 'addr=kind,kind'] [--kinds] [--detach]`, `mandatum listen <topic> [--kinds] [--rev] [--origin] [--from]`, `mandatum agent {create,revise,get,list,history,delete}`, global `--format text|json`

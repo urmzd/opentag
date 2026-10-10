@@ -5,16 +5,16 @@ import (
 	"strings"
 	"time"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/envelope"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // eventJSON is the shape the streaming commands emit under --format json.
 //
 // It is a hand-written struct rather than protojson of the wire Event for one
 // reason: payload is bytes on the wire, and protojson would base64 it. A
-// consumer piping `opentag listen` into jq wants the citation it can read, not
+// consumer piping `mandatum listen` into jq wants the citation it can read, not
 // a blob it has to decode in a second step. Kind-specific bodies are decoded
 // here and inlined, and anything unrecognised falls back to the raw string so
 // a new kind is still legible to an old client.
@@ -30,7 +30,7 @@ type eventJSON struct {
 	Payload any       `json:"payload,omitempty"`
 }
 
-func toEventJSON(e *opentagv1.Event) eventJSON {
+func toEventJSON(e *mandatumv1.Event) eventJSON {
 	out := eventJSON{
 		Seq:    e.GetSeq(),
 		Topic:  e.GetTopic(),
@@ -54,7 +54,7 @@ func toEventJSON(e *opentagv1.Event) eventJSON {
 // asEnvelope rebuilds enough of an envelope.Event for payload.Of to dispatch
 // on. Only Kind and Payload are read, but the whole value is filled so that a
 // future decoder needing more does not silently see zeros.
-func asEnvelope(e *opentagv1.Event) envelope.Event {
+func asEnvelope(e *mandatumv1.Event) envelope.Event {
 	return envelope.Event{
 		Seq:     e.GetSeq(),
 		RunID:   e.GetRunId(),
@@ -69,13 +69,13 @@ func asEnvelope(e *opentagv1.Event) envelope.Event {
 
 // renderEventText writes one event for a human.
 //
-// answerOnly is what makes `opentag tag` feel like a conversation rather than a
+// answerOnly is what makes `mandatum tag` feel like a conversation rather than a
 // log: text fragments are written bare and unterminated so they accumulate into
 // the answer as it arrives, and everything else goes to stderr as a diagnostic.
-// `opentag listen` sets it false and gets one labelled line per event, because
+// `mandatum listen` sets it false and gets one labelled line per event, because
 // there a stream of many runs concatenated into one paragraph would be
 // unreadable.
-func renderEventText(u *ui, e *opentagv1.Event, answerOnly bool) {
+func renderEventText(u *ui, e *mandatumv1.Event, answerOnly bool) {
 	kind := envelope.Kind(e.GetKind())
 	body, known, err := payload.Of(asEnvelope(e))
 	if err != nil || !known {
@@ -170,7 +170,7 @@ func oneLine(s string) string {
 
 // terminal reports whether an event ends its run. `tag` stops on it; `listen`
 // ignores it, because a topic outlives the runs on it.
-func terminal(e *opentagv1.Event) bool {
+func terminal(e *mandatumv1.Event) bool {
 	switch envelope.Kind(e.GetKind()) {
 	case envelope.KindCompleted, envelope.KindFailed:
 		return true

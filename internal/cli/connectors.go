@@ -8,15 +8,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/cron"
-	"github.com/urmzd/opentag/pkg/connectors/github"
-	"github.com/urmzd/opentag/pkg/connectors/jira"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/connectors/slack"
-	"github.com/urmzd/opentag/pkg/connectors/webhook"
-	"github.com/urmzd/opentag/pkg/registry"
-	"github.com/urmzd/opentag/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/cron"
+	"github.com/urmzd/mandatum/pkg/connectors/github"
+	"github.com/urmzd/mandatum/pkg/connectors/jira"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/connectors/slack"
+	"github.com/urmzd/mandatum/pkg/connectors/webhook"
+	"github.com/urmzd/mandatum/pkg/registry"
+	"github.com/urmzd/mandatum/pkg/signature"
 )
 
 // Environment variables that turn a connector on.
@@ -29,30 +29,30 @@ import (
 const (
 	// Slack. A signing secret is what makes the trigger safe; a bot token is
 	// what makes the sink able to write.
-	EnvSlackToken   = "OPENTAG_SLACK_TOKEN"
-	EnvSlackSecret  = "OPENTAG_SLACK_SIGNING_SECRET"
-	EnvSlackTeam    = "OPENTAG_SLACK_TEAM"
-	EnvSlackBots    = "OPENTAG_SLACK_BOTS"
-	EnvSlackDefault = "OPENTAG_SLACK_DEFAULT_AGENT"
+	EnvSlackToken   = "MANDATUM_SLACK_TOKEN"
+	EnvSlackSecret  = "MANDATUM_SLACK_SIGNING_SECRET"
+	EnvSlackTeam    = "MANDATUM_SLACK_TEAM"
+	EnvSlackBots    = "MANDATUM_SLACK_BOTS"
+	EnvSlackDefault = "MANDATUM_SLACK_DEFAULT_AGENT"
 
 	// GitHub.
-	EnvGitHubToken  = "OPENTAG_GITHUB_TOKEN"
-	EnvGitHubSecret = "OPENTAG_GITHUB_WEBHOOK_SECRET"
-	EnvGitHubOwners = "OPENTAG_GITHUB_OWNERS"
-	EnvGitHubBots   = "OPENTAG_GITHUB_BOTS"
+	EnvGitHubToken  = "MANDATUM_GITHUB_TOKEN"
+	EnvGitHubSecret = "MANDATUM_GITHUB_WEBHOOK_SECRET"
+	EnvGitHubOwners = "MANDATUM_GITHUB_OWNERS"
+	EnvGitHubBots   = "MANDATUM_GITHUB_BOTS"
 
 	// Jira. Sites is a comma-separated list of short-key=base-URL pairs; the
 	// short key, not the hostname, is what appears in a jira:// address.
-	EnvJiraSites  = "OPENTAG_JIRA_SITES"
-	EnvJiraEmail  = "OPENTAG_JIRA_EMAIL"
-	EnvJiraToken  = "OPENTAG_JIRA_TOKEN"
-	EnvJiraSecret = "OPENTAG_JIRA_WEBHOOK_SECRET"
-	EnvJiraBots   = "OPENTAG_JIRA_BOTS"
+	EnvJiraSites  = "MANDATUM_JIRA_SITES"
+	EnvJiraEmail  = "MANDATUM_JIRA_EMAIL"
+	EnvJiraToken  = "MANDATUM_JIRA_TOKEN"
+	EnvJiraSecret = "MANDATUM_JIRA_WEBHOOK_SECRET"
+	EnvJiraBots   = "MANDATUM_JIRA_BOTS"
 
 	// Webhook. A comma-separated list of workspace=base-url=secret triples.
 	// The workspace is an indirection precisely so that a route written in an
 	// agent spec cannot name an arbitrary URL on the internet.
-	EnvWebhookEndpoints = "OPENTAG_WEBHOOK_ENDPOINTS"
+	EnvWebhookEndpoints = "MANDATUM_WEBHOOK_ENDPOINTS"
 )
 
 // buildConnectors registers every connector this deployment is configured for.
@@ -208,7 +208,7 @@ func newCron(cfg coreConfig, _ mention.Set) (connector.Connector, error) {
 // HeaderJiraSecret carries the shared secret a Jira webhook is registered with.
 // Jira signs nothing, so the secret is whatever the person who configured the
 // URL put in a header; see jiraSecret.
-const HeaderJiraSecret = "X-OpenTag-Secret"
+const HeaderJiraSecret = "X-Mandatum-Secret"
 
 // jiraSecret authenticates a Jira webhook by a shared secret in a header.
 //

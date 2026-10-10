@@ -11,11 +11,11 @@ import (
 	saigetypes "github.com/urmzd/saige/agent/types"
 	ragtypes "github.com/urmzd/saige/rag/types"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/agentrt"
-	"github.com/urmzd/opentag/pkg/agentrt/payload"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/agentrt"
+	"github.com/urmzd/mandatum/pkg/agentrt/payload"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 func offlineRevision(rev int, prompt string) agentrt.Revision {
@@ -175,7 +175,7 @@ func TestRetrievalIsSkippedWhenTheSpecNamesNoSources(t *testing.T) {
 func TestConnectorActionReportsWhatItDidAndWhere(t *testing.T) {
 	t.Parallel()
 
-	target := address.MustParse("github://urmzd/opentag/issues/42")
+	target := address.MustParse("github://urmzd/mandatum/issues/42")
 	var invokedAt address.Address
 	reg := connector.NewRegistry()
 	if err := reg.Register(&fakeConnector{actions: []connector.Action{{
@@ -186,7 +186,7 @@ func TestConnectorActionReportsWhatItDidAndWhere(t *testing.T) {
 			invokedAt = at
 			return connector.Result{
 				Summary: "posted a comment",
-				Address: address.MustParse("github://urmzd/opentag/issues/42/comments/7"),
+				Address: address.MustParse("github://urmzd/mandatum/issues/42/comments/7"),
 			}, nil
 		},
 	}}}); err != nil {
@@ -219,7 +219,7 @@ func TestConnectorActionReportsWhatItDidAndWhere(t *testing.T) {
 	if actions[0].Target != target.String() {
 		t.Errorf("action target is %q, want %q", actions[0].Target, target)
 	}
-	if actions[0].Address != "github://urmzd/opentag/issues/42/comments/7" {
+	if actions[0].Address != "github://urmzd/mandatum/issues/42/comments/7" {
 		t.Errorf("action address is %q, want the created comment", actions[0].Address)
 	}
 	if invokedAt.String() != target.String() {

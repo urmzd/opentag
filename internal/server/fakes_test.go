@@ -16,10 +16,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/urmzd/dispatch/pkg/metrics"
 
-	"github.com/urmzd/opentag/gen/opentag/v1/opentagv1connect"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/gen/mandatum/v1/mandatumv1connect"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // The fakes here are complete, not stubs: the store enforces the immutability
@@ -438,16 +438,16 @@ func newHarness(t *testing.T, mutate func(*Config)) *harness {
 
 // The client constructors take the credential rather than a client, and an empty
 // token means "add nothing", so a test can present a malformed credential itself.
-func (h *harness) agentClient(token string) opentagv1connect.AgentServiceClient {
-	return opentagv1connect.NewAgentServiceClient(h.http.Client(), h.http.URL, credential(token)...)
+func (h *harness) agentClient(token string) mandatumv1connect.AgentServiceClient {
+	return mandatumv1connect.NewAgentServiceClient(h.http.Client(), h.http.URL, credential(token)...)
 }
 
-func (h *harness) busClient(token string) opentagv1connect.BusServiceClient {
-	return opentagv1connect.NewBusServiceClient(h.http.Client(), h.http.URL, credential(token)...)
+func (h *harness) busClient(token string) mandatumv1connect.BusServiceClient {
+	return mandatumv1connect.NewBusServiceClient(h.http.Client(), h.http.URL, credential(token)...)
 }
 
-func (h *harness) invokeClient(token string) opentagv1connect.InvokeServiceClient {
-	return opentagv1connect.NewInvokeServiceClient(h.http.Client(), h.http.URL, credential(token)...)
+func (h *harness) invokeClient(token string) mandatumv1connect.InvokeServiceClient {
+	return mandatumv1connect.NewInvokeServiceClient(h.http.Client(), h.http.URL, credential(token)...)
 }
 
 func credential(token string) []connect.ClientOption {

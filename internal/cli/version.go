@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// newVersionCmd builds `opentag version`.
+// newVersionCmd builds `mandatum version`.
 //
 // It reports the commit and build date alongside the tag because a version
 // string alone cannot distinguish a release from a local build of the same
@@ -32,7 +32,7 @@ func newVersionCmd(v Version) *cobra.Command {
 					"arch":    runtime.GOARCH,
 				})
 			}
-			u.printf("opentag %s\n", v.Version)
+			u.printf("mandatum %s\n", v.Version)
 			if v.Commit != "" {
 				u.printf("  commit %s\n", v.Commit)
 			}

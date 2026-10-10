@@ -63,9 +63,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/envelope"
 )
 
 // Name is the address scheme this connector owns.
@@ -99,8 +99,8 @@ const (
 // Endpoint is one receiver: where to POST, and what to sign with.
 type Endpoint struct {
 	// BaseURL is the root the address path is appended to, without a trailing
-	// slash. "https://hooks.example.com/opentag" plus webhook://acme/deploys
-	// posts to "https://hooks.example.com/opentag/deploys".
+	// slash. "https://hooks.example.com/mandatum" plus webhook://acme/deploys
+	// posts to "https://hooks.example.com/mandatum/deploys".
 	BaseURL string
 
 	// Secret signs requests to this receiver. Required: an unsigned webhook

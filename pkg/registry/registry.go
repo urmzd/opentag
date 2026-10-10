@@ -56,7 +56,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/urmzd/opentag/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/agentspec"
 )
 
 // Sentinels every implementation reports. They are matched with errors.Is, and

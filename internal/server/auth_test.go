@@ -8,7 +8,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
 )
 
 // Authentication is a property of the transport, not of a handler that remembers
@@ -31,13 +31,13 @@ func TestEveryProcedureRefusesAnUnidentifiedCaller(t *testing.T) {
 	events := h.busClient("")
 	for name, header := range credentials {
 		t.Run(name, func(t *testing.T) {
-			unary := connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"})
+			unary := connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"})
 			copyHeader(unary.Header(), header)
 			_, err := agents.GetAgent(ctx, unary)
 			requireCode(t, err, connect.CodeUnauthenticated)
 
-			streaming := connect.NewRequest(&opentagv1.SubscribeRequest{
-				Subscription: &opentagv1.Subscription{Topic: "agent"},
+			streaming := connect.NewRequest(&mandatumv1.SubscribeRequest{
+				Subscription: &mandatumv1.Subscription{Topic: "agent"},
 			})
 			copyHeader(streaming.Header(), header)
 			stream, err := events.Subscribe(ctx, streaming)
@@ -130,7 +130,7 @@ func TestTokensResolveOnlyRegisteredCredentials(t *testing.T) {
 // header-smuggling bug: the gateway that set one and the client that set the
 // other must never be able to disagree about which is authoritative.
 func TestTrustedHeaderAcceptsExactlyOneValue(t *testing.T) {
-	auth := TrustedHeader{SubjectHeader: "X-OpenTag-Subject"}
+	auth := TrustedHeader{SubjectHeader: "X-Mandatum-Subject"}
 	tests := []struct {
 		name   string
 		header http.Header
@@ -139,7 +139,7 @@ func TestTrustedHeaderAcceptsExactlyOneValue(t *testing.T) {
 	}{
 		{
 			name:   "one value",
-			header: headerOf(HeaderTenant, tenantAcme, "X-OpenTag-Subject", subjectAcme),
+			header: headerOf(HeaderTenant, tenantAcme, "X-Mandatum-Subject", subjectAcme),
 			want:   Identity{Tenant: tenantAcme, Subject: subjectAcme},
 		},
 		{
@@ -185,6 +185,6 @@ func TestAHandlerWithoutAnIdentityRefuses(t *testing.T) {
 		t.Fatalf("want an unauthenticated error, got %v", err)
 	}
 	svc := &agentService{store: newFakeStore(), log: discardLogger()}
-	_, err := svc.GetAgent(context.Background(), connect.NewRequest(&opentagv1.GetAgentRequest{Name: "docs-bot"}))
+	_, err := svc.GetAgent(context.Background(), connect.NewRequest(&mandatumv1.GetAgentRequest{Name: "docs-bot"}))
 	requireCode(t, err, connect.CodeUnauthenticated)
 }

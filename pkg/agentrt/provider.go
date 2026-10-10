@@ -22,7 +22,7 @@ const (
 	// ProviderOllama talks to a local daemon (see EnvOllamaHost).
 	ProviderOllama = "ollama"
 	// ProviderOffline replays a canned script instead of calling a model.
-	// It is what makes an opentag deployment demonstrable with no API key,
+	// It is what makes an mandatum deployment demonstrable with no API key,
 	// no daemon, and no network: the whole path from tag to delivered event
 	// runs, and only the token source is fake. Tests use it with WithScript.
 	ProviderOffline = "offline"

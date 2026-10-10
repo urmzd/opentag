@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
 )
 
 const webhookSecret = "s3cr3t"

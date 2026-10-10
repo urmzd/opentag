@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/address"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/address"
 )
 
 // The structured address on the wire is convenient, not trusted: it is rebuilt
@@ -15,13 +15,13 @@ import (
 func TestAddressesAreRevalidatedOnTheWayIn(t *testing.T) {
 	tests := []struct {
 		name  string
-		in    *opentagv1.Address
+		in    *mandatumv1.Address
 		want  string
 		fails bool
 	}{
 		{
 			name: "slack thread",
-			in: &opentagv1.Address{
+			in: &mandatumv1.Address{
 				Connector: "slack",
 				Workspace: "T0123",
 				Path:      []string{"C0456"},
@@ -31,26 +31,26 @@ func TestAddressesAreRevalidatedOnTheWayIn(t *testing.T) {
 		},
 		{
 			name: "path segments needing escaping",
-			in: &opentagv1.Address{
+			in: &mandatumv1.Address{
 				Connector: "github",
 				Workspace: "urmzd",
-				Path:      []string{"opentag", "issues", "42"},
+				Path:      []string{"mandatum", "issues", "42"},
 			},
-			want: "github://urmzd/opentag/issues/42",
+			want: "github://urmzd/mandatum/issues/42",
 		},
 		{
 			name:  "workspace is not token safe",
-			in:    &opentagv1.Address{Connector: "slack", Workspace: "team one"},
+			in:    &mandatumv1.Address{Connector: "slack", Workspace: "team one"},
 			fails: true,
 		},
 		{
 			name:  "workspace carries a separator",
-			in:    &opentagv1.Address{Connector: "jira", Workspace: "acme/other"},
+			in:    &mandatumv1.Address{Connector: "jira", Workspace: "acme/other"},
 			fails: true,
 		},
 		{
 			name:  "no connector",
-			in:    &opentagv1.Address{Workspace: "acme"},
+			in:    &mandatumv1.Address{Workspace: "acme"},
 			fails: true,
 		},
 		{
@@ -97,14 +97,14 @@ func TestWorkspaceValidationIsTheAddressPackages(t *testing.T) {
 // A status the edge does not recognise reaches the wire as UNSPECIFIED, because
 // the enum's zero value exists so that "unknown to me" is expressible.
 func TestRunStatusMapsUnknownStatesToUnspecified(t *testing.T) {
-	tests := map[Status]opentagv1.RunStatus{
-		StatusAccepted:  opentagv1.RunStatus_RUN_STATUS_ACCEPTED,
-		StatusRunning:   opentagv1.RunStatus_RUN_STATUS_RUNNING,
-		StatusParked:    opentagv1.RunStatus_RUN_STATUS_PARKED,
-		StatusCompleted: opentagv1.RunStatus_RUN_STATUS_COMPLETED,
-		StatusFailed:    opentagv1.RunStatus_RUN_STATUS_FAILED,
-		"":              opentagv1.RunStatus_RUN_STATUS_UNSPECIFIED,
-		"reticulating":  opentagv1.RunStatus_RUN_STATUS_UNSPECIFIED,
+	tests := map[Status]mandatumv1.RunStatus{
+		StatusAccepted:  mandatumv1.RunStatus_RUN_STATUS_ACCEPTED,
+		StatusRunning:   mandatumv1.RunStatus_RUN_STATUS_RUNNING,
+		StatusParked:    mandatumv1.RunStatus_RUN_STATUS_PARKED,
+		StatusCompleted: mandatumv1.RunStatus_RUN_STATUS_COMPLETED,
+		StatusFailed:    mandatumv1.RunStatus_RUN_STATUS_FAILED,
+		"":              mandatumv1.RunStatus_RUN_STATUS_UNSPECIFIED,
+		"reticulating":  mandatumv1.RunStatus_RUN_STATUS_UNSPECIFIED,
 	}
 	for status, want := range tests {
 		if got := statusToProto(status); got != want {
@@ -152,7 +152,7 @@ func TestASpecWithoutANameIsRefused(t *testing.T) {
 	if _, err := specFromProto(nil); err == nil {
 		t.Fatal("want an absent spec to be refused")
 	}
-	if _, err := specFromProto(&opentagv1.AgentSpec{Description: "no name"}); err == nil {
+	if _, err := specFromProto(&mandatumv1.AgentSpec{Description: "no name"}); err == nil {
 		t.Fatal("want a nameless spec to be refused")
 	}
 }

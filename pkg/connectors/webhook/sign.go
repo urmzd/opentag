@@ -11,30 +11,30 @@ import (
 
 // Headers this connector puts on every outbound POST.
 //
-// They are opentag's own names rather than a provider's, because opentag is the
-// sender here. The signing scheme underneath them is not opentag's own: see
+// They are mandatum's own names rather than a provider's, because mandatum is the
+// sender here. The signing scheme underneath them is not mandatum's own: see
 // Sign.
 const (
 	// HeaderSignature carries "v0=" followed by the hex digest.
-	HeaderSignature = "X-OpenTag-Signature"
+	HeaderSignature = "X-Mandatum-Signature"
 
 	// HeaderTimestamp carries the unix seconds that are inside the signed base
 	// string. A receiver reads it to bound the replay window and MUST use this
 	// value when recomputing the digest, never its own clock.
-	HeaderTimestamp = "X-OpenTag-Timestamp"
+	HeaderTimestamp = "X-Mandatum-Timestamp"
 
 	// HeaderDelivery identifies one event exactly: "<run id>/<seq>". It is the
 	// dedupe key. Delivery is at-least-once and the router retries, so a
 	// receiver will see the same delivery id more than once and must treat the
 	// second as a no-op.
-	HeaderDelivery = "X-OpenTag-Delivery"
+	HeaderDelivery = "X-Mandatum-Delivery"
 
 	// HeaderEvent carries the event kind, so a receiver can route on a header
 	// rather than parsing a body it is about to discard.
-	HeaderEvent = "X-OpenTag-Event"
+	HeaderEvent = "X-Mandatum-Event"
 
 	// HeaderTopic carries the bus topic the event was published on.
-	HeaderTopic = "X-OpenTag-Topic"
+	HeaderTopic = "X-Mandatum-Topic"
 )
 
 // Version is the signing scheme version that prefixes the base string and the
@@ -52,7 +52,7 @@ const Version = "v0"
 // # Why this base string, and why a timestamp is in it
 //
 // It is byte-for-byte the scheme pkg/signature's Slack verifier checks, so a
-// receiver can authenticate opentag with a verifier it already has. That
+// receiver can authenticate mandatum with a verifier it already has. That
 // compatibility is the reason to reuse it rather than invent one; the reason it
 // is worth reusing is the timestamp.
 //

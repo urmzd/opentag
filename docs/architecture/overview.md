@@ -5,7 +5,7 @@
 > designed but not yet finished, it is called out in
 > [Limitations](#limitations) rather than described as though it exists.
 
-opentag is an agent platform and a low-latency pub/sub bus. Create an agent from
+mandatum is an agent platform and a low-latency pub/sub bus. Create an agent from
 a spec, tag it from anywhere, get its events streamed to anyone and delivered
 anywhere.
 
@@ -17,19 +17,19 @@ below follows from it.
 
 ## What each layer owns
 
-opentag composes three libraries and adds the parts that make them a product.
+mandatum composes three libraries and adds the parts that make them a product.
 
 | Concern | Owner |
 |---------|-------|
 | The agent loop, typed deltas, RAG and citations | [saige](https://github.com/urmzd/saige) |
 | Durability, replay, exactly-once effects, per-run journal | [duraturo](https://github.com/urmzd/duraturo) |
 | Sandboxed execution nodes, NGAC access control | [dispatch](https://github.com/urmzd/dispatch) |
-| Agent specs, revisions, registry | opentag |
-| Topics, the bus, delivery routing, transports | opentag |
-| Connectors: triggers, sinks, and native actions | opentag |
+| Agent specs, revisions, registry | mandatum |
+| Topics, the bus, delivery routing, transports | mandatum |
+| Connectors: triggers, sinks, and native actions | mandatum |
 
 The division is strict. duraturo owns whether work survives a crash; dispatch
-owns what a tool is allowed to touch; saige owns what the model does. opentag
+owns what a tool is allowed to touch; saige owns what the model does. mandatum
 owns addressing, distribution, and the control plane, and delegates the rest.
 
 ## Topics: one namespace, matched by prefix
@@ -184,7 +184,7 @@ transports, storage, or agents.
 ```
 leaves (stdlib only)
   pkg/topic        agent:name[:run], prefix containment
-  pkg/address      github://urmzd/opentag/issues/42, slack://T01/C02?thread=...
+  pkg/address      github://urmzd/mandatum/issues/42, slack://T01/C02?thread=...
   pkg/envelope     Tag, Event, Kind, Route, Filter, Subscription
   pkg/signature    HMAC verification for inbound webhooks
   pkg/agentspec    immutable specs, content-addressed revisions
@@ -255,13 +255,13 @@ Verified against the code, and honest.
   `adapters/postgres/pgqueue/pgqueue.go`. A Postgres-only deployment runs
   durably but cannot stream.
 - **duraturo's Redis and Postgres adapter submodules are not depended on.** They
-  currently fail checksum verification against `sum.golang.org`, so opentag
+  currently fail checksum verification against `sum.golang.org`, so mandatum
   depends only on duraturo's root module and ships its own Redis Streams bus
   backend. duraturo's in-memory ledger and queue are complete systems and are
   what the single-binary deployment uses.
 - **dispatch's queue is at-most-once** in beta. Durability comes from duraturo.
 - **Citations are derived from retrieval.** Citations are extracted from RAG
-  `AssembledContext` blocks and emitted as opentag's own `delta.citation`
+  `AssembledContext` blocks and emitted as mandatum's own `delta.citation`
   events. saige's `CitationDelta`, which reports what a model or tool cited, is
   not translated into events yet.
 - **duraturo v1 workflow bodies are single-goroutine.** Parallelism belongs

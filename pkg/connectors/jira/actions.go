@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
 )
 
 // Actions implements connector.Actor.

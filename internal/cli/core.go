@@ -25,15 +25,15 @@ import (
 	drun "github.com/urmzd/duraturo/pkg/run"
 	"github.com/urmzd/duraturo/pkg/worker"
 
-	"github.com/urmzd/opentag/internal/server"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/cron"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/registry"
-	"github.com/urmzd/opentag/pkg/router"
-	"github.com/urmzd/opentag/pkg/runtime"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/internal/server"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/cron"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/registry"
+	"github.com/urmzd/mandatum/pkg/router"
+	"github.com/urmzd/mandatum/pkg/runtime"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Environment variables the composition root reads. Everything that names an
@@ -44,14 +44,14 @@ const (
 	// EnvRedis points the bus at Redis Streams. Unset keeps the in-memory
 	// broker, which is a complete implementation of the same interface and
 	// exactly as correct — for one process.
-	EnvRedis = "OPENTAG_REDIS_URL"
+	EnvRedis = "MANDATUM_REDIS_URL"
 
 	// EnvWorkspace is the directory agent artifacts are written under. Unset
 	// takes a directory under the user's cache.
-	EnvWorkspace = "OPENTAG_WORKSPACE"
+	EnvWorkspace = "MANDATUM_WORKSPACE"
 )
 
-// coreConfig is what a running opentag needs that is not a command-line
+// coreConfig is what a running mandatum needs that is not a command-line
 // concern. It is filled from flags and the environment by the commands, and
 // nothing in this file reads either: a composition root that reaches for
 // os.Getenv cannot be constructed twice in one process, and a test is exactly
@@ -83,7 +83,7 @@ type coreConfig struct {
 	Metrics metrics.Recorder
 }
 
-// core is opentag assembled: every long-lived component this process owns, in
+// core is mandatum assembled: every long-lived component this process owns, in
 // the order data flows through them.
 //
 //	registry  →  runtime  →  bus  →  router  →  connector sinks
@@ -115,7 +115,7 @@ type core struct {
 }
 
 // newCore assembles the system. It is deliberately linear: read it top to
-// bottom and you have read how opentag fits together.
+// bottom and you have read how mandatum fits together.
 func newCore(cfg coreConfig) (*core, error) {
 	log := cfg.Log
 	if log == nil {
@@ -225,7 +225,7 @@ func newExecutor(cfg coreConfig, store registry.Store, sinks *connector.Registry
 		if err != nil {
 			base = os.TempDir()
 		}
-		dir = filepath.Join(base, "opentag", "workspace")
+		dir = filepath.Join(base, "mandatum", "workspace")
 	}
 	ws, err := workspace.NewLocal(dir)
 	if err != nil {
@@ -335,7 +335,7 @@ func statusOf(s drun.RunStatus) server.Status {
 	}
 }
 
-// startDelivery runs the router: the half of opentag that reads the bus and
+// startDelivery runs the router: the half of mandatum that reads the bus and
 // renders events onto surfaces. It is separable from execution on purpose —
 // see work.go.
 func (c *core) startDelivery(ctx context.Context, g *group) {

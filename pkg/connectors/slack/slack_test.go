@@ -13,13 +13,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/connectors/slack"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/connectors/slack"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 const secret = "8f742231b10e8888abcd99yyyzzz85a5"
@@ -535,7 +535,7 @@ func TestDeliveryToAWorkspaceThisConnectorDoesNotServeIsRefused(t *testing.T) {
 		target string
 	}{
 		{name: "another workspace", target: "slack://T99OTHER/C02CHANNEL"},
-		{name: "another connector's scheme", target: "github://urmzd/opentag/issues/1"},
+		{name: "another connector's scheme", target: "github://urmzd/mandatum/issues/1"},
 		{name: "no channel", target: "slack://T01ABCDEF"},
 		{name: "too much path", target: "slack://T01ABCDEF/C02CHANNEL/extra"},
 	}

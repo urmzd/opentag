@@ -9,10 +9,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/urmzd/dispatch/pkg/metrics"
 
-	opentagv1 "github.com/urmzd/opentag/gen/opentag/v1"
-	"github.com/urmzd/opentag/pkg/bus"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/topic"
+	mandatumv1 "github.com/urmzd/mandatum/gen/mandatum/v1"
+	"github.com/urmzd/mandatum/pkg/bus"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 // Accepted is what the runtime returns once a tag is durable. It is returned
@@ -98,7 +98,7 @@ type RunReader interface {
 	Run(ctx context.Context, tenant, runID string) (Run, error)
 }
 
-// invokeService serves opentag.v1.InvokeService: the write path.
+// invokeService serves mandatum.v1.InvokeService: the write path.
 type invokeService struct {
 	invoker Invoker
 	runs    RunReader
@@ -108,7 +108,7 @@ type invokeService struct {
 }
 
 // Invoke accepts a tag and returns as soon as the run is durable.
-func (s *invokeService) Invoke(ctx context.Context, req *connect.Request[opentagv1.Tag]) (*connect.Response[opentagv1.InvokeResponse], error) {
+func (s *invokeService) Invoke(ctx context.Context, req *connect.Request[mandatumv1.Tag]) (*connect.Response[mandatumv1.InvokeResponse], error) {
 	id, err := s.identity(ctx)
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func (s *invokeService) Invoke(ctx context.Context, req *connect.Request[opentag
 	if err != nil {
 		return nil, fail(s.log, "invoke", err)
 	}
-	return connect.NewResponse(&opentagv1.InvokeResponse{
+	return connect.NewResponse(&mandatumv1.InvokeResponse{
 		RunId:      accepted.RunID,
 		Rev:        int32Of(accepted.Rev),
 		Topic:      accepted.Topic.String(),
@@ -141,7 +141,7 @@ func (s *invokeService) Invoke(ctx context.Context, req *connect.Request[opentag
 // subscribe arrive from the bus's retained window rather than being missed. That
 // window is what makes this safe, and it is also why a redelivered tag tails the
 // existing run from wherever the window starts rather than from event one.
-func (s *invokeService) InvokeStream(ctx context.Context, req *connect.Request[opentagv1.Tag], stream *connect.ServerStream[opentagv1.Event]) error {
+func (s *invokeService) InvokeStream(ctx context.Context, req *connect.Request[mandatumv1.Tag], stream *connect.ServerStream[mandatumv1.Event]) error {
 	id, err := s.identity(ctx)
 	if err != nil {
 		return err
@@ -166,7 +166,7 @@ func (s *invokeService) InvokeStream(ctx context.Context, req *connect.Request[o
 }
 
 // GetRun reads a run's durable record.
-func (s *invokeService) GetRun(ctx context.Context, req *connect.Request[opentagv1.GetRunRequest]) (*connect.Response[opentagv1.Run], error) {
+func (s *invokeService) GetRun(ctx context.Context, req *connect.Request[mandatumv1.GetRunRequest]) (*connect.Response[mandatumv1.Run], error) {
 	id, err := s.identity(ctx)
 	if err != nil {
 		return nil, err
@@ -195,11 +195,11 @@ func (s *invokeService) GetRun(ctx context.Context, req *connect.Request[opentag
 // tag parses a wire tag and stamps what the server owns: the tenant, from the
 // credential, and the observation time when the trigger did not set one.
 //
-// The tenant is assigned rather than merged. opentag.v1.Tag has no tenant field,
+// The tenant is assigned rather than merged. mandatum.v1.Tag has no tenant field,
 // so there is nothing to merge on the protobuf path, but a hand-rolled JSON body
 // can still carry one — Connect's JSON codec discards unknown fields — and an
 // assignment makes the outcome the same either way.
-func (s *invokeService) tag(p *opentagv1.Tag, id Identity) (envelope.Tag, error) {
+func (s *invokeService) tag(p *mandatumv1.Tag, id Identity) (envelope.Tag, error) {
 	tag, err := tagFromProto(p)
 	if err != nil {
 		return envelope.Tag{}, err

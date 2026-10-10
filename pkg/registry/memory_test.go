@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/agentspec"
-	"github.com/urmzd/opentag/pkg/registry"
+	"github.com/urmzd/mandatum/pkg/agentspec"
+	"github.com/urmzd/mandatum/pkg/registry"
 )
 
 const tenantA, tenantB = "acme", "globex"

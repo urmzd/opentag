@@ -12,13 +12,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/urmzd/opentag/pkg/address"
-	"github.com/urmzd/opentag/pkg/connector"
-	"github.com/urmzd/opentag/pkg/connectors/github"
-	"github.com/urmzd/opentag/pkg/connectors/mention"
-	"github.com/urmzd/opentag/pkg/envelope"
-	"github.com/urmzd/opentag/pkg/signature"
-	"github.com/urmzd/opentag/pkg/topic"
+	"github.com/urmzd/mandatum/pkg/address"
+	"github.com/urmzd/mandatum/pkg/connector"
+	"github.com/urmzd/mandatum/pkg/connectors/github"
+	"github.com/urmzd/mandatum/pkg/connectors/mention"
+	"github.com/urmzd/mandatum/pkg/envelope"
+	"github.com/urmzd/mandatum/pkg/signature"
+	"github.com/urmzd/mandatum/pkg/topic"
 )
 
 const secret = "It's a Secret to Everybody"
@@ -86,7 +86,7 @@ const issueComment = `{
     "state": "open",
     "user": {"login": "urmzd", "type": "User"},
     "labels": [{"name": "bug"}, {"name": "connectors"}],
-    "html_url": "https://github.com/urmzd/opentag/issues/42",
+    "html_url": "https://github.com/urmzd/mandatum/issues/42",
     "created_at": "2026-07-20T10:00:00Z",
     "updated_at": "2026-07-20T11:00:00Z"
   },
@@ -94,12 +94,12 @@ const issueComment = `{
     "id": 2201234567,
     "body": "can @docs-bot summarize what changed here, and @docs-bot check the retry path too?",
     "user": {"login": "urmzd", "type": "User"},
-    "html_url": "https://github.com/urmzd/opentag/issues/42#issuecomment-2201234567",
+    "html_url": "https://github.com/urmzd/mandatum/issues/42#issuecomment-2201234567",
     "created_at": "2026-07-20T12:30:00Z"
   },
   "repository": {
-    "name": "opentag",
-    "full_name": "urmzd/opentag",
+    "name": "mandatum",
+    "full_name": "urmzd/mandatum",
     "private": false,
     "owner": {"login": "urmzd", "type": "User"}
   },
@@ -127,7 +127,7 @@ func TestIssueCommentBecomesATagAddressedAtTheIssue(t *testing.T) {
 	if tag.Text != want {
 		t.Errorf("Tag.Text = %q, want %q with both mentions stripped", tag.Text, want)
 	}
-	if got, want := tag.Source.String(), "github://urmzd/opentag/issues/42"; got != want {
+	if got, want := tag.Source.String(), "github://urmzd/mandatum/issues/42"; got != want {
 		t.Errorf("Tag.Source = %q, want %q", got, want)
 	}
 	if tag.Actor.ID != "urmzd" || tag.Actor.Bot {
@@ -140,7 +140,7 @@ func TestIssueCommentBecomesATagAddressedAtTheIssue(t *testing.T) {
 		"github_event":           "issue_comment",
 		"github_action":          "created",
 		"github_owner":           "urmzd",
-		"github_repo":            "opentag",
+		"github_repo":            "mandatum",
 		"github_number":          "42",
 		"github_kind":            "issue",
 		"github_title":           "Retries double-post to Slack",
@@ -164,14 +164,14 @@ func TestACommentOnAPullRequestAddressesPullNotIssues(t *testing.T) {
 	// a pull_request member. The address must say what the agent is looking at.
 	body := strings.Replace(issueComment,
 		`"state": "open",`,
-		`"state": "open", "pull_request": {"url": "https://api.github.com/repos/urmzd/opentag/pulls/42"},`, 1)
+		`"state": "open", "pull_request": {"url": "https://api.github.com/repos/urmzd/mandatum/pulls/42"},`, 1)
 
 	c, tags := start(t, github.Config{Agents: mention.NewNames("docs-bot")})
 	w := httptest.NewRecorder()
 	c.ServeHTTP(w, deliver(t, "issue_comment", "d2", body))
 	tag := receive(t, tags)
 
-	if got, want := tag.Source.String(), "github://urmzd/opentag/pull/42"; got != want {
+	if got, want := tag.Source.String(), "github://urmzd/mandatum/pull/42"; got != want {
 		t.Errorf("Tag.Source = %q, want %q", got, want)
 	}
 	if tag.Meta["github_kind"] != "pull" {
@@ -192,7 +192,7 @@ const reviewRequested = `{
     "draft": false,
     "user": {"login": "urmzd", "type": "User"},
     "labels": [{"name": "connectors"}],
-    "html_url": "https://github.com/urmzd/opentag/pull/77",
+    "html_url": "https://github.com/urmzd/mandatum/pull/77",
     "base": {"ref": "main"},
     "head": {"ref": "coalesce-edits", "sha": "deadbeef"},
     "created_at": "2026-07-21T09:00:00Z",
@@ -200,8 +200,8 @@ const reviewRequested = `{
   },
   "requested_reviewer": {"login": "docs-bot[bot]", "type": "Bot"},
   "repository": {
-    "name": "opentag",
-    "full_name": "urmzd/opentag",
+    "name": "mandatum",
+    "full_name": "urmzd/mandatum",
     "owner": {"login": "urmzd", "type": "User"}
   },
   "sender": {"login": "urmzd", "type": "User"}
@@ -224,7 +224,7 @@ func TestAReviewRequestNamesTheAgentWithoutAnyMention(t *testing.T) {
 	if tag.Agent != "docs-bot" {
 		t.Errorf("Tag.Agent = %q, want the requested reviewer's agent", tag.Agent)
 	}
-	if got, want := tag.Source.String(), "github://urmzd/opentag/pull/77"; got != want {
+	if got, want := tag.Source.String(), "github://urmzd/mandatum/pull/77"; got != want {
 		t.Errorf("Tag.Source = %q, want %q", got, want)
 	}
 	// With no message, the pull request is the request.
@@ -290,7 +290,7 @@ func TestDeliveriesThatMustNotRaiseTags(t *testing.T) {
 		{
 			name:  "a push, which names no agent and would run one per commit",
 			event: "push",
-			body:  `{"repository":{"name":"opentag","owner":{"login":"urmzd"}},"sender":{"login":"urmzd","type":"User"}}`,
+			body:  `{"repository":{"name":"mandatum","owner":{"login":"urmzd"}},"sender":{"login":"urmzd","type":"User"}}`,
 		},
 		{
 			name:  "a pull request being closed",
@@ -332,7 +332,7 @@ func TestAnIssueOpenedWithAMentionRaisesATag(t *testing.T) {
 	    "state": "open", "user": {"login": "urmzd", "type": "User"},
 	    "created_at": "2026-07-22T08:00:00Z", "updated_at": "2026-07-22T08:00:00Z"
 	  },
-	  "repository": {"name": "opentag", "full_name": "urmzd/opentag", "owner": {"login": "urmzd", "type": "User"}},
+	  "repository": {"name": "mandatum", "full_name": "urmzd/mandatum", "owner": {"login": "urmzd", "type": "User"}},
 	  "sender": {"login": "urmzd", "type": "User"}
 	}`
 
@@ -347,7 +347,7 @@ func TestAnIssueOpenedWithAMentionRaisesATag(t *testing.T) {
 	if tag.Text != "please triage this\n\nThe sink posts twice on retry." {
 		t.Errorf("Tag.Text = %q", tag.Text)
 	}
-	if got, want := tag.Source.String(), "github://urmzd/opentag/issues/9"; got != want {
+	if got, want := tag.Source.String(), "github://urmzd/mandatum/issues/9"; got != want {
 		t.Errorf("Tag.Source = %q, want %q", got, want)
 	}
 }
@@ -390,7 +390,7 @@ func TestThePingGitHubSendsWhenAHookIsCreatedIsAnswered(t *testing.T) {
 
 // ── Sink ────────────────────────────────────────────────────────────
 
-var target = address.MustParse("github://urmzd/opentag/issues/42")
+var target = address.MustParse("github://urmzd/mandatum/issues/42")
 
 func event(seq uint64, kind envelope.Kind, payload string) envelope.Event {
 	return envelope.Event{
@@ -432,7 +432,7 @@ func TestDeliveringTheSameEventsTwiceKeepsOneEditedComment(t *testing.T) {
 		event(1, envelope.KindAccepted, ""),
 		textEvent(2, "The retry path posts twice "),
 		textEvent(3, "because the handle was lost."),
-		event(4, envelope.KindCitation, `{"title":"sink.go","uri":"https://github.com/urmzd/opentag/blob/main/sink.go"}`),
+		event(4, envelope.KindCitation, `{"title":"sink.go","uri":"https://github.com/urmzd/mandatum/blob/main/sink.go"}`),
 		event(5, envelope.KindCompleted, ""),
 	}
 	for range 2 {
@@ -448,7 +448,7 @@ func TestDeliveringTheSameEventsTwiceKeepsOneEditedComment(t *testing.T) {
 		t.Fatalf("github holds %d comments, want exactly 1", len(comments))
 	}
 	comment := comments[0]
-	if comment.Ref != (github.Ref{Owner: "urmzd", Repo: "opentag", Number: 42}) {
+	if comment.Ref != (github.Ref{Owner: "urmzd", Repo: "mandatum", Number: 42}) {
 		t.Errorf("comment ref = %+v", comment.Ref)
 	}
 	if got := strings.Count(comment.Body, "The retry path posts twice because the handle was lost."); got != 1 {
@@ -457,7 +457,7 @@ func TestDeliveringTheSameEventsTwiceKeepsOneEditedComment(t *testing.T) {
 	if !strings.Contains(comment.Body, "**docs-bot** _(done)_") {
 		t.Errorf("body is not GitHub markdown:\n%s", comment.Body)
 	}
-	if !strings.Contains(comment.Body, "[1] [sink.go](https://github.com/urmzd/opentag/blob/main/sink.go)") {
+	if !strings.Contains(comment.Body, "[1] [sink.go](https://github.com/urmzd/mandatum/blob/main/sink.go)") {
 		t.Errorf("citation is not a markdown footnote:\n%s", comment.Body)
 	}
 	if comment.Edits == 0 {
@@ -499,11 +499,11 @@ func TestDeliveryToAnUnservedTargetIsRefused(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct{ name, target string }{
-		{name: "another owner", target: "github://someone-else/opentag/issues/1"},
+		{name: "another owner", target: "github://someone-else/mandatum/issues/1"},
 		{name: "another connector", target: "slack://T01/C02"},
-		{name: "no number", target: "github://urmzd/opentag/issues"},
-		{name: "not a number", target: "github://urmzd/opentag/issues/latest"},
-		{name: "an unknown resource kind", target: "github://urmzd/opentag/discussions/4"},
+		{name: "no number", target: "github://urmzd/mandatum/issues"},
+		{name: "not a number", target: "github://urmzd/mandatum/issues/latest"},
+		{name: "an unknown resource kind", target: "github://urmzd/mandatum/discussions/4"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -534,18 +534,18 @@ func TestActionsChangeGitHubAndReportWhatTheyChanged(t *testing.T) {
 	if err != nil {
 		t.Fatalf("github_comment: %v", err)
 	}
-	if got := res.Address.String(); !strings.HasPrefix(got, "github://urmzd/opentag/issues/42?comment=") {
+	if got := res.Address.String(); !strings.HasPrefix(got, "github://urmzd/mandatum/issues/42?comment=") {
 		t.Errorf("Result.Address = %q, want the comment it created", got)
 	}
 	if len(fake.Comments()) != 1 || fake.Comments()[0].Body != "looked into it" {
 		t.Errorf("comments = %+v", fake.Comments())
 	}
 
-	pull := address.MustParse("github://urmzd/opentag/pull/77")
+	pull := address.MustParse("github://urmzd/mandatum/pull/77")
 	if _, err := actions["github_request_review"].Invoke(ctx, pull, json.RawMessage(`{"reviewers":["urmzd"],"teams":["platform"]}`)); err != nil {
 		t.Fatalf("github_request_review: %v", err)
 	}
-	if got := fake.Reviewers(github.Ref{Owner: "urmzd", Repo: "opentag", Number: 77}); len(got) != 2 {
+	if got := fake.Reviewers(github.Ref{Owner: "urmzd", Repo: "mandatum", Number: 77}); len(got) != 2 {
 		t.Errorf("reviewers = %v, want the user and the team", got)
 	}
 
@@ -557,7 +557,7 @@ func TestActionsChangeGitHubAndReportWhatTheyChanged(t *testing.T) {
 	if _, err := actions["github_add_labels"].Invoke(ctx, target, json.RawMessage(`{"labels":["bug"]}`)); err != nil {
 		t.Fatalf("github_add_labels again: %v", err)
 	}
-	if got := fake.Labels(github.Ref{Owner: "urmzd", Repo: "opentag", Number: 42}); len(got) != 2 {
+	if got := fake.Labels(github.Ref{Owner: "urmzd", Repo: "mandatum", Number: 42}); len(got) != 2 {
 		t.Errorf("labels = %v, want two", got)
 	}
 }
