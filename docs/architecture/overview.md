@@ -1,6 +1,6 @@
 # Architecture
 
-> **Beta, pre-1.0.** This document describes the architecture as built and
+> **v0 alpha, pre-1.0.** This document describes the architecture as built and
 > tested. Interfaces may change between minor versions. Where something is
 > designed but not yet finished, it is called out in
 > [Limitations](#limitations) rather than described as though it exists.

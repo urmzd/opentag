@@ -22,31 +22,31 @@
 
 ### Features
 
-- **runtime**: let a host carry out a delegation for a turn that is a run (#6) ([f8d8fda](https://github.com/urmzd/opentag/commit/f8d8fda4a91831e5f6595fc9f456d724aee8c174))
+- **runtime**: let a host carry out a delegation for a turn that is a run (#6) ([f8d8fda](https://github.com/urmzd/mandatum/commit/f8d8fda4a91831e5f6595fc9f456d724aee8c174))
 
 ### Misc
 
-- **deps**: bump saige to v0.34.0 (#5) ([f4be729](https://github.com/urmzd/opentag/commit/f4be729ab035a22755b2c8e9256c5250a9b53872))
-- **release**: read the sr-releaser key from the release environment (#4) ([0d66d8f](https://github.com/urmzd/opentag/commit/0d66d8f70c16a5424c61d6c45e7f5244589aa8e4))
-- **deps**: bump saige to v0.24.0 (#3) ([e6cb2ac](https://github.com/urmzd/opentag/commit/e6cb2acf04073e84cb17acf467dcf0b1b6f16624))
-- upgrade urmzd/sr action to v9 (#2) ([d16c081](https://github.com/urmzd/opentag/commit/d16c08121bac6ac35b91d33972bad917b6ec98ef))
+- **deps**: bump saige to v0.34.0 (#5) ([f4be729](https://github.com/urmzd/mandatum/commit/f4be729ab035a22755b2c8e9256c5250a9b53872))
+- **release**: read the sr-releaser key from the release environment (#4) ([0d66d8f](https://github.com/urmzd/mandatum/commit/0d66d8f70c16a5424c61d6c45e7f5244589aa8e4))
+- **deps**: bump saige to v0.24.0 (#3) ([e6cb2ac](https://github.com/urmzd/mandatum/commit/e6cb2acf04073e84cb17acf467dcf0b1b6f16624))
+- upgrade urmzd/sr action to v9 (#2) ([d16c081](https://github.com/urmzd/mandatum/commit/d16c08121bac6ac35b91d33972bad917b6ec98ef))
 
-[Full Changelog](https://github.com/urmzd/opentag/compare/v0.1.0...v0.2.0)
+[Full Changelog](https://github.com/urmzd/mandatum/compare/v0.1.0...v0.2.0)
 
 
 ## 0.1.0 (2026-10-09)
 
 ### Features
 
-- opentag, an agent platform and pub/sub bus for agents ([946ab53](https://github.com/urmzd/opentag/commit/946ab53d59c5314bfff7f6ca24c924882868c6ea))
+- opentag, an agent platform and pub/sub bus for agents ([946ab53](https://github.com/urmzd/mandatum/commit/946ab53d59c5314bfff7f6ca24c924882868c6ea))
 
 ### Bug Fixes
 
-- remove a lost wakeup in the retry test and repair CI ([f77c845](https://github.com/urmzd/opentag/commit/f77c845cff664d8cb2319d34b41e2e2e6317fa91))
+- remove a lost wakeup in the retry test and repair CI ([f77c845](https://github.com/urmzd/mandatum/commit/f77c845cff664d8cb2319d34b41e2e2e6317fa91))
 
 ### Misc
 
-- update model examples and bump saige to v0.22.0 (#1) ([5a43167](https://github.com/urmzd/opentag/commit/5a4316754d95c652ff3610b0d805339085a11ad7))
+- update model examples and bump saige to v0.22.0 (#1) ([5a43167](https://github.com/urmzd/mandatum/commit/5a4316754d95c652ff3610b0d805339085a11ad7))
 
 
 All notable changes to this project are documented here.

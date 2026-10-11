@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="#status"><img src="https://img.shields.io/badge/status-beta-orange" alt="Status: Beta"></a>
+  <a href="#status"><img src="https://img.shields.io/badge/status-v0%20alpha-orange" alt="Status: v0 alpha"></a>
   &nbsp;
   <a href="https://github.com/urmzd/mandatum/actions/workflows/ci.yml"><img src="https://github.com/urmzd/mandatum/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   &nbsp;
@@ -21,14 +21,12 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/urmzd/mandatum" alt="License"></a>
 </p>
 
-Formerly `opentag`.
-
 > ## Status
 >
-> **mandatum is beta software. It is pre-1.0 and not yet recommended for
+> **mandatum is v0 alpha software. It is pre-1.0 and not recommended for
 > production.**
 >
-> Interfaces are stabilizing but may change between minor versions, and a minor
+> Interfaces are still moving and may change between minor versions, and a minor
 > release may require code changes on your side.
 >
 > What that means concretely today:

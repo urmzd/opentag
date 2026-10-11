@@ -4,8 +4,8 @@ Agent platform and low-latency pub/sub bus. Tag an agent from anywhere, stream
 its events to anyone, deliver them anywhere. Go module
 `github.com/urmzd/mandatum`, binary `mandatum`.
 
-**Status: beta, pre-1.0, not recommended for production.** Interfaces are
-stabilizing but may change between minor versions. The single-binary deployment
+**Status: v0 alpha, pre-1.0, not recommended for production.** Interfaces are
+still moving and may change between minor versions. The single-binary deployment
 is complete and tested; the Redis bus backend is conformance-tested but not
 exercised in CI; there is no persistent registry yet, so agent specs do not
 survive a restart. Keep the surface small and document limitations honestly.
@@ -89,7 +89,7 @@ Discover layout with `tree` or ripgrep; do not trust stale listings.
   per run and edit it; never post per delta.
 - **Tenant is never read from a request body.** The server sets it from the
   caller's credential and overwrites whatever the client sent.
-- This is a beta: keep the surface small and document limitations honestly
+- This is a v0 alpha: keep the surface small and document limitations honestly
   rather than papering over them.
 
 ## Extension Guide
