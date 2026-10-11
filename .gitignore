@@ -17,3 +17,11 @@ coverage.html
 
 # Git worktrees
 .worktrees/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+.envrc.local
+*.pem
+*.key
